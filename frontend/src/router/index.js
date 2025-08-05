@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HelloWorld from '../components/HelloWorld.vue';
+import HelloWorld from '../views/HelloWorld.vue';
+import LoginView from '../views/LoginView.vue';
+import RegisterView from '../views/RegisterView.vue';
 
 
 const routes = [
@@ -8,8 +10,18 @@ const routes = [
     name: 'Home',
     component: HelloWorld,
     meta: {
-      authenticationRequired: false,
+      authenticationRequired: true,
     },
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+  },
+  {
+    path: '/register',
+    name: 'Registration',
+    component: RegisterView,
   }
 ];
 
