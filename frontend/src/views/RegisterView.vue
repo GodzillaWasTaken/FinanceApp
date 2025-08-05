@@ -74,8 +74,7 @@ const isFormValid = computed(() => {
 .password-toggle {
   position: absolute;
   right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 58%;
   cursor: pointer;
   color: #6c757d;
   font-size: 0.9rem;
