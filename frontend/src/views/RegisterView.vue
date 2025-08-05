@@ -76,7 +76,66 @@ const isFormValid = computed(() => {
   right: 15px;
   top: 58%;
   cursor: pointer;
-  color: #6c757d;
+  color: #6A7DA0; /* blu medio soft */
   font-size: 0.9rem;
+  margin-right: 25px;
+}
+
+.card {
+  background-color: #F9FAFB; /* bianco crema */
+  border: none;
+}
+
+.card-title {
+  color: #465881; /* blu più profondo */
+}
+
+.text-muted {
+  color: #6A7DA0 !important; /* blu medio soft */
+}
+
+.btn-dark {
+  background-color: #465881; /* blu più profondo */
+  border: none;
+}
+
+.btn-dark:hover {
+  background-color: #6A7DA0; /* blu medio soft */
+}
+
+.btn-secondary {
+  background-color: #B2BFE0; /* blu pastello */
+  border: none;
+  color: #465881;
+}
+
+.btn-secondary:disabled {
+  background-color: #D7E8F7; /* azzurro chiarissimo */
+  color: #B2BFE0;
+}
+
+input.form-control {
+  background-color: #D7E8F7; /* azzurro chiarissimo */
+  border: 1px solid #B2BFE0; /* blu pastello */
+  color: #465881; /* testo blu più profondo */
+}
+
+input.form-control:focus {
+  background-color: #F9FAFB; /* bianco crema */
+  border-color: #6A7DA0; /* blu medio soft */
+  outline: none;
+  box-shadow: 0 0 5px #6A7DA0;
+}
+
+a.text-primary {
+  color: #465881; /* blu più profondo */
+}
+
+a.text-primary:hover {
+  color: #6A7DA0; /* blu medio soft */
+}
+
+.text-danger {
+  color: #6A7DA0; /* usa il blu medio per gli errori, per restare soft */
 }
 </style>

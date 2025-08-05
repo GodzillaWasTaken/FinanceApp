@@ -8,22 +8,20 @@ const currentYear = ref(new Date().getFullYear());
 
 <template>
   <footer class="main-footer">
-    <p>
-      &copy; {{ currentYear }} by {{ authorName }}
-    </p>
-    <p>
-      Version {{ appVersion }}
-    </p>
+    <p>&copy; {{ currentYear }} by {{ authorName }}</p>
+    <p>Version {{ appVersion }}</p>
   </footer>
 </template>
 
 <style scoped>
 .main-footer {
-  background-color: #626a76;
-  color: white;
+  background-color: #F9FAFB;
+  color: #465881; 
   padding: 20px;
   text-align: center;
-  
+  border-radius: 0 0 12px 12px;
+  font-family: Arial, sans-serif;
+  user-select: none;
 }
 
 .main-footer p {

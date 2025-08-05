@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import HelloWorld from '../views/HelloWorld.vue';
+import MainDashboard from '../views/MainDashboard.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 
@@ -8,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: HelloWorld,
+    component: MainDashboard,
     meta: {
       authenticationRequired: true,
     },

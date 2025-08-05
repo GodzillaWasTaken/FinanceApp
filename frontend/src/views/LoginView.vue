@@ -77,7 +77,63 @@ const isFormValid = computed(() => {
   right: 15px;
   top: 57%;
   cursor: pointer;
-  color: #6c757d;
+  color: #6A7DA0;
   font-size: 0.9rem;
+  margin-right:  25px;
 }
+
+.card {
+  background-color: #F9FAFB;
+  border: none;
+}
+
+.card-title {
+  color: #465881; 
+}
+
+.text-muted {
+  color: #6A7DA0 !important; 
+}
+
+.btn-dark {
+  background-color: #465881; 
+  border: none;
+}
+
+.btn-dark:hover {
+  background-color: #6A7DA0; 
+}
+
+.btn-secondary {
+  background-color: #B2BFE0;
+  border: none;
+  color: #465881;
+}
+
+.btn-secondary:disabled {
+  background-color: #D7E8F7; 
+  color: #B2BFE0;
+}
+
+input.form-control {
+  background-color: #D7E8F7; 
+  border: 1px solid #B2BFE0; 
+  color: #465881; 
+}
+
+input.form-control:focus {
+  background-color: #F9FAFB; 
+  border-color: #6A7DA0; 
+  outline: none;
+  box-shadow: 0 0 5px #6A7DA0;
+}
+
+a.text-primary {
+  color: #465881; 
+}
+
+a.text-primary:hover {
+  color: #6A7DA0; 
+}
+
 </style>
