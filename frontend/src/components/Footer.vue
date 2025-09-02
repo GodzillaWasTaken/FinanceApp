@@ -2,31 +2,30 @@
 import { ref } from 'vue';
 
 const authorName = ref('Riccardo Modina'); 
-const appVersion = ref('0.0.1');
+const appVersion = ref('0.0.0');
 const currentYear = ref(new Date().getFullYear());
 </script>
 
 <template>
-  <footer class="main-footer">
-    <p>&copy; {{ currentYear }} by {{ authorName }}</p>
-    <p>Version {{ appVersion }}</p>
+  <footer class="bg-gray-50 text-slate-700 py-6 text-center rounded-b-xl font-sans select-none shadow-inner">
+    
+    <p class="text-sm mb-5 inline-block">
+      <router-link 
+        to="/contacts" 
+        class="text-slate-700 hover:underline duration-300 "
+        style="cursor: pointer;"
+      >
+        Finance Tracker
+      </router-link>
+    </p>
+
+    <div 
+      class="mx-auto mb-4"
+      style="width: 360px; height: 0; border-bottom: 1px; border-bottom-style: solid; border-bottom-color: rgb(51, 65, 85);"
+    ></div>
+
+
+    <p class="text-sm">&copy; {{ currentYear }} by {{ authorName }}</p>
+    <p class="text-sm">Version {{ appVersion }}</p>
   </footer>
 </template>
-
-<style scoped>
-.main-footer {
-  background-color: #F9FAFB;
-  color: #465881; 
-  padding: 20px;
-  text-align: center;
-  border-radius: 0 0 12px 12px;
-  font-family: Arial, sans-serif;
-  user-select: none;
-}
-
-.main-footer p {
-  margin: 0;
-  padding: 5px 0;
-  font-size: 0.9rem;
-}
-</style>

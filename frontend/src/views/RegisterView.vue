@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import Footer from '../components/Footer.vue'
+import Title from '../components/Title.vue'
+import ShowHideButton from '../components/ShowHideButton.vue'
 
 const username = ref('')
 const password = ref('')
@@ -25,44 +27,72 @@ const isFormValid = computed(() => {
 });
 
 </script>
-
 <template>
-  <div class="d-flex flex-column min-vh-100 bg-light">
-    <div class="d-flex flex-grow-1 justify-content-center align-items-center p-3">
-      <div class="row w-100 justify-content-center">
-        <div class="col-sm-10 col-md-8 col-lg-6">
-          <div class="card p-4 rounded-4 shadow-lg">
-            <h2 class="card-title text-center fw-bold mb-3">Sign up</h2>
-            <p class="text-center text-muted mb-4">
-              Already have an account? <router-link to="/login" class="text-decoration-none text-primary fw-bold">Log in</router-link>
-            </p>
+  <div class="flex flex-col min-h-screen bg-gray-50">
+    <div class="flex-grow flex justify-center items-center p-6">
+      <div class="w-full max-w-lg">
+         <Title title="Registrati nel Research Hub" class="mb-6" />
+        <div class="bg-white rounded-2xl shadow-lg p-8">
+          <h2 class="text-center text-2xl font-bold mb-4 text-grey-600">Registrati</h2>
+          <p class="text-center text-grey-600 mb-6">
+            Hai già un account?
+            <router-link to="/login" class="text-indigo-600 font-semibold hover:text-indigo-800 underline">
+              Accedi
+            </router-link>
+          </p>
 
-            <form @submit.prevent="handleRegistration">
-              <div class="mb-3">
-                <label for="username" class="form-label">Your username</label>
-                <input id="username" v-model="username" placeholder="Username" class="form-control" required/>
-              </div>
-              <div class="mb-3">
-                <label for="email" class="form-label">Your email</label>
-                <input id="email" v-model="email" type="email" placeholder="Email" class="form-control" required/>
-              </div>
-              <div class="mb-3 position-relative">
-                <label for="password" class="form-label">Your password</label>
-                <input :type="passwordFieldType" id="password" v-model="password" placeholder="Password" class="form-control" required>
-                <span class="password-toggle" @click="togglePasswordVisibility">{{ showPassword ? 'Hide' : 'Show' }}</span>
-              </div>
+          <form @submit.prevent="handleRegistration" class="space-y-6">
+            <div>
+              <label for="username" class="block text-grey-600 font-semibold mb-1">Username</label>
+              <input
+                id="username"
+                v-model="username"
+                placeholder="Username"
+                required
+                class="w-full px-4 py-2 rounded-lg border border-indigo-300 bg-indigo-100 text-grey-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </div>
 
-              <button
-                type="submit"
-                class="btn w-100 mt-4 text-white fw-bold"
-                :class="isFormValid ? 'btn-dark' : 'btn-secondary'"
-                :disabled="!isFormValid"
-              >
-                Sign up
-              </button>
-              <p v-if="authError" class="text-danger mt-3">{{ authError }}</p>
-            </form>
-          </div>
+            <div>
+              <label for="email" class="block text-grey-600 font-semibold mb-1">Email</label>
+              <input
+                id="email"
+                type="email"
+                v-model="email"
+                placeholder="Email"
+                required
+                class="w-full px-4 py-2 rounded-lg border border-indigo-300 bg-indigo-100 text-grey-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+            </div>
+
+            <div class="relative">
+              <label for="password" class="block text-grey-600 font-semibold mb-1">Password</label>
+              <input
+                :type="passwordFieldType"
+                id="password"
+                v-model="password"
+                placeholder="Password"
+                required
+                class="w-full px-4 py-2 rounded-lg border border-indigo-300 bg-indigo-100 text-grey-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              />
+              <ShowHideButton 
+                class="show-button"
+                :showPassword="showPassword"
+                @toggle="togglePasswordVisibility"
+              />
+            </div>
+
+            <button
+              type="submit"
+              :disabled="!isFormValid"
+              :class="isFormValid ? 'bg-indigo-900 hover:bg-indigo-700 text-white' : 'bg-indigo-300 text-grey-600 cursor-not-allowed'"
+              class="w-full py-3 rounded-lg font-bold transition-colors"
+            >
+              Registrati
+            </button>
+
+            <p v-if="authError" class="text-red-600 mt-3 text-center">{{ authError }}</p>
+          </form>
         </div>
       </div>
     </div>
@@ -70,72 +100,15 @@ const isFormValid = computed(() => {
   </div>
 </template>
 
+
 <style scoped>
-.password-toggle {
+.relative {
+  position: relative;
+}
+
+.show-button {
   position: absolute;
-  right: 15px;
-  top: 58%;
-  cursor: pointer;
-  color: #6A7DA0; /* blu medio soft */
-  font-size: 0.9rem;
-  margin-right: 25px;
-}
-
-.card {
-  background-color: #F9FAFB; /* bianco crema */
-  border: none;
-}
-
-.card-title {
-  color: #465881; /* blu più profondo */
-}
-
-.text-muted {
-  color: #6A7DA0 !important; /* blu medio soft */
-}
-
-.btn-dark {
-  background-color: #465881; /* blu più profondo */
-  border: none;
-}
-
-.btn-dark:hover {
-  background-color: #6A7DA0; /* blu medio soft */
-}
-
-.btn-secondary {
-  background-color: #B2BFE0; /* blu pastello */
-  border: none;
-  color: #465881;
-}
-
-.btn-secondary:disabled {
-  background-color: #D7E8F7; /* azzurro chiarissimo */
-  color: #B2BFE0;
-}
-
-input.form-control {
-  background-color: #D7E8F7; /* azzurro chiarissimo */
-  border: 1px solid #B2BFE0; /* blu pastello */
-  color: #465881; /* testo blu più profondo */
-}
-
-input.form-control:focus {
-  background-color: #F9FAFB; /* bianco crema */
-  border-color: #6A7DA0; /* blu medio soft */
-  outline: none;
-  box-shadow: 0 0 5px #6A7DA0;
-}
-
-a.text-primary {
-  color: #465881; /* blu più profondo */
-}
-
-a.text-primary:hover {
-  color: #6A7DA0; /* blu medio soft */
-}
-
-.text-danger {
-  color: #6A7DA0; /* usa il blu medio per gli errori, per restare soft */
+  right: 45px;
+  top: 70%
 }
 </style>

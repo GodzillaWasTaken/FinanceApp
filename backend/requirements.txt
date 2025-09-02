@@ -3,3 +3,5 @@ djangorestframework>=3.14
 djoser==2.3.3
 django-cors-headers==4.7.0
 psycopg2
+django-guardian>=2.5
+
