@@ -28,6 +28,10 @@ export function deleteConto(id) {
     return apiRequest(`/api/conti/${id}/`, 'DELETE');
 }
 
+export function getAllConti() {
+    return apiRequest('/api/conti/', 'GET', null, { page_size: 'all' });
+}
+
 // -------------------- CATEGORIE --------------------
 export function getCategorie(page = 1, pageSize = 10) {
     return apiRequest('/api/categorie/', 'GET', null, { page, page_size: pageSize });
@@ -43,6 +47,10 @@ export function updateCategoria(id, data) {
 }
 export function deleteCategoria(id) {
     return apiRequest(`/api/categorie/${id}/`, 'DELETE');
+}
+
+export function getAllCategorie() {
+    return apiRequest('/api/categorie/', 'GET', null, { page_size: 'all' });
 }
 
 // -------------------- MOVIMENTI --------------------

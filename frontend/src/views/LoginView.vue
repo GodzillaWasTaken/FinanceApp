@@ -31,15 +31,9 @@ const isFormValid = computed(() => {
   <div class="flex flex-col min-h-screen bg-gray-50">
     <div class="flex-grow flex justify-center items-center p-6">
       <div class="w-full max-w-lg">
-        <Title title="Area privata Research Hub" class="mb-6" />
+        <Title title="FinanceApp" class="mb-6" />
         <div class="bg-white rounded-2xl shadow-lg p-8">
           <h2 class="text-center text-2xl font-bold mb-4 text-grey-600">Accedi</h2>
-          <p class="text-center text-grey-600 mb-6">
-            Non hai un account?
-            <router-link to="/register" class="text-indigo-600 font-semibold hover:text-indigo-800 underline">
-              Registrati
-            </router-link>
-          </p>
 
           <form @submit.prevent="handleLogin" class="space-y-6">
             <div>

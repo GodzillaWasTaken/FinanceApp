@@ -10,13 +10,7 @@ const currentYear = ref(new Date().getFullYear());
   <footer class="bg-gray-50 text-slate-700 py-6 text-center rounded-b-xl font-sans select-none shadow-inner">
     
     <p class="text-sm mb-5 inline-block">
-      <router-link 
-        to="/contacts" 
-        class="text-slate-700 hover:underline duration-300 "
-        style="cursor: pointer;"
-      >
         Finance Tracker
-      </router-link>
     </p>
 
     <div 

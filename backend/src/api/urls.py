@@ -3,9 +3,9 @@ from . import views
 from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
-router.register('conti', views.ContoViewSet, basename='conto')
-router.register('categorie', views.CategoriaViewSet, basename='categoria')
-router.register('movimenti', views.MovimentoViewSet, basename='movimento')
+router.register('conti', views.ContoViewSet)
+router.register('categorie', views.CategoriaViewSet)
+router.register('movimenti', views.MovimentoViewSet)
 
 urlpatterns = [
     path('auth/', include('djoser.urls')),
