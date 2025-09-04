@@ -10,8 +10,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      PORT: 8080
     ports:
-      - "8000:8000"
+      - "8080:8080"
 
   database:
     image: postgres:latest
