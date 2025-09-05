@@ -2,12 +2,17 @@ import axios from 'axios'
 
 export const axiosEventBus = new EventTarget()
 
+const baseURL = import.meta.env.PROD
+  ? `https://${import.meta.env.VITE_API_URL}/`
+  : `http://${import.meta.env.VITE_API_URL}/`
+
 const axiosInstance = axios.create({
-  baseURL: `http://${import.meta.env.VITE_API_URL}/`,
+  baseURL,
   headers: {
     'Content-Type': 'application/json',
   },
 })
+
 
 // Request interceptor: attach access token
 axiosInstance.interceptors.request.use(config => {
