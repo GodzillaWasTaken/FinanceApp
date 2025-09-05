@@ -254,5 +254,13 @@ frontend/src/npm-debug.log*
 frontend/src/yarn-debug.log*
 frontend/src/yarn-error.log*
 
+# Cache files
+.cache/
+*.cache
+*.pyc
+
 #local files
 localfiles/
+
+#local scripts
+create_user.py

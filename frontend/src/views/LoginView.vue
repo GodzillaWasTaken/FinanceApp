@@ -75,15 +75,7 @@ const isFormValid = computed(() => {
             </button>
 
             <p v-if="authError" class="text-red-600 mt-3 text-center">{{ authError }}</p>
-            <p class="text-sm text-center">
-              <router-link 
-                to="/" 
-                class="text-slate-700 hover:underline duration-300 "
-                style="cursor: pointer;"
-              >
-                Home
-              </router-link>
-            </p>
+            
           </form>
         </div>
       </div>
