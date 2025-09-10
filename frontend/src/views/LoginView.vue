@@ -31,8 +31,8 @@ const isFormValid = computed(() => {
   <div class="flex flex-col min-h-screen bg-background">
     <div class="flex-grow flex justify-center items-center p-6">
       <div class="w-full max-w-lg">
-        <Title title="FinanceApp" class="mb-6" />
         <div class="bg-white rounded-2xl shadow-lg p-8">
+          <Title title="FinanceApp" class="text-5xl" />
           <h2 class="text-center text-2xl font-bold mb-4 text-text">Accedi</h2>
 
           <form @submit.prevent="handleLogin" class="space-y-6">
@@ -80,8 +80,6 @@ const isFormValid = computed(() => {
         </div>
       </div>
     </div>
-
-    <Footer />
   </div>
 </template>
 

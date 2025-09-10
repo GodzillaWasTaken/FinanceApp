@@ -7,7 +7,7 @@ const currentYear = ref(new Date().getFullYear());
 </script>
 
 <template>
-  <footer class="bg-secondary-clear text-text py-6 text-center rounded-b-xl font-sans select-none shadow-inner">
+  <footer class="bg-secondary-clear text-text py-4 text-center rounded-b-xl font-sans select-none shadow-inner">
     
     <p class="text-sm mb-5 inline-block">
         FinanceApp
