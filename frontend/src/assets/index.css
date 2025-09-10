@@ -1,4 +1,25 @@
-/* ./src/index.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* ./src/assets/index.css */
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #087E8B;          /* teal scuro */
+  --color-primary-hover: #055E63;
+  --color-primary-clear: rgba(8, 126, 139, 0.2);
+  --color-primary-light: rgba(8, 126, 139, 0.7);
+  --color-secondary: #FF5A5F;   
+  --color-secondary-clear: rgba(255, 90, 95, 0.2); 
+  --color-secondary-light: rgba(255, 90, 95, 0.7);     /* rosa corallo */
+  --color-secondary-hover: #E04D51;
+  --color-accent: #C1839F;
+  --color-accent-clear: rgba(193, 131, 159, 0.3);            /* lilla pastello */
+  --color-accent-hover: #A16D8A;
+  --color-text: #3C3C3C;             /* grigio scuro per testo */
+  --color-background: #F5F5F5;       /* bianco sporco chiaro */
+  --color-success: #6CBF84;          /* verde soft */
+  --color-neutral: #E0E0E0;          /* grigio chiaro */
+}
+
+body{
+  font-family: Arial, sans-serif;
+}
+

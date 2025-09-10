@@ -28,35 +28,35 @@ const isFormValid = computed(() => {
 </script>
 
 <template>
-  <div class="flex flex-col min-h-screen bg-gray-50">
+  <div class="flex flex-col min-h-screen bg-background">
     <div class="flex-grow flex justify-center items-center p-6">
       <div class="w-full max-w-lg">
         <Title title="FinanceApp" class="mb-6" />
         <div class="bg-white rounded-2xl shadow-lg p-8">
-          <h2 class="text-center text-2xl font-bold mb-4 text-grey-600">Accedi</h2>
+          <h2 class="text-center text-2xl font-bold mb-4 text-text">Accedi</h2>
 
           <form @submit.prevent="handleLogin" class="space-y-6">
             <div>
-              <label for="username" class="block text-grey-600 font-semibold mb-1">Username</label>
+              <label for="username" class="block text-text font-semibold mb-1">Username</label>
               <input
                 id="username"
                 v-model="username"
                 type="text"
                 placeholder="Username"
                 required
-                class="w-full px-4 py-2 rounded-lg border border-indigo-300 bg-indigo-100 text-grey-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full px-4 py-2 rounded-lg border border-neutral bg-primary-clear text-text focus:outline-none focus:ring-2 focus:ring-secondary-light"
               />
             </div>
 
             <div class="relative">
-              <label for="password" class="block text-grey-600 font-semibold mb-1">Password</label>
+              <label for="password" class="block text-text font-semibold mb-1">Password</label>
               <input
                 :type="passwordFieldType"
                 id="password"
                 v-model="password"
                 placeholder="Password"
                 required
-                class="w-full px-4 py-2 rounded-lg border border-indigo-300 bg-indigo-100 text-grey-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                class="w-full px-4 py-2 rounded-lg border border-neutral bg-primary-clear text-text focus:outline-none focus:ring-2 focus:ring-secondary-light"
               />
               <ShowHideButton 
                 class="show-button"
@@ -68,7 +68,7 @@ const isFormValid = computed(() => {
             <button
               type="submit"
               :disabled="!isFormValid"
-              :class="isFormValid ? 'bg-indigo-900 hover:bg-indigo-700 text-white' : 'bg-indigo-300 text-grey-600 cursor-not-allowed'"
+              :class="isFormValid ? 'bg-primary hover:bg-primary-hover text-neutral cursor-pointer' : 'bg-primary-light text-text cursor-not-allowed'"
               class="w-full py-3 rounded-lg font-bold transition-colors"
             >
               Accedi
