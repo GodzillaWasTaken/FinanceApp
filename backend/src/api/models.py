@@ -26,6 +26,7 @@ class Categoria(models.Model):
     TIPO_CHOICES = [
         ("entrata", "Entrata"),
         ("uscita", "Spesa"),
+        ("giroconto", "Giroconto"),
     ]
 
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name="categorie")

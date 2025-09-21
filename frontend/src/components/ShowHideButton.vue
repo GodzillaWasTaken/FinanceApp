@@ -13,7 +13,7 @@ const emit = defineEmits(['toggle']);
   <button
     type="button"
     @click="emit('toggle')"
-    class="absolute right-3 top-1/2 -translate-y-1/2 text-text hover:text-secondary-light cursor-pointer"
+    class="absolute right-3 top-1/2 -translate-y-1/2 text-text hover:text-primary-light cursor-pointer"
   >
     <transition name="eye-toggle" mode="out-in">
       <template v-if="showPassword">
