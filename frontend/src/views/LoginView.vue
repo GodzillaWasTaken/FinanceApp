@@ -1,9 +1,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useAuth } from '../composables/useAuth';
-import Footer from '../components/Footer.vue';
 import Title from '../components/Title.vue';
-import ShowHideButton from '../components/ShowHideButton.vue';
+import ShowHideButton from '../components/buttons/ShowHideButton.vue';
 
 const username = ref('');
 const password = ref('');

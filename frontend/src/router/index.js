@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import MainDashboard from '../views/MainDashboard.vue';
+import CashFlowDashboardView from '../views/CashFlowDashboardView.vue';
 import LoginView from '../views/LoginView.vue';
 
 
 const routes = [
   {
-    path: '/',
-    name: 'Home',
-    component: MainDashboard,
+    path: '/cashflow',
+    name: 'CashFlowDashboard',
+    component: CashFlowDashboardView,
     meta: {
       authenticationRequired: true,
     },
