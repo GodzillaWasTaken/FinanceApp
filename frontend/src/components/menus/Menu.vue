@@ -1,5 +1,7 @@
 <script setup>
 import { ref } from 'vue'
+import { Bars3Icon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
+import { PaperAirplaneIcon as PaperAirplaneIconSolid } from '@heroicons/vue/24/solid'
 
 const menuOptions = ref([
   { name: 'CashFlow', route: '/cashflow' },
@@ -7,6 +9,7 @@ const menuOptions = ref([
 ])
 
 const isOpen = ref(false)
+const isHoverCloseMenuOnMobileIcon = ref(false)
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
@@ -40,14 +43,7 @@ const toggleMenu = () => {
       class="absolute left-4 md:hidden z-40 text-text"
       style="top: 8px"
     >
-      <!-- icona hamburger -->
-      <svg xmlns="http://www.w3.org/2000/svg" 
-           class="h-6 w-6" fill="none" 
-           viewBox="0 0 24 24" 
-           stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-              d="M4 6h16M4 12h16M4 18h16"/>
-      </svg>
+      <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
     </button>
 
     <!-- effetto opaco nella aperte restante -->
@@ -67,10 +63,21 @@ const toggleMenu = () => {
       >
         <button 
           @click="toggleMenu" 
-          class="absolute top-4 right-4 text-white"
+          class="absolute top-4 right-4 text-white cursor-pointer"
+          @mouseenter="isHoverCloseMenuOnMobileIcon = true"
+          @mouseleave="isHoverCloseMenuOnMobileIcon = false"
         >
-          <
+          <transition name="fade" mode="out-in">
+            <component 
+              :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
+              :class="[
+              'h-4.5 w-4.5 transform rotate-180 !duration-150',
+              isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-white'
+              ]"
+            />
+          </transition>
         </button>
+
         <nav>
           <ul class="space-y-2 mt-30">
             <li v-for="item in menuOptions" :key="item.route">

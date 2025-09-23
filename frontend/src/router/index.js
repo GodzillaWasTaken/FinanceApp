@@ -16,6 +16,12 @@ const routes = [
     path: '/login',
     name: 'Login',
     component: LoginView,
+  },
+    {
+      // temporanea per sviluppo una volta inclusa la dashbpard completa sarà quella l'endpoint
+    path: '/',
+    name: 'Home',
+    component: CashFlowDashboardView,
   }
 ];
 

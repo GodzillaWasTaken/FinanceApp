@@ -1,4 +1,6 @@
 <script setup>
+import { PlusCircleIcon } from '@heroicons/vue/24/outline';
+
 </script>
 
 <template>
@@ -15,12 +17,17 @@
 
                 <!-- Container a destra -->
                 <div class="flex items-center space-x-4">
-                <button class="bg-secondary px-4 py-1 rounded text-white font-semibold">+ movimento to do(style too)</button>
-                <!-- Timeframe bottoni -->
-                <div class="flex space-x-2">
-                    <button class="px-3 py-1 bg-white rounded text-text">1W todo</button>
-                    <button class="px-3 py-1 bg-white rounded text-text">1M todo</button>
-                </div>
+                  <div 
+                    class="group bg-secondary px-4 py-1 rounded text-white
+                                hover:bg-secondary-hover transition-transform origin-center duration-500 cursor-pointer"
+                    >
+                        <PlusCircleIcon class="h-6 group-hover:rotate-90 duration-800" />
+                    </div>
+                    <!-- Timeframe bottoni -->
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 bg-white rounded text-text">1W todo</button>
+                        <button class="px-3 py-1 bg-white rounded text-text">1M todo</button>
+                    </div>
                 </div>
             </div>
         </section>
