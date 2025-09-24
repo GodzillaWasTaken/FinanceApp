@@ -71,7 +71,7 @@ const toggleMenu = () => {
             <component 
               :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
               :class="[
-              'h-4.5 w-4.5 transform rotate-180 !duration-150',
+              'h-4.5 w-4.5 transform rotate-180 !duration-100',
               isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-white'
               ]"
             />
@@ -107,6 +107,6 @@ const toggleMenu = () => {
   transition: opacity 0.3s ease;
 }
 .fade-enter-from, .fade-leave-to {
-  opacity: 0;
+  opacity: 0.6;
 }
 </style>
