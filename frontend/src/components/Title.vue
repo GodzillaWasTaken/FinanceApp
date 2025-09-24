@@ -3,7 +3,7 @@
 const props = defineProps({
   title: {
     type: String,
-    default: 'Welcome to the Research Hub'
+    default: 'Title'
   }
 })
 </script>

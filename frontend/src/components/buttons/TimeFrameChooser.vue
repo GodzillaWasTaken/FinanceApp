@@ -80,7 +80,7 @@ watch(isOpen, (val) => {
                 
                 />
             </transition>
-            Seleziona Data
+            Seleziona Periodo
     </button>
 
     <!-- Popover -->

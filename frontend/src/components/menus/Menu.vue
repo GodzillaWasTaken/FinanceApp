@@ -19,7 +19,7 @@ const toggleMenu = () => {
 <template>
   <div class="flex">
     <!-- Sidebar (desktop) -->
-    <aside class="hidden md:flex md:flex-col w-35 h-screen bg-primary-light text-white text-center text-xl">
+    <aside class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center text-xl">
       <nav class="flex-1">
         <ul class="space-y-2 mt-30">
           <!-- da rendere un componente con icona e nome, proprieta del colore delle parole e della dimensione del testo messe qua, solo il fatto che siano centrali va messo nell'aside -->

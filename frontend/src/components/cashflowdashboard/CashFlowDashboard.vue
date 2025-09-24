@@ -1,6 +1,8 @@
 <script setup>
 import { PlusCircleIcon } from '@heroicons/vue/24/outline';
 import TimeFrameChooser from '../buttons/TimeFrameChooser.vue';
+import CashFlowMainData from './CashFlowMainData.vue';
+import ChartSection from '../charts/ChartSection.vue';
 
 function updateTimeframe(nuovoTimeframe) {
     console.log("Timeframe scelto:", nuovoTimeframe);
@@ -13,10 +15,11 @@ function updateTimeframe(nuovoTimeframe) {
         <!-- top service icon -->
         <section class="h-[40px] bg-background"></section>
 
-        <!-- title bar -->
+        <!-- la barra sopra ed il main data hanno imensione fissa, cio che si adatta sono le dimensioni dei grafici -->
+
         <!-- potrebbe anche questa essere resa un componente -->
-        <section class="bg-primary-light/55 h-[50px]">
-            <div class="flex items-center h-full px-4 justify-between">
+        <section class="bg-primary-light/55 md:min-h-[70px] min-h-24">
+            <div class="md:flex-row flex flex-col items-center h-full px-4 justify-center gap-2.5 md:justify-between md:gap-0">
                 <!-- Titolo a sinistra -->
                 <h1 class="text-2xl font-bold text-text">Cash Flow Dashboard</h1>
 
@@ -38,22 +41,13 @@ function updateTimeframe(nuovoTimeframe) {
         </section>
 
         <!-- main -->
-        <section class="bg-background h-[210px]">
-            <div class="bg-white m-[25px] rounded-[10px] h-[160px]">
-                fff
-            </div>
+        <section class="bg-background">
+            <CashFlowMainData/>
         </section>
 
         <!-- graphs -->
         <section class="flex-1 bg-background">
-            <div class="flex flex-col md:flex-row items-center justify-center gap-[25px] h-full ml-[25px] mr-[25px]">
-                <div class="bg-white rounded-[10px] flex-1 flex items-center justify-center h-full">
-                ff
-                </div>
-                <div class="bg-white rounded-[10px] flex-1 flex items-center justify-center h-full">
-                ddd
-                </div>
-            </div>
+            <ChartSection/>
         </section>
 
     </div>

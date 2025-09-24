@@ -6,7 +6,7 @@ import CashFlowDashboard from '../components/cashflowdashboard/CashFlowDashboard
 
 <template>
   <div class="flex min-h-screen">
-    <div>
+    <div class="flex bg-primary-light">
       <Menu />
     </div>
     <div class="flex-1 flex flex-col">
