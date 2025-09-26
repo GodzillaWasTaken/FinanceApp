@@ -2,11 +2,18 @@
 import { ref } from 'vue'
 import { Bars3Icon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import { PaperAirplaneIcon as PaperAirplaneIconSolid } from '@heroicons/vue/24/solid'
+import MenuVoice from './MenuVoice.vue'
+import { WalletIcon } from '@heroicons/vue/24/outline'
+import { WalletIcon as WalletIconSolid} from '@heroicons/vue/24/solid'
+import { UserCircleIcon } from '@heroicons/vue/24/outline'
+import { UserCircleIcon as UserCircleIconSolid } from '@heroicons/vue/24/solid'
 
 const menuOptions = ref([
-  { name: 'CashFlow', route: '/cashflow' },
-  { name: 'Profilo', route: '/profile' }
+  { name: 'CashFlow', route: '/cashflow', icon: WalletIcon, iconSolid: WalletIconSolid},
+  { name: 'Profilo', route: '/profile', icon: UserCircleIcon, iconSolid: UserCircleIconSolid }
 ])
+
+const defaultMenuOpen = ref(true) //il menu di default è sempre aperto su desktop, da inserire nelle impostazioni la logica di quesgto
 
 const isOpen = ref(false)
 const isHoverCloseMenuOnMobileIcon = ref(false)
@@ -18,18 +25,18 @@ const toggleMenu = () => {
 
 <template>
   <div class="flex">
-    <!-- Sidebar (desktop) -->
-    <aside class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center text-xl">
+    <!-- desktop menu quando scegli di averlo sempre aperto -->
+    <aside v-if="defaultMenuOpen" class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center">
       <nav class="flex-1">
         <ul class="space-y-2 mt-30">
           <!-- da rendere un componente con icona e nome, proprieta del colore delle parole e della dimensione del testo messe qua, solo il fatto che siano centrali va messo nell'aside -->
-          <li v-for="item in menuOptions" :key="item.route">
-            <a 
-              :href="item.route" 
-              class="block px-4 py-2 rounded hover:text-secondary transition"
-            >
-              {{ item.name }}
-            </a>
+          <li v-for="item in menuOptions" :key="item.name">
+            <MenuVoice
+              :menuVoice="item.name"
+              :route="item.route"
+              :icon="item.icon"
+              :iconSolid="item.iconSolid"
+            />
           </li>
         </ul>
       </nav>
@@ -39,8 +46,9 @@ const toggleMenu = () => {
     <!-- ho messo altezza dal top 8px perche il div in cui deve stare (top in cashflowdashboard) è alto 40, l'icona è 24 
       per centrarlo ho fatto 40-24/2 ed esce 8 -->
     <button 
+      v-if="!defaultMenuOpen"
       @click="toggleMenu"
-      class="absolute left-4 md:hidden z-40 text-text"
+      class="absolute left-4 z-40 text-text"
       style="top: 8px"
     >
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
@@ -51,7 +59,7 @@ const toggleMenu = () => {
       <div
         v-if="isOpen"
         @click="toggleMenu"
-        class="fixed inset-0 bg-black/40 z-30 md:hidden"
+        class="fixed inset-0 bg-black/40 z-30"
       ></div>
     </transition>
 
@@ -59,7 +67,7 @@ const toggleMenu = () => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-35 bg-primary-light text-white p-4 z-40 md:hidden"
+        class="fixed inset-y-0 left-0 w-35 bg-primary-light text-white p-4 z-40"
       >
         <button 
           @click="toggleMenu" 

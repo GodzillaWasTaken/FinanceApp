@@ -66,7 +66,7 @@ watch(isOpen, (val) => {
     <div class="relative inline-block" ref="root">
     <!-- Trigger -->
     <button 
-        class="px-4 py-1 rounded-md text-text text-sm bg-secondary hover:bg-secondary-hover flex items-center justify-center gap-2 cursor-pointer"
+        class="px-4 py-1 rounded-md text-white text-sm bg-primary-light hover:bg-primary flex items-center justify-center gap-2 cursor-pointer"
         ref="trigger"
         @click="toggle"
         @mouseenter="isHoverSelectDateIcon = true"

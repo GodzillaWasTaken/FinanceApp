@@ -1,6 +1,6 @@
 <script setup>
 import Footer from '../components/Footer.vue';
-import Menu from '../components/menus/Menu.vue';
+import Menu from '../components/menus/mainmenu/Menu.vue';
 import CashFlowDashboard from '../components/cashflowdashboard/CashFlowDashboard.vue';
 </script>
 

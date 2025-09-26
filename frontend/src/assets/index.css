@@ -17,11 +17,7 @@
   --color-text: #3C3C3C;             /* grigio scuro per testo */
   --color-background: #EBEEF2;       /* bianco sporco chiaro leggermente azzurrino */
   --color-success: #7FCB75;          /* verde soft */
+  --color-negative: #FF5C61;
   --color-card-background: #FFFFFF;   /* bianco puro per sfondi delle card */
   --color-neutral: #B0B0B0;       
 }
-
-body{
-  font-family: Arial, sans-serif;
-}
-
