@@ -29,7 +29,6 @@ const toggleMenu = () => {
     <aside v-if="defaultMenuOpen" class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center">
       <nav class="flex-1">
         <ul class="space-y-2 mt-30">
-          <!-- da rendere un componente con icona e nome, proprieta del colore delle parole e della dimensione del testo messe qua, solo il fatto che siano centrali va messo nell'aside -->
           <li v-for="item in menuOptions" :key="item.name">
             <MenuVoice
               :menuVoice="item.name"
@@ -46,9 +45,9 @@ const toggleMenu = () => {
     <!-- ho messo altezza dal top 8px perche il div in cui deve stare (top in cashflowdashboard) è alto 40, l'icona è 24 
       per centrarlo ho fatto 40-24/2 ed esce 8 -->
     <button 
-      v-if="!defaultMenuOpen"
+      v-if="!isOpen"
       @click="toggleMenu"
-      class="absolute left-4 z-40 text-text"
+      :class="['absolute left-4 z-40 text-text', defaultMenuOpen ? 'md:hidden' : '' ]"
       style="top: 8px"
     >
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
@@ -59,7 +58,7 @@ const toggleMenu = () => {
       <div
         v-if="isOpen"
         @click="toggleMenu"
-        class="fixed inset-0 bg-black/40 z-30"
+        :class="['fixed inset-0 bg-black/40 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
       ></div>
     </transition>
 
@@ -88,14 +87,14 @@ const toggleMenu = () => {
 
         <nav>
           <ul class="space-y-2 mt-30">
-            <li v-for="item in menuOptions" :key="item.route">
-            <a 
-              :href="item.route" 
-              class="block px-4 py-2 rounded hover:text-secondary transition"
-            >
-              {{ item.name }}
-            </a>
-          </li>
+            <li v-for="item in menuOptions" :key="item.name">
+              <MenuVoice
+                :menuVoice="item.name"
+                :route="item.route"
+                :icon="item.icon"
+                :iconSolid="item.iconSolid"
+              />
+            </li>
           </ul>
         </nav>
       </aside>
