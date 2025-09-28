@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import NumberCard from '../cards/NumberCard.vue';
+import NumberCard from '../../cards/NumberCard.vue';
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { BanknotesIcon } from '@heroicons/vue/24/outline';
@@ -29,33 +29,36 @@ onMounted(() => {
     <!-- md siginifica da dimensione ipad in su -->
   <div class="bg-background m-6 rounded-[10px] flex flex-col md:flex-col md:min-h-[160px] 2xl:min-h-[300px]"> 
     <!-- ogiuno di questi sotto sara uno stesso componente in cui passo i valori ed il colore della freccia oltre che boh la variazione percentuale etcc -->
-    <div class="flex bg-white md:flex-[1_1_50%] 2xl:mb-6 mb-4 rounded-[10px] min-h-30 md:min-h-0 items-center justify-center">
+    <div class="flex bg-white md:flex-[1_1_50%] 2xl:mb-6 mb-4 rounded-[10px] min-h-30 md:min-h-0 items-center">
       <NumberCard 
       title="Netto" 
       :value="net"
       color="bg-white"
       :icon="BanknotesIcon"
       :sign="netSign"
+      class="flex-1 md:ml-10 items-center md:items-baseline"
     />
     </div>
 
     <div class="flex flex-col md:flex-row mt-0 md:flex-[1_1_50%] md:gap-4">
-      <div class="flex bg-white flex-1 mb-4 md:mb-0 rounded-[10px] min-h-30 md:min-h-0 items-center justify-center">
+      <div class="flex bg-white flex-1 mb-4 md:mb-0 rounded-[10px] min-h-30 md:min-h-0 items-center">
         <NumberCard 
         title="Entrate" 
         :value="income" 
         color="bg-white"
         :icon="ArrowRightEndOnRectangleIcon"
         iconClass="text-success"
+        class="flex-1 md:ml-10 items-center md:items-baseline"
       />
       </div>
-      <div class="flex bg-white flex-1 mt-0 rounded-[10px] min-h-30 md:min-h-0 items-center justify-center">
+      <div class="flex bg-white flex-1 mt-0 rounded-[10px] min-h-30 md:min-h-0 items-center">
         <NumberCard 
         title="Uscite" 
         :value="expense"  
         color="bg-white"
         :icon="ArrowRightStartOnRectangleIcon"
         iconClass="text-negative"
+        class="flex-1 md:ml-10 items-center md:items-baseline"
       />
       </div>
     </div>

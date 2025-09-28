@@ -1,9 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import CashFlowDashboardView from '../views/CashFlowDashboardView.vue';
 import LoginView from '../views/LoginView.vue';
+import SettingsView from '../views/SettingsView.vue';
+import ProfileView from '../views/ProfileView.vue';
 
 
 const routes = [
+   {
+    path: '/login',
+    name: 'Login',
+    component: LoginView,
+  },
   {
     path: '/cashflow',
     name: 'CashFlowDashboard',
@@ -13,15 +20,29 @@ const routes = [
     },
   },
   {
-    path: '/login',
-    name: 'Login',
-    component: LoginView,
-  },
-    {
       // temporanea per sviluppo una volta inclusa la dashbpard completa sarà quella l'endpoint
     path: '/',
     name: 'Home',
     component: CashFlowDashboardView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: SettingsView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/profile',
+    name: 'Profile',
+    component: ProfileView,
+    meta: {
+      authenticationRequired: true,
+    },
   }
 ];
 

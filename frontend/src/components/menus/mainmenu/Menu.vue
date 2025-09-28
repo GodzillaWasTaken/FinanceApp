@@ -1,19 +1,24 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, onUnmounted } from 'vue'
 import { Bars3Icon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
 import { PaperAirplaneIcon as PaperAirplaneIconSolid } from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
-import { WalletIcon } from '@heroicons/vue/24/outline'
-import { WalletIcon as WalletIconSolid} from '@heroicons/vue/24/solid'
-import { UserCircleIcon } from '@heroicons/vue/24/outline'
-import { UserCircleIcon as UserCircleIconSolid } from '@heroicons/vue/24/solid'
+import { WalletIcon, UserCircleIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
+import { WalletIcon as WalletIconSolid, UserCircleIcon as UserCircleIconSolid, Cog8ToothIcon as Cog8ToothIconSolid} from '@heroicons/vue/24/solid'
+import { useSettingsStore } from '../../../stores/settings'
 
 const menuOptions = ref([
   { name: 'CashFlow', route: '/cashflow', icon: WalletIcon, iconSolid: WalletIconSolid},
-  { name: 'Profilo', route: '/profile', icon: UserCircleIcon, iconSolid: UserCircleIconSolid }
+  { name: 'Profilo', route: '/profile', icon: UserCircleIcon, iconSolid: UserCircleIconSolid },
+  { name: 'Impostazioni', route: '/settings', icon: Cog8ToothIcon, iconSolid: Cog8ToothIconSolid }
 ])
 
-const defaultMenuOpen = ref(true) //il menu di default è sempre aperto su desktop, da inserire nelle impostazioni la logica di quesgto
+const settings = useSettingsStore();
+const defaultMenuOpen = settings.defaultMenuOpen;
+
+watch(() => settings.defaultMenuOpen, () => {
+  window.location.reload()
+})
 
 const isOpen = ref(false)
 const isHoverCloseMenuOnMobileIcon = ref(false)
@@ -21,12 +26,28 @@ const isHoverCloseMenuOnMobileIcon = ref(false)
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
 }
+
+// Evita lo scroll quando il menu mobile è aperto
+watch(isOpen, (val) => {
+  if (val) {
+    document.body.classList.add('overflow-hidden')
+  } else {
+    document.body.classList.remove('overflow-hidden')
+  }
+})
+
+onUnmounted(() => {
+  document.body.classList.remove('overflow-hidden')
+})
 </script>
 
 <template>
   <div class="flex">
-    <!-- desktop menu quando scegli di averlo sempre aperto -->
-    <aside v-if="defaultMenuOpen" class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center">
+    <!-- desktop menu sempre aperto -->
+    <aside 
+      v-if="defaultMenuOpen" 
+      class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center"
+    >
       <nav class="flex-1">
         <ul class="space-y-2 mt-30">
           <li v-for="item in menuOptions" :key="item.name">
@@ -42,8 +63,6 @@ const toggleMenu = () => {
     </aside>
 
     <!-- Hamburger (mobile) -->
-    <!-- ho messo altezza dal top 8px perche il div in cui deve stare (top in cashflowdashboard) è alto 40, l'icona è 24 
-      per centrarlo ho fatto 40-24/2 ed esce 8 -->
     <button 
       v-if="!isOpen"
       @click="toggleMenu"
@@ -53,7 +72,7 @@ const toggleMenu = () => {
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
     </button>
 
-    <!-- effetto opaco nella aperte restante -->
+    <!-- sfondo opaco -->
     <transition name="fade">
       <div
         v-if="isOpen"
@@ -66,7 +85,7 @@ const toggleMenu = () => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-35 bg-primary-light text-white p-4 z-40"
+        class="fixed inset-y-0 left-0 w-55 bg-primary-light text-white p-4 z-40 flex flex-col"
       >
         <button 
           @click="toggleMenu" 
@@ -78,15 +97,15 @@ const toggleMenu = () => {
             <component 
               :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
               :class="[
-              'h-4.5 w-4.5 transform rotate-180 !duration-100',
-              isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-white'
+                'h-4.5 w-4.5 transform rotate-180 !duration-100',
+                isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-white'
               ]"
             />
           </transition>
         </button>
 
-        <nav>
-          <ul class="space-y-2 mt-30">
+        <nav class="flex-1 justify-center">
+          <ul class="flex flex-col space-y-2 items-center mt-30">
             <li v-for="item in menuOptions" :key="item.name">
               <MenuVoice
                 :menuVoice="item.name"
