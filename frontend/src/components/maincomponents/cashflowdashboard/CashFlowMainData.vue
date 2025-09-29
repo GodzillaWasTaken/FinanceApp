@@ -29,7 +29,7 @@ onMounted(() => {
     <!-- md siginifica da dimensione ipad in su -->
   <div class="bg-background m-6 rounded-[10px] flex flex-col md:flex-col md:min-h-[160px] 2xl:min-h-[300px]"> 
     <!-- ogiuno di questi sotto sara uno stesso componente in cui passo i valori ed il colore della freccia oltre che boh la variazione percentuale etcc -->
-    <div class="flex bg-white md:flex-[1_1_50%] 2xl:mb-6 mb-4 rounded-[10px] min-h-30 md:min-h-0 items-center">
+    <div class="flex bg-white md:flex-[1_1_50%] 2xl:mb-6 mb-4 rounded-[10px] min-h-30 md:min-h-0 items-center shadow-sm">
       <NumberCard 
       title="Netto" 
       :value="net"
@@ -41,7 +41,7 @@ onMounted(() => {
     </div>
 
     <div class="flex flex-col md:flex-row mt-0 md:flex-[1_1_50%] md:gap-4">
-      <div class="flex bg-white flex-1 mb-4 md:mb-0 rounded-[10px] min-h-30 md:min-h-0 items-center">
+      <div class="flex bg-white flex-1 mb-4 md:mb-0 rounded-[10px] min-h-30 md:min-h-0 items-center shadow-sm">
         <NumberCard 
         title="Entrate" 
         :value="income" 
@@ -51,7 +51,7 @@ onMounted(() => {
         class="flex-1 md:ml-10 items-center md:items-baseline"
       />
       </div>
-      <div class="flex bg-white flex-1 mt-0 rounded-[10px] min-h-30 md:min-h-0 items-center">
+      <div class="flex bg-white flex-1 mt-0 rounded-[10px] min-h-30 md:min-h-0 items-center shadow-sm">
         <NumberCard 
         title="Uscite" 
         :value="expense"  

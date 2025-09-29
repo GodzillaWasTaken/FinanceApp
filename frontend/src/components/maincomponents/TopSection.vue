@@ -46,7 +46,7 @@ const routeSettings = "/settings";
             </RouterLink>
             
         </section>
-        <section class="bg-secondary-light/80 md:min-h-[70px] min-h-24 flex items-center md:justify-between">
+        <section class="bg-secondary-light/80 md:min-h-[70px] min-h-24 flex items-center md:justify-between ">
             <div class="md:flex-row flex flex-col items-center w-full h-full px-4 justify-center gap-2.5 md:justify-between md:gap-0">
                 <!-- Titolo a sinistra -->
                 <h1 class=" text-2xl font-bold text-text">{{ title }}</h1>

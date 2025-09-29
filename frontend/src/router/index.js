@@ -3,10 +3,11 @@ import CashFlowDashboardView from '../views/CashFlowDashboardView.vue';
 import LoginView from '../views/LoginView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import NotFundView from '../views/NotFundView.vue';
 
 
 const routes = [
-   {
+  {
     path: '/login',
     name: 'Login',
     component: LoginView,
@@ -43,6 +44,11 @@ const routes = [
     meta: {
       authenticationRequired: true,
     },
+  },
+  {
+    path: '/:catchAll(.*)', 
+    name: 'NotFound',     
+    component: NotFundView, 
   }
 ];
 

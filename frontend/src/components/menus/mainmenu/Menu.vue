@@ -85,7 +85,7 @@ onUnmounted(() => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-55 bg-primary-light text-white p-4 z-40 flex flex-col"
+        class="fixed inset-y-0 left-0 w-55 md:w-35 bg-primary-light text-white p-4 z-40 flex flex-col"
       >
         <button 
           @click="toggleMenu" 
@@ -105,7 +105,7 @@ onUnmounted(() => {
         </button>
 
         <nav class="flex-1 justify-center">
-          <ul class="flex flex-col space-y-2 items-center mt-30">
+          <ul class="flex flex-col space-y-8 text-xl md:space-y-2 md:text-base items-center mt-30">
             <li v-for="item in menuOptions" :key="item.name">
               <MenuVoice
                 :menuVoice="item.name"
