@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-white rounded-[10px] flex items-center justify-center h-full min-h-80 shadow-sm">
+  <div class="bg-white rounded-[10px] flex items-center justify-center h-full min-h-80 shadow-md">
     <!-- key forza il remount quando cambia windowWidth -->
     <component :is="chart" class="flex h-full" :key="windowWidth"/>
   </div>

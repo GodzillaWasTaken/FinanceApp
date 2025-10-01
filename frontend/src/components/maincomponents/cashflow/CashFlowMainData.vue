@@ -1,0 +1,61 @@
+<script setup>
+import { onMounted, ref } from 'vue';
+import NumberCard from '../../cards/NumberCard.vue';
+import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline';
+import { BanknotesIcon } from '@heroicons/vue/24/outline';
+
+const income = ref(1000);
+const expense = ref(500);
+const net = ref();
+const netSign = ref();
+
+const updateNet = () => {
+  net.value=income.value-expense.value;
+  updateNetSign(net.value);
+};
+
+const updateNetSign = (val)=>{
+  netSign.value = val>0 ? "+" : "-";
+}
+
+onMounted(() => {
+  updateNet();
+});
+
+</script>
+
+<template>
+  <div class="bg-background ml-6 mr-6 mt-10 mb-10 rounded-[10px] flex flex-col md:flex-row gap-4 ">
+      <div class="flex-1">
+        <NumberCard 
+          title="Netto" 
+          :value="net"
+          color="bg-white"
+          :icon="BanknotesIcon"
+          :sign="netSign"
+          class="flex-1 items-center p-4"
+        />
+      </div>
+      <div class="flex-1">
+        <NumberCard 
+          title="Entrate" 
+          :value="income" 
+          color="bg-white"
+          :icon="ArrowRightEndOnRectangleIcon"
+          iconClass="text-success"
+          class="flex-1 items-center p-4"
+        />
+      </div>
+      <div class="flex-1">
+        <NumberCard 
+          title="Uscite" 
+          :value="expense"  
+          color="bg-white"
+          :icon="ArrowRightStartOnRectangleIcon"
+          iconClass="text-negative"
+          class="flex-1 items-center p-4"
+        />
+      </div>
+    </div>
+</template>

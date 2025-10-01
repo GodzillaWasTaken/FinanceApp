@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import CashFlowDashboardView from '../views/CashFlowDashboardView.vue';
+import CashFlowDashboardView from '../views/cashflow/CashFlowDashboardView.vue';
 import LoginView from '../views/LoginView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
