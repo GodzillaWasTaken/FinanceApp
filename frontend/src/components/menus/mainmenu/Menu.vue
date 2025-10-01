@@ -1,10 +1,9 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
-import { Bars3Icon, PaperAirplaneIcon } from '@heroicons/vue/24/outline'
-import { PaperAirplaneIcon as PaperAirplaneIconSolid } from '@heroicons/vue/24/solid'
+import { Bars3Icon, PaperAirplaneIcon, WalletIcon, UserCircleIcon, Cog8ToothIcon, HomeIcon} from '@heroicons/vue/24/outline'
+import { PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, UserCircleIcon as UserCircleIconSolid, Cog8ToothIcon as Cog8ToothIconSolid,
+         HomeIcon as HomeIconSolid} from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
-import { WalletIcon, UserCircleIcon, Cog8ToothIcon } from '@heroicons/vue/24/outline'
-import { WalletIcon as WalletIconSolid, UserCircleIcon as UserCircleIconSolid, Cog8ToothIcon as Cog8ToothIconSolid} from '@heroicons/vue/24/solid'
 import { useSettingsStore } from '../../../stores/settings'
 
 const menuOptions = ref([
@@ -15,6 +14,7 @@ const menuOptions = ref([
 
 const settings = useSettingsStore();
 const defaultMenuOpen = settings.defaultMenuOpen;
+const isHoverHomeIcon = ref(false)
 
 watch(() => settings.defaultMenuOpen, () => {
   window.location.reload()
@@ -49,7 +49,21 @@ onUnmounted(() => {
       class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center"
     >
       <nav class="flex-1">
-        <ul class="space-y-2 mt-30">
+        <ul class="space-y-2 mt-10">
+        <RouterLink to="/" class="group">
+          <li
+            @mouseenter="isHoverHomeIcon = true"
+            @mouseleave="isHoverHomeIcon = false" 
+            class="flex justify-center hover:cursor-pointer mb-10">
+              <component 
+                :is="isHoverHomeIcon ? HomeIconSolid : HomeIcon" 
+                :class="[
+                  'hidden md:block h-15 w-15 transform !duration-100',
+                  isHoverHomeIcon ? 'text-secondary' : 'text-white'
+                ]"
+              />
+          </li>
+        </RouterLink>
           <li v-for="item in menuOptions" :key="item.name">
             <MenuVoice
               :menuVoice="item.name"

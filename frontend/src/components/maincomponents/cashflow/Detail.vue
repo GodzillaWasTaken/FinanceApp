@@ -1,6 +1,10 @@
 <script setup>
 import TopSection from '../TopSection.vue'
 
+defineProps({
+    desc: String
+})
+
 const showAddButton = true
 const showTimeButton = true
 
@@ -18,7 +22,7 @@ const showTimeButton = true
 
         <section class="flex-1 bg-background">
             <div class = "flex bg-white m-6 rounded-[10px] min-h-40">
-                <h1 class="flex text-2xl font-semibold">DetailComponent</h1>
+                <h1 class="flex text-2xl font-semibold">{{ desc }}</h1>
             </div>
         </section>
     </div>

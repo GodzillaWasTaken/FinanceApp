@@ -3,7 +3,11 @@ import Footer from '../../components/Footer.vue';
 import Menu from '../../components/menus/mainmenu/Menu.vue';
 
 defineProps({
-    mainComponent: Object
+    mainComponent: Object,
+    mainProps:{
+        type: Object,
+        default: () => ({})
+    }
 })
 </script>
 
@@ -14,7 +18,7 @@ defineProps({
     </div>
     <div class="flex-1 flex flex-col">
       <div class="flex flex-1">
-        <component :is="mainComponent"/>
+        <component :is="mainComponent" v-bind="mainProps"/>
       </div>
       <div>
         <Footer />

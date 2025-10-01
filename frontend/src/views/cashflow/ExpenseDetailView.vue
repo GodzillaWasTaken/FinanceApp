@@ -6,5 +6,6 @@ import MainComponent from '../../components/maincomponents/MainComponent.vue';
 <template>
   <MainComponent
   :mainComponent="Detail"
+  :mainProps="{ desc: 'Dettagli Spese' }"
   />
 </template>

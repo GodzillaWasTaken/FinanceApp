@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 import NumberCard from '../../cards/NumberCard.vue';
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline';
@@ -27,7 +28,9 @@ onMounted(() => {
 
 <template>
   <div class="bg-background ml-6 mr-6 mt-10 mb-10 rounded-[10px] flex flex-col md:flex-row gap-4 ">
-      <div class="flex-1">
+      <RouterLink 
+        to="/notfound"
+        class="flex-1">
         <NumberCard 
           title="Netto" 
           :value="net"
@@ -36,8 +39,10 @@ onMounted(() => {
           :sign="netSign"
           class="flex-1 items-center p-4"
         />
-      </div>
-      <div class="flex-1">
+      </RouterLink>
+      <RouterLink 
+        to="/income"
+        class="flex-1">
         <NumberCard 
           title="Entrate" 
           :value="income" 
@@ -46,8 +51,10 @@ onMounted(() => {
           iconClass="text-success"
           class="flex-1 items-center p-4"
         />
-      </div>
-      <div class="flex-1">
+      </RouterLink>
+      <RouterLink 
+        to="/expenses"
+        class="flex-1">
         <NumberCard 
           title="Uscite" 
           :value="expense"  
@@ -56,6 +63,6 @@ onMounted(() => {
           iconClass="text-negative"
           class="flex-1 items-center p-4"
         />
-      </div>
+      </RouterLink>
     </div>
 </template>

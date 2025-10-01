@@ -4,6 +4,8 @@ import LoginView from '../views/LoginView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ProfileView from '../views/ProfileView.vue';
 import NotFundView from '../views/NotFundView.vue';
+import IncomeDetailView from '../views/cashflow/IncomeDetailView.vue';
+import ExpenseDetailView from '../views/cashflow/ExpenseDetailView.vue';
 
 
 const routes = [
@@ -41,6 +43,22 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: ProfileView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/income',
+    name: 'Income',
+    component: IncomeDetailView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/expenses',
+    name: 'Expenses',
+    component: ExpenseDetailView,
     meta: {
       authenticationRequired: true,
     },
