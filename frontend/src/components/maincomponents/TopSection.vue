@@ -24,7 +24,7 @@ const routeSettings = "/settings";
 
 <template>
     <div class="flex flex-col w-full">
-        <section class="flex h-[40px] bg-background items-center justify-end">
+        <section class="hidden md:flex h-[40px] bg-background items-center justify-end">
             <RouterLink
             :to="routeSettings"
             @mouseenter="isSettingsHover = true"
@@ -55,7 +55,7 @@ const routeSettings = "/settings";
                 <div class="flex space-x-4">
                     <div
                     v-if="showAddButton"
-                    class="group bg-primary-light px-4 py-1 rounded-md text-white
+                    class="hidden md:block group bg-primary-light px-4 py-1 rounded-md text-white
                                 hover:bg-primary transition-transform origin-center duration-500 cursor-pointer"
                     >
                         <PlusIcon class="h-5.5 w-5.5 group-hover:rotate-90 duration-800" />

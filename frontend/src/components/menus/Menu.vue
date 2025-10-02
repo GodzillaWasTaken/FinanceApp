@@ -1,15 +1,16 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
-import { Bars3Icon, PaperAirplaneIcon, WalletIcon, UserCircleIcon, Cog8ToothIcon, HomeIcon} from '@heroicons/vue/24/outline'
-import { PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, UserCircleIcon as UserCircleIconSolid, Cog8ToothIcon as Cog8ToothIconSolid,
-         HomeIcon as HomeIconSolid} from '@heroicons/vue/24/solid'
+import { Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon} from '@heroicons/vue/24/outline'
+import { PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
+         HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid} from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
-import { useSettingsStore } from '../../../stores/settings'
+import { useSettingsStore } from '../../stores/settings'
 
 const menuOptions = ref([
+  { name: 'Home', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid},
   { name: 'CashFlow', route: '/cashflow', icon: WalletIcon, iconSolid: WalletIconSolid},
-  { name: 'Profilo', route: '/profile', icon: UserCircleIcon, iconSolid: UserCircleIconSolid },
-  { name: 'Impostazioni', route: '/settings', icon: Cog8ToothIcon, iconSolid: Cog8ToothIconSolid }
+  { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid},
+  { name: 'Budget', route: '/notfound', icon: ClipboardIcon, iconSolid: ClipboardIconSolid }
 ])
 
 const settings = useSettingsStore();
@@ -76,17 +77,17 @@ onUnmounted(() => {
       </nav>
     </aside>
 
-    <!-- Hamburger (mobile) -->
+    <!-- Hamburger (mobile) DA RIMUOVERE METTERE UNA VOCE SOTTO CHE LO FA, L?ULTIMA A DX DEL MENU UN BASSO -->
     <button 
       v-if="!isOpen"
       @click="toggleMenu"
-      :class="['absolute left-4 z-40 text-text', defaultMenuOpen ? 'md:hidden' : '' ]"
+      :class="['hidden absolute left-4 z-40 text-text', defaultMenuOpen ? 'md:hidden' : 'md:block' ]"
       style="top: 8px"
     >
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
     </button>
 
-    <!-- sfondo opaco -->
+    <!-- sfondo opaco VORREI RENDERLO TIPO PIENO A TUTTO SCHERMO DI LARGHEZZA E LASCIAR NERO SOPRA-->
     <transition name="fade">
       <div
         v-if="isOpen"
@@ -132,6 +133,63 @@ onUnmounted(() => {
         </nav>
       </aside>
     </transition>
+
+
+    <!-- Bottom Navigation (mobile) -->
+
+    <nav 
+      class="fixed bottom-0 left-0 right-0 bg-primary-light text-white 
+            flex justify-between items-center py-2 md:hidden z-50 shadow-lg
+            m-1 rounded-[10px]"
+    >
+      <!-- Home -->
+      <div class="flex-1 flex flex-col items-center">
+        <MenuVoice
+          :menuVoice="menuOptions[0].name"
+          :route="menuOptions[0].route"
+          :icon="menuOptions[0].icon"
+          :iconSolid="menuOptions[0].iconSolid"
+        />
+      </div>
+
+      <!-- Prima voce -->
+      <div class="flex-1 flex flex-col items-center">
+        <MenuVoice
+          :menuVoice="menuOptions[1].name"
+          :route="menuOptions[1].route"
+          :icon="menuOptions[1].icon"
+          :iconSolid="menuOptions[1].iconSolid"
+        />
+      </div>
+
+      <!-- Pulsante centrale floating -->
+      <RouterLink to="/" 
+        class="w-14 h-14 -mt-6 flex items-center justify-center rounded-full bg-primary text-white shadow-lg"
+      >
+        <PlusIcon class="w-6 h-6" />
+      </RouterLink>
+
+      <!-- Seconda voce -->
+      <div class="flex-1 flex flex-col items-center">
+        <MenuVoice
+          :menuVoice="menuOptions[2].name"
+          :route="menuOptions[2].route"
+          :icon="menuOptions[2].icon"
+          :iconSolid="menuOptions[2].iconSolid"
+        />
+      </div>
+
+      <!-- Terza voce -->
+      <div class="flex-1 flex flex-col items-center">
+        <MenuVoice
+          :menuVoice="menuOptions[3].name"
+          :route="menuOptions[3].route"
+          :icon="menuOptions[3].icon"
+          :iconSolid="menuOptions[3].iconSolid"
+        />
+      </div>
+    </nav>
+
   </div>
 </template>
 
