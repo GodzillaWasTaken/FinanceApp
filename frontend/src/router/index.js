@@ -6,6 +6,7 @@ import ProfileView from '../views/ProfileView.vue';
 import NotFundView from '../views/NotFundView.vue';
 import IncomeDetailView from '../views/cashflow/IncomeDetailView.vue';
 import ExpenseDetailView from '../views/cashflow/ExpenseDetailView.vue';
+import AddModifiyView from '../views/cashflow/AddModifyTransactionView.vue';
 
 
 const routes = [
@@ -59,6 +60,14 @@ const routes = [
     path: '/expenses',
     name: 'Expenses',
     component: ExpenseDetailView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/addmodifytransaction',
+    name: 'AddModifyTransaction',
+    component: AddModifiyView,
     meta: {
       authenticationRequired: true,
     },

@@ -19,12 +19,12 @@ const showTimeButton = true
 
         <!-- main -->
         <section class="bg-background">
-            <CashFlowMainData/>
+            <CashFlowMainData class="2xl:ml-50 2xl:mr-50"/>
         </section>
 
         <!-- graphs -->
         <section class="flex-1 bg-background">
-            <ChartSection/>
+            <ChartSection class="2xl:ml-50 2xl:mr-50"/>
         </section>
 
     </div>

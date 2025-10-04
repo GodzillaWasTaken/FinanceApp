@@ -53,13 +53,14 @@ const routeSettings = "/settings";
 
                 <!-- Container a destra -->
                 <div class="flex space-x-4">
-                    <div
+                    <RouterLink
+                    to="/addmodifytransaction"
                     v-if="showAddButton"
                     class="hidden md:block group bg-primary-light px-4 py-1 rounded-md text-white
                                 hover:bg-primary transition-transform origin-center duration-500 cursor-pointer"
                     >
                         <PlusIcon class="h-5.5 w-5.5 group-hover:rotate-90 duration-800" />
-                    </div>
+                    </RouterLink>
                     <div
                         v-if="showTimeFrameButton" 
                         class="flex space-x-2"

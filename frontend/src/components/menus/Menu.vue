@@ -7,7 +7,7 @@ import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
 
 const menuOptions = ref([
-  { name: 'Home', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid},
+  { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid},
   { name: 'CashFlow', route: '/cashflow', icon: WalletIcon, iconSolid: WalletIconSolid},
   { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid},
   { name: 'Budget', route: '/notfound', icon: ClipboardIcon, iconSolid: ClipboardIconSolid }
@@ -163,10 +163,10 @@ onUnmounted(() => {
       </div>
 
       <!-- Pulsante centrale floating -->
-      <RouterLink to="/" 
+      <RouterLink to="/addmodifytransaction" 
         class="w-14 h-14 -mt-6 flex items-center justify-center rounded-full bg-primary text-white shadow-lg"
       >
-        <PlusIcon class="w-6 h-6" />
+        <PlusIcon class="w-8 h-8" />
       </RouterLink>
 
       <!-- Seconda voce -->

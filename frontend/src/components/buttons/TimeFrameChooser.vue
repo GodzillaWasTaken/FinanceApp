@@ -1,7 +1,12 @@
 <script setup>
+import { ref, onBeforeUnmount, watch, nextTick, onMounted, onUnmounted} from 'vue'
+import { useSettingsStore } from '../../stores/settings'
 import { CalendarDateRangeIcon } from '@heroicons/vue/24/outline'
 import { CalendarDateRangeIcon as CalendarDateRangeIconSolid } from '@heroicons/vue/24/solid'
-import { ref, onMounted, onBeforeUnmount, watch, nextTick } from 'vue'
+import YearChooser from './YearChooser.vue'
+
+
+const settings = useSettingsStore()
 
 const isOpen = ref(false)
 const root = ref(null)
@@ -10,6 +15,28 @@ const panel = ref(null)
 const content = ref(null)
 const isHoverSelectDateIcon = ref(false)
 
+const buttonDesc = ref(settings.dataPeriod)
+
+const preSetButtons = [
+  { id: 2, label: 'Ytd' },
+  { id: 3, label: 'Totale' }
+]
+
+//gestione della dimensinione finestra per mostrare popover mobile o desktop
+const windowWidth = ref(window.innerWidth)
+
+function handleResize() {
+  windowWidth.value = window.innerWidth
+}
+
+onMounted(() => {
+  window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', handleResize)
+})
+
 function toggle() {
   isOpen.value = !isOpen.value
 }
@@ -17,21 +44,27 @@ function close() {
   isOpen.value = false
 }
 
-const emit = defineEmits(['update'])
-function bottoneCliccato() {
-  // qui puoi decidere il “risultato” interno, senza passare nulla dal bottone
-  const risultato = "qualcosa"  
-  emit('update', risultato)  // invia al genitore
+function bottoneCliccato(label) {
+  settings.dataPeriod = label
+  buttonDesc.value = label
+  close()
 }
 
-// click fuori
-function onDocClick(e) {
+// doc handlers gestiti dinamicamente
+const docClickHandler = (e) => {
   if (!root.value) return
   if (!root.value.contains(e.target)) close()
 }
-// esc
-function onKeyDown(e) {
+const keydownHandler = (e) => {
   if (e.key === 'Escape') close()
+}
+function addDocListeners() {
+  document.addEventListener('click', docClickHandler)
+  document.addEventListener('keydown', keydownHandler)
+}
+function removeDocListeners() {
+  document.removeEventListener('click', docClickHandler)
+  document.removeEventListener('keydown', keydownHandler)
 }
 
 async function focusFirstInPanel() {
@@ -47,23 +80,24 @@ async function focusFirstInPanel() {
   }
 }
 
-onMounted(() => {
-  document.addEventListener('click', onDocClick)
-  document.addEventListener('keydown', onKeyDown)
-})
-onBeforeUnmount(() => {
-  document.removeEventListener('click', onDocClick)
-  document.removeEventListener('keydown', onKeyDown)
+// watch su isOpen per aggiungere/rimuovere listener e gestire focus
+watch(isOpen, (val) => {
+  if (val) {
+    addDocListeners()
+    focusFirstInPanel()
+  } else {
+    removeDocListeners()
+    trigger.value?.focus()
+  }
 })
 
-watch(isOpen, (val) => {
-  if (val) focusFirstInPanel()
-  else trigger.value?.focus()
+onBeforeUnmount(() => {
+  removeDocListeners()
 })
 </script>
 
 <template>
-    <div class="relative inline-block" ref="root">
+  <div class="relative inline-block" ref="root">
     <!-- Trigger -->
     <button 
         class="px-4 py-1 rounded-md text-white text-sm bg-primary-light hover:bg-primary flex items-center justify-center gap-2 cursor-pointer"
@@ -71,52 +105,89 @@ watch(isOpen, (val) => {
         @click="toggle"
         @mouseenter="isHoverSelectDateIcon = true"
         @mouseleave="isHoverSelectDateIcon = false"
-        >
-            <transition name="fade" mode="out-in">
-                <component 
-                :is="isHoverSelectDateIcon ? CalendarDateRangeIconSolid : CalendarDateRangeIcon" 
-                class=
-                "h-5.5 w-5.5 !duration-100"
-                
-                />
-            </transition>
-            Seleziona Periodo
+        :aria-expanded="isOpen"
+        aria-haspopup="menu"
+    >
+      <transition name="fade" mode="out-in">
+        <component 
+          :is="isHoverSelectDateIcon ? CalendarDateRangeIconSolid : CalendarDateRangeIcon" 
+          class="h-5 w-5 transition duration-100"
+        />
+      </transition>
+      {{buttonDesc}}
     </button>
 
-    <!-- Popover -->
+    <!-- Popover desktop-->
     <transition
       enter-active-class="transition ease-out duration-150"
-      enter-from-class="opacity-0 translate-y-1 scale-95"
+      enter-from-class="opacity-0 translate-y-2 scale-95"
       enter-to-class="opacity-100 translate-y-0 scale-100"
       leave-active-class="transition ease-in duration-100"
       leave-from-class="opacity-100 translate-y-0 scale-100"
-      leave-to-class="opacity-0 translate-y-1 scale-95"
+      leave-to-class="opacity-0 translate-y-2 scale-95"
     >
       <div
-        v-if="isOpen"
+        v-if="isOpen & windowWidth >= 768"
         ref="panel"
-        class="absolute left-0 mt-2 w-48 origin-top-left rounded-md border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
+        role="menu"
+        class="absolute left-1/2 transform -translate-x-1/2 mt-2 mr-20 w-52 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
+        style="left: calc(50% + 1rem); transform: translateX(-50%); max-width: 90vw;"
       >
         <!-- Arrow -->
         <div
-          class="absolute left-4 -top-2 w-3 h-3 bg-white border-l border-t border-gray-200 rotate-45"
+          class="absolute right-1 -top-2 w-3 h-3 bg-white border-l border-t border-gray-200 rotate-45 -translate-x-1/2"
           aria-hidden="true"
         ></div>
 
         <!-- Content -->
-        <div class="p-2 flex flex-col gap-1" ref="content" tabindex="-1">
-            <button
-              class="w-full px-3 py-2 text-left rounded-md text-sm hover:bg-gray-100"
-              @click="bottoneCliccato"
-            >
-              Bottone 1
-            </button>
-            <button
-              class="w-full px-3 py-2 text-left rounded-md text-sm hover:bg-gray-100"
-              @click="bottoneCliccato"
-            >
-              Bottone 2
-            </button>
+        <div class="p-3 flex flex-col gap-2" ref="content" tabindex="-1">
+          <!-- preset buttons -->
+          <button v-for="button in preSetButtons" :key="button.id"
+            class="w-full px-3 py-2 rounded-md text-center hover:bg-gray-100 transition"
+            @click=bottoneCliccato(button.label)
+          >
+            {{button.label}}
+          </button>
+
+          <YearChooser @updateYear="bottoneCliccato"/>
+
+        </div>
+      </div>
+    </transition>
+
+
+    <!-- Popover mobile-->
+    <transition
+      enter-active-class="transition ease-out duration-150"
+      enter-from-class="opacity-0 translate-y-2 scale-95"
+      enter-to-class="opacity-100 translate-y-0 scale-100"
+      leave-active-class="transition ease-in duration-100"
+      leave-from-class="opacity-100 translate-y-0 scale-100"
+      leave-to-class="opacity-0 translate-y-2 scale-95"
+    >
+      <div
+        v-if="isOpen & windowWidth < 768"
+        ref="panel"
+        role="menu"
+        class="absolute left-1/2 transform -translate-x-1/2 mt-2 mr-20 w-52 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
+      >
+        <!-- Arrow -->
+        <div
+          class="absolute left-1/2 -top-2 w-3 h-3 bg-white border-l border-t border-gray-200 rotate-45 -translate-x-1/2"
+          aria-hidden="true"
+        ></div>
+
+        <!-- Content -->
+        <div class="p-3 flex flex-col gap-2" ref="content" tabindex="-1">
+          <button v-for="button in preSetButtons" :key="button.id"
+            class="w-full px-3 py-2 text-lg rounded-md text-center hover:bg-gray-100 transition"
+            @click=bottoneCliccato(button.label)
+          >
+            {{button.label}}
+          </button>
+
+          <YearChooser @updateYear="bottoneCliccato"/>
+          
         </div>
       </div>
     </transition>
@@ -125,9 +196,9 @@ watch(isOpen, (val) => {
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.25s ease;
 }
 .fade-enter-from, .fade-leave-to {
-  opacity: 0.6;
+  opacity: 0.5;
 }
 </style>
