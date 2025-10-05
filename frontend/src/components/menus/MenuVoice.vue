@@ -12,8 +12,13 @@ const props = defineProps({
 const isHoverIcon = ref(false)
 const route = useRoute()
 
-// verifica se la route corrente corrisponde (o inizia con) la route della voce
-const isActive = computed(() => route.path.startsWith(props.route))
+//verifico se la route è attiva
+const isActive = computed(() => {
+  if (props.route === "/") {
+    return route.path === "/";
+  }
+  return route.path.startsWith(props.route);
+});
 </script>
 
 <template>
