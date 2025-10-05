@@ -18,8 +18,7 @@ const isHoverSelectDateIcon = ref(false)
 const buttonDesc = ref(settings.dataPeriod)
 
 const preSetButtons = [
-  { id: 2, label: 'Ytd' },
-  { id: 3, label: 'Totale' }
+  { id: 1, label: 'Totale' }
 ]
 
 //gestione della dimensinione finestra per mostrare popover mobile o desktop
@@ -100,7 +99,7 @@ onBeforeUnmount(() => {
   <div class="relative inline-block" ref="root">
     <!-- Trigger -->
     <button 
-        class="px-4 py-1 rounded-md text-white text-sm bg-primary-light hover:bg-primary flex items-center justify-center gap-2 cursor-pointer"
+        class="px-4 py-1 rounded-md text-white text-md md:text-sm bg-primary-light hover:bg-primary flex items-center justify-center gap-2 cursor-pointer"
         ref="trigger"
         @click="toggle"
         @mouseenter="isHoverSelectDateIcon = true"
@@ -116,6 +115,15 @@ onBeforeUnmount(() => {
       </transition>
       {{buttonDesc}}
     </button>
+
+    <!-- opacità -->
+    <transition name="fade">
+          <div
+            v-if="isOpen"
+            @click="close"
+            :class="['fixed inset-0 bg-black/40 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
+          ></div>
+    </transition>
 
     <!-- Popover desktop-->
     <transition
@@ -141,22 +149,30 @@ onBeforeUnmount(() => {
 
         <!-- Content -->
         <div class="p-3 flex flex-col gap-2" ref="content" tabindex="-1">
+
+          <YearChooser @updateYear="bottoneCliccato"/>
+
           <!-- preset buttons -->
           <button v-for="button in preSetButtons" :key="button.id"
-            class="w-full px-3 py-2 rounded-md text-center hover:bg-gray-100 transition"
+            class="w-full px-3 py-2 rounded-md text-center hover:bg-primary-clear/50 transition cursor-pointer"
             @click=bottoneCliccato(button.label)
           >
             {{button.label}}
           </button>
-
-          <YearChooser @updateYear="bottoneCliccato"/>
-
+          <button
+            @click="close" 
+            class="text-center text-sm text-text/50 cursor-pointer hover:underline"
+          >
+              Chiudi
+          </button>
         </div>
       </div>
     </transition>
 
 
+
     <!-- Popover mobile-->
+
     <transition
       enter-active-class="transition ease-out duration-150"
       enter-from-class="opacity-0 translate-y-2 scale-95"
@@ -169,25 +185,26 @@ onBeforeUnmount(() => {
         v-if="isOpen & windowWidth < 768"
         ref="panel"
         role="menu"
-        class="absolute left-1/2 transform -translate-x-1/2 mt-2 mr-20 w-52 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
+        class="absolute left-1/2 transform -translate-x-1/2 mt-20 mr-20 w-70 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
       >
-        <!-- Arrow -->
-        <div
-          class="absolute left-1/2 -top-2 w-3 h-3 bg-white border-l border-t border-gray-200 rotate-45 -translate-x-1/2"
-          aria-hidden="true"
-        ></div>
-
+       
         <!-- Content -->
-        <div class="p-3 flex flex-col gap-2" ref="content" tabindex="-1">
+        <div class="p-3 flex flex-col gap-4" ref="content" tabindex="-1">
+
+          <YearChooser @updateYear="bottoneCliccato"/>
+
           <button v-for="button in preSetButtons" :key="button.id"
-            class="w-full px-3 py-2 text-lg rounded-md text-center hover:bg-gray-100 transition"
+            class="w-full px-3 py-2 text-lg rounded-md text-center hover:bg-primary-clear/50 transition cursor-pointer"
             @click=bottoneCliccato(button.label)
           >
             {{button.label}}
           </button>
-
-          <YearChooser @updateYear="bottoneCliccato"/>
-          
+          <button
+            @click="close" 
+            class="text-center text-sm text-text/50 cursor-pointer hover:underline"
+          >
+              Chiudi
+          </button>
         </div>
       </div>
     </transition>

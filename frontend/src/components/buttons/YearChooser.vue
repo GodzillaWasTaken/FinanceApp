@@ -1,20 +1,17 @@
 <script setup>
 import { ref, defineEmits } from 'vue'
-import { CheckIcon } from '@heroicons/vue/24/outline'
+import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
 
 // Stato locale per l'anno selezionato
 const currentYear = ref(new Date().getFullYear())
-const isYearOpen = ref(false)
 
 // Permette di comunicare l'anno selezionato al componente genitore
 const emit = defineEmits(['updateYear'])
 
-function toggleYearChooser() {
-  isYearOpen.value = !isYearOpen.value
-}
-
 function incrementYear() {
-  currentYear.value++
+  if (currentYear.value < new Date().getFullYear()) {
+    currentYear.value++
+  }
 }
 
 function decrementYear() {
@@ -23,47 +20,38 @@ function decrementYear() {
 
 function confirmYear() {
   emit('updateYear', currentYear.value)
-  isYearOpen.value = false
 }
 </script>
 
 <template>
-  <div class="flex flex-col gap-2">
-    <!-- Bottone per aprire/chiudere il selettore anno -->
+  <div class="flex items-center justify-between px-3 py-4 md:py-2 bg-secondary-light/80 border border-gray-200 rounded-lg shadow-sm">
+    <!-- Decrementa anno -->
     <button
-      @click="toggleYearChooser"
-      class="w-full px-3 py-2 rounded-md text-center bg-gray-100 hover:bg-gray-200 transition cursor-pointer"
+      @click="decrementYear"
+      class="p-3 md:p-1 rounded-md bg-primary-light text-white hover:bg-primary transition-transform duration-300 cursor-pointer"
     >
-      Seleziona Anno: {{ currentYear }}
+      <ChevronLeftIcon class="h-5 w-5" />
     </button>
 
-    <!-- Popup anno -->
-    <div
-      v-if="isYearOpen"
-      class="flex items-center justify-between mt-1 p-2 bg-white border border-text/50 rounded shadow-lg"
+    <!-- Anno corrente -->
+    <span class="flex-1 text-center text-xl md:text-base font-semibold text-text select-none">
+      {{ currentYear }}
+    </span>
+
+    <!-- Incrementa anno -->
+    <button
+      @click="incrementYear"
+      class="p-3 md:p-1 rounded-md bg-primary-light text-white hover:bg-primary transition-transform duration-300 cursor-pointer"
     >
-      <button
-        @click="decrementYear"
-        class="px-2 py-1 rounded-md bg-primary/50 hover:bg-primary hover:text-white transition"
-      >
-        &lt;
-      </button>
+      <ChevronRightIcon class="h-5 w-5" />
+    </button>
 
-      <span class="px-3 text-center flex-1">{{ currentYear }}</span>
-
-      <button
-        @click="incrementYear"
-        class="px-2 py-1 rounded-md bg-primary/50 hover:bg-primary hover:text-white transition"
-      >
-        &gt;
-      </button>
-
-      <button
-        @click="confirmYear"
-        class="ml-2 px-3 py-1 rounded-md bg-success/70 text-text hover:bg-success transition cursor-pointer"
-      >
-        <CheckIcon class="h-5 w-5" />
-      </button>
-    </div>
+    <!-- Conferma anno -->
+    <button
+      @click="confirmYear"
+      class="ml-3 p-3 md:p-1 rounded-md bg-success/80 text-white hover:bg-success transition-transform duration-300 cursor-pointer"
+    >
+      <CheckIcon class="h-5 w-5" />
+    </button>
   </div>
 </template>
