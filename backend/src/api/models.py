@@ -44,12 +44,14 @@ class Categoria(models.Model):
 class Movimento(models.Model):
     TIPO_CHOICES = [
         ("entrata", "Entrata"),
-        ("spesa", "Spesa"),
+        ("uscita", "Spesa"),
+        ("giroconto", "Giroconto"),
     ]
 
     id = models.AutoField(primary_key=True)
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name="movimenti")
     categoria = models.ForeignKey(Categoria, on_delete=models.SET_NULL, null=True, related_name="movimenti")
+    titolo = models.CharField(max_length=200)
     conto = models.ForeignKey(Conto, on_delete=models.SET_NULL, null=True, related_name="movimenti")
     data = models.DateField()
     importo = models.DecimalField(max_digits=12, decimal_places=2)

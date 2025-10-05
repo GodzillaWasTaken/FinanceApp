@@ -9,6 +9,10 @@ import { use } from 'echarts/core'
 import { CanvasRenderer } from 'echarts/renderers'
 import { BarChart, LineChart, PieChart } from 'echarts/charts'
 import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from 'echarts/components'
+
+import PrimeVue from 'primevue/config'
+import 'primeicons/primeicons.css'
+
 use([ CanvasRenderer, 
     BarChart, 
     LineChart, 
@@ -24,6 +28,12 @@ const pinia = createPinia()
 
 app.use(pinia)
 app.use(router)
+app.use(PrimeVue, {
+    unstyled: true, 
+    pt: {}
+});
+
+
 app.component('v-chart', ECharts)
 
 app.mount('#app')
