@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
         v-if="isOpen & windowWidth >= 768"
         ref="panel"
         role="menu"
-        class="absolute left-1/2 transform -translate-x-1/2 mt-2 mr-20 w-52 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
+        class="absolute left-1/2 transform -translate-x-1/2 mt-2 mr-20 w-60 rounded-lg border border-gray-200 bg-white shadow-lg z-50 focus:outline-none"
         style="left: calc(50% + 1rem); transform: translateX(-50%); max-width: 90vw;"
       >
         <!-- Arrow -->

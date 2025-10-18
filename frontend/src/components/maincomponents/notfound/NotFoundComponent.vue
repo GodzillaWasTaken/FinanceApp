@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 </script>
 
 <template>
-  <div class="flex w-full min-h-screen items-center justify-center bg-background px-4">
+  <div class="flex h-full items-center justify-center bg-background px-4">
     <div class="flex flex-col bg-white w-full max-w-lg md:max-w-2xl rounded-xl items-center justify-center p-6 gap-4 shadow-lg">
       <ExclamationTriangleIcon class="h-16 w-16 md:h-24 md:w-24 text-negative" />
       <h1 class="text-4xl md:text-6xl lg:text-7xl font-extrabold text-secondary mb-4 text-center">

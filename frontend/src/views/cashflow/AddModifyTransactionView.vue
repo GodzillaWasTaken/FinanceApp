@@ -6,5 +6,7 @@ import MainComponent from '../../components/maincomponents/MainComponent.vue';
 <template>
   <MainComponent
   :mainComponent="AddModifyCashFLow"
+  showTopSection=true
+  topSectionTitle="Aggiungi/Modifica Movimento"
   />
 </template>

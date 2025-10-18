@@ -6,5 +6,9 @@ import MainComponent from '../../components/maincomponents/MainComponent.vue';
 <template>
   <MainComponent
   :mainComponent="CashFlowDashboard"
+  showTopSection=true
+  topSectionTitle="Riepilogo Movimenti"
+  showAddButton=true
+  showTimeButton=true
   />
 </template>

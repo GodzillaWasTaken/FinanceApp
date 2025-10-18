@@ -1,6 +1,7 @@
 <script setup>
-import { ref, defineEmits } from 'vue'
+import { ref, defineEmits, watch } from 'vue'
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
+import DatePicker from 'primevue/datepicker';
 
 // Stato locale per l'anno selezionato
 const currentYear = ref(new Date().getFullYear())
@@ -21,11 +22,12 @@ function decrementYear() {
 function confirmYear() {
   emit('updateYear', currentYear.value)
 }
+
 </script>
 
 <template>
   <div class="flex items-center justify-between px-3 py-4 md:py-2 bg-secondary-light/80 border border-gray-200 rounded-lg shadow-sm">
-    <!-- Decrementa anno -->
+   
     <button
       @click="decrementYear"
       class="p-3 md:p-1 rounded-md bg-primary-light text-white hover:bg-primary transition-transform duration-300 cursor-pointer"
@@ -33,12 +35,12 @@ function confirmYear() {
       <ChevronLeftIcon class="h-5 w-5" />
     </button>
 
-    <!-- Anno corrente -->
+  
     <span class="flex-1 text-center text-xl md:text-base font-semibold text-text select-none">
       {{ currentYear }}
     </span>
 
-    <!-- Incrementa anno -->
+    
     <button
       @click="incrementYear"
       class="p-3 md:p-1 rounded-md bg-primary-light text-white hover:bg-primary transition-transform duration-300 cursor-pointer"
@@ -46,7 +48,7 @@ function confirmYear() {
       <ChevronRightIcon class="h-5 w-5" />
     </button>
 
-    <!-- Conferma anno -->
+ 
     <button
       @click="confirmYear"
       class="ml-3 p-3 md:p-1 rounded-md bg-success/80 text-white hover:bg-success transition-transform duration-300 cursor-pointer"

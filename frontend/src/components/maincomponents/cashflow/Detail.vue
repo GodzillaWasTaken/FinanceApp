@@ -1,29 +1,15 @@
 <script setup>
-import TopSection from '../TopSection.vue'
 
 defineProps({
     desc: String
 })
 
-const showAddButton = true
-const showTimeButton = true
-
 </script>
 
 <template>
-    <div class="flex flex-col w-full">
-        <section>
-            <TopSection
-                title='Dettagli METTI VAR'
-                :show-time-frame-button="showTimeButton"
-                :show-add-button="showAddButton"
-            />
-        </section>
-
         <section class="flex-1 bg-background">
             <div class = "flex bg-white m-6 rounded-[10px] min-h-40 2xl:ml-50 2xl:mr-50">
                 <h1 class="flex text-2xl font-semibold">{{ desc }}</h1>
             </div>
         </section>
-    </div>
 </template>

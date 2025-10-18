@@ -6,5 +6,7 @@ import MainComponent from '../components/maincomponents/MainComponent.vue';
 <template>
     <MainComponent
         :mainComponent="Profile"
+        showTopSection=true
+        topSectionTitle="Profilo"
     />
 </template>

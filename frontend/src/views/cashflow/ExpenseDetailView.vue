@@ -7,5 +7,9 @@ import MainComponent from '../../components/maincomponents/MainComponent.vue';
   <MainComponent
   :mainComponent="Detail"
   :mainProps="{ desc: 'Dettagli Spese' }"
+  showTopSection=true
+  topSectionTitle="Dettagli Spese"
+  showAddButton=true
+  showTimeButton=true
   />
 </template>

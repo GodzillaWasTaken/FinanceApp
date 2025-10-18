@@ -1,41 +1,38 @@
 <script setup>
-import TopSection from '../TopSection.vue';
 import { Switch } from '@headlessui/vue';
-import { useSettingsStore } from '../../../stores/settings';
 
-const settings = useSettingsStore();
+defineProps({
+    defaultMenuOpen: {
+        type: Boolean,
+        required: true
+    }
+});
 
-const showAddButton = false;
-const showTimeButton = false;
+const emit = defineEmits(['update:defaultMenuOpen']); 
 
+function toggleMenu(newValue) {
+    emit('update:defaultMenuOpen', newValue);
+}
 </script>
 
 <template>
-    <div class="flex flex-col w-full">
-        <section>
-            <TopSection
-                title='Impostazioni'
-                :show-time-frame-button="showTimeButton"
-                :show-add-button="showAddButton"
-            />
-        </section>
-
-        <section class="flex-1 bg-background">
-            <div class = "flex bg-white m-6 rounded-[10px]">
+        <section class="flex-1 bg-background h-full px-6 md:px-50 2xl:px-150 pt-10 pb-6">
+            <div class = "flex flex-col bg-white rounded-[10px] shadow-lg ">
                 <div>
                     <div class="text-text m-6 text-xl font-bold">Menu</div>
-                    <div class="flex text-text m-6 gap-6">
+                    <div class="flex text-text m-6 gap-6 items-center">
                         <div>Menu fisso (su desktop)</div>
                          <Switch
-                            v-model="settings.defaultMenuOpen"
+                            :modelValue="defaultMenuOpen"
+                            @update:modelValue="toggleMenu"
                             :class="[
-                                settings.defaultMenuOpen ? 'bg-primary-light' : 'bg-gray-300',
+                                defaultMenuOpen ? 'bg-primary-light' : 'bg-gray-300',
                                 'relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer'
                             ]"
                             >
                             <span
                                 :class="[
-                                settings.defaultMenuOpen ? 'translate-x-6' : 'translate-x-1',
+                                defaultMenuOpen ? 'translate-x-6' : 'translate-x-1',
                                 'inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300'
                                 ]"
                             />
@@ -44,5 +41,4 @@ const showTimeButton = false;
                 </div>
             </div>
         </section>
-    </div>
 </template>
