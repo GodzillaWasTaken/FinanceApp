@@ -1,13 +1,16 @@
 <script setup>
 import { ref, onBeforeUnmount, watch, nextTick, onMounted, onUnmounted} from 'vue'
-import { useSettingsStore } from '../../stores/settings'
+import { defineEmits } from 'vue'
 import { CalendarDateRangeIcon } from '@heroicons/vue/24/outline'
 import { CalendarDateRangeIcon as CalendarDateRangeIconSolid } from '@heroicons/vue/24/solid'
 import YearChooser from './YearChooser.vue'
 
-
-const settings = useSettingsStore()
-
+const props = defineProps({
+  dataPeriod: {
+    type: Number,
+    default: new Date().getFullYear()
+  }
+})
 const isOpen = ref(false)
 const root = ref(null)
 const trigger = ref(null)
@@ -15,7 +18,7 @@ const panel = ref(null)
 const content = ref(null)
 const isHoverSelectDateIcon = ref(false)
 
-const buttonDesc = ref(settings.dataPeriod)
+const buttonDesc = ref(props.dataPeriod)
 
 const preSetButtons = [
   { id: 1, label: 'Totale' }
@@ -43,11 +46,15 @@ function close() {
   isOpen.value = false
 }
 
+
+const emit = defineEmits(['timeFrameUpdate'])
+
 function bottoneCliccato(label) {
-  settings.dataPeriod = label
+  emit('timeFrameUpdate', label)
   buttonDesc.value = label
   close()
 }
+
 
 // doc handlers gestiti dinamicamente
 const docClickHandler = (e) => {
@@ -121,7 +128,7 @@ onBeforeUnmount(() => {
           <div
             v-if="isOpen"
             @click="close"
-            :class="['fixed inset-0 bg-black/40 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
+            class="fixed inset-0 bg-black/40 z-30"
           ></div>
     </transition>
 

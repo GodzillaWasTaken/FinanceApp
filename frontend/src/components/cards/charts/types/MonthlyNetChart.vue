@@ -2,13 +2,24 @@
 <script setup>
 import { ref } from 'vue'
 
-const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
-const entrate = [5000, 4500, 6000, 5500, 7000, 500, 5000, 4500, 6000, 5500, 7000, 500]
-const uscite = [3000, 3500, 4000, 3800, 4200, 4500, 3000, 3500, 4000, 3800, 4200, 4500]
+const props = defineProps({
+  months: {
+    type: Array,
+    default: () => []
+  },
+  entrate: {
+    type: Array,
+    default: () => []
+  },
+  uscite: {
+    type: Array,
+    default: () => []
+  }
+})
 
 
 // Calcolo netto mese per mese
-const netto = entrate.map((e, i) => e - uscite[i])
+const netto = props.entrate.map((e, i) => e - props.uscite[i])
 
 const option = ref({
   title: {
@@ -22,7 +33,7 @@ const option = ref({
   },
   xAxis: {
     type: 'category',
-    data: months
+    data: props.months
   },
   yAxis: [
     { type: 'value', name: 'Euro' }  // unico asse verticale per semplicità
@@ -31,13 +42,13 @@ const option = ref({
     {
       name: 'Entrate',
       type: 'line',
-      data: entrate,
+      data: props.entrate,
       itemStyle: { color: '#7FCB75' }
     },
     {
       name: 'Uscite',
       type: 'line',
-      data: uscite,
+      data: props.uscite,
       itemStyle: { color: '#FF5C61' }
     },
     {

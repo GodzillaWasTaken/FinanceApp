@@ -6,13 +6,16 @@ import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline';
 import { BanknotesIcon } from '@heroicons/vue/24/outline';
 
-const income = ref(1000);
-const expense = ref(500);
+const props = defineProps({
+  income: { type: Number, required: true },
+  expense: { type: Number, required: true }
+})
+
 const net = ref();
 const netSign = ref();
 
 const updateNet = () => {
-  net.value=income.value-expense.value;
+  net.value=props.income-props.expense;
   updateNetSign(net.value);
 };
 

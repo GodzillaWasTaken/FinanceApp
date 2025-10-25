@@ -1,19 +1,27 @@
 <script setup>
 import { ref } from 'vue'
 
-// Mesi
-const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
-
-// Dati mensili (inventati)
-const entrateMensili = [5000, 4500, 6000, 5500, 7000, 500, 5000, 4500, 6000, 5500, 7000, 500]
-const usciteMensili = [3000, 3500, 4000, 3800, 4200, 4500, 3000, 3500, 4000, 3800, 4200, 4500]
+const props = defineProps({
+  months: {
+    type: Array,
+    default: () => []
+  },
+  entrate: {
+    type: Array,
+    default: () => []
+  },
+  uscite: {
+    type: Array,
+    default: () => []
+  }
+})
 
 // Calcolo cumulativi
-const entrateCumulative = entrateMensili.map((val, i) =>
-  i === 0 ? val : val + entrateMensili.slice(0, i).reduce((a, b) => a + b, 0)
+const entrateCumulative = props.entrate.map((val, i) =>
+  i === 0 ? val : val + props.entrate.slice(0, i).reduce((a, b) => a + b, 0)
 )
-const usciteCumulative = usciteMensili.map((val, i) =>
-  i === 0 ? val : val + usciteMensili.slice(0, i).reduce((a, b) => a + b, 0)
+const usciteCumulative = props.uscite.map((val, i) =>
+  i === 0 ? val : val + props.uscite.slice(0, i).reduce((a, b) => a + b, 0)
 )
 
 const option = ref({
@@ -28,7 +36,7 @@ const option = ref({
   },
   xAxis: {
     type: 'category',
-    data: months
+    data: props.months
   },
   yAxis: {
     type: 'value',

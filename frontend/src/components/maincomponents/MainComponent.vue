@@ -11,6 +11,7 @@ defineOptions({
 
 defineProps({
     mainComponent: Object,
+    //prop per l'oggetto component che viene sostituito a mainComponent
     mainProps:{
         type: Object,
         default: () => ({})

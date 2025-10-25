@@ -5,6 +5,9 @@ import TimeFrameChooser from '../buttons/TimeFrameChooser.vue';
 import { Cog8ToothIcon } from '@heroicons/vue/24/outline';
 import { Cog8ToothIcon as Cog8ToothIconSolid} from '@heroicons/vue/24/solid';
 import { RouterLink } from 'vue-router';
+import { useSettingsStore } from '../../stores/settings'
+
+const settings = useSettingsStore();
 
 defineProps({
     title: String,
@@ -14,12 +17,11 @@ defineProps({
 
 const isSettingsHover = ref(false);
 
-function updateTimeframe(nuovoTimeframe) {
-    console.log("Timeframe scelto:", nuovoTimeframe);
-    // qui puoi fare qualcosa con il timeframe scelto
-}
-
 const routeSettings = "/settings";
+
+function updateTimeframe(newTimeframe) {
+    settings.dataPeriod = newTimeframe;
+}
 </script>
 
 <template>
@@ -65,7 +67,7 @@ const routeSettings = "/settings";
                         v-if="showTimeFrameButton" 
                         class="flex space-x-2"
                         >
-                        <TimeFrameChooser @update="updateTimeframe">
+                        <TimeFrameChooser @timeFrameUpdated="updateTimeframe">
                         </TimeFrameChooser>
                     </div>
                 </div>
