@@ -3,18 +3,12 @@ import { ref } from 'vue'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/vue/24/outline'
 import DatePicker from 'primevue/datepicker';
 import { ChevronDownIcon } from '@heroicons/vue/24/outline'
-// Non importiamo più Dropdown
-// import Dropdown from 'primevue/dropdown'; 
-import { useSettingsStore } from '../../../stores/settings';
 
-const settings = useSettingsStore();
-
-defineProps({
+const props = defineProps({
   categorie: { type: Array, default: () => [] },
-  conti: { type: Array, default: () => [] }
+  conti: { type: Array, default: () => [] },
+  currency: { type: String, default: '€' }
 })
-
-const currency = settings.displayCurrencySymbol;
 
 const datepickerRef = ref(null)  // ref del DatePicker
 
@@ -48,10 +42,8 @@ const form = ref({
 
 })
 
-// Submit handler
 function submitForm() {
   emit('submit', { ...form.value })
-  // opzionale: reset
   form.value.amount = ''
   form.value.description = ''
 }
@@ -76,7 +68,6 @@ function submitForm() {
                                         append-to="body"
                                         input-class="w-full px-3 py-2 focus:outline-none"
                                         :pt="{
-                                            // ... (stili DatePicker invariati)
                                             panel: 'bg-white shadow-md border border-gray-200 rounded-lg p-3',
                                             header: 'flex justify-between items-center text-text mb-2',
                                             title: 'text-md',
@@ -114,7 +105,7 @@ function submitForm() {
                     </div>
 
                     <div class="flex flex-col gap-1">
-                    <label class="text-sm font-semibold text-text text-center md:text-left">Importo ({{ currency }})</label>
+                    <label class="text-sm font-semibold text-text text-center md:text-left">Importo ({{ props.currency }})</label>
                     <input
                         type="number"
                         step="0.01"
@@ -139,7 +130,7 @@ function submitForm() {
                           class="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-60 overflow-y-auto"
                         >
                           <li
-                            v-for="cat in categorie"
+                            v-for="cat in props.categorie"
                             :key="cat.id"
                             @click="selectCategory(cat)"
                             class="px-3 py-2 cursor-pointer hover:bg-primary hover:text-white"
@@ -158,7 +149,7 @@ function submitForm() {
                             class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
                         >
                             <option value="" disabled selected>Seleziona conto</option>
-                            <option v-for="conto in conti" :key="conto.id" :value="conto.id">
+                            <option v-for="conto in props.conti" :key="conto.id" :value="conto.id">
                                 {{ conto.nome }}
                             </option>
                         </select>
