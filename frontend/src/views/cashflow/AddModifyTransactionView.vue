@@ -1,20 +1,20 @@
 <script setup>
-import AddModifyCashFLow from '../../components/maincomponents/cashflow/AddModifyCashFlow.vue';
+import AddModifyCashFlow from '../../components/maincomponents/cashflow/AddModifyCashFlow.vue';
 import MainComponent from '../../components/maincomponents/MainComponent.vue';
-import { useSettingsStore } from '../../stores/settings';
+import { useFinancialsStore } from '../../stores/financials';
 
-const settings = useSettingsStore();
+const financials = useFinancialsStore();
 </script>
 
 <template>
   <MainComponent
-  :mainComponent="AddModifyCashFLow"
+  :mainComponent="AddModifyCashFlow"
   :mainProps="{
-    categorie: settings.cashFlowCategories,
-    conti: settings.accounts,
-    currency: settings.displayCurrencySymbol
+    categorie: financials.cashFlowCategories,
+    conti: financials.accounts,
+    currency: financials.displayCurrencySymbol
   }"
-  showTopSection=true
+  :showTopSection="true"
   topSectionTitle="Aggiungi/Modifica Movimento"
   />
 </template>

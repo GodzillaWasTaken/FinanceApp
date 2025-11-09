@@ -1,7 +1,6 @@
 <script setup>
-import { ref, defineEmits, watch } from 'vue'
+import { ref } from 'vue'
 import { CheckIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/outline'
-import DatePicker from 'primevue/datepicker';
 
 // Stato locale per l'anno selezionato
 const currentYear = ref(new Date().getFullYear())
