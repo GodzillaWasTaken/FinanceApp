@@ -13,8 +13,6 @@ import { TitleComponent, TooltipComponent, LegendComponent, GridComponent } from
 import PrimeVue from 'primevue/config'
 import 'primeicons/primeicons.css'
 
-import { VMoney } from 'v-money3'
-
 use([ CanvasRenderer, 
     BarChart, 
     LineChart, 
@@ -37,8 +35,6 @@ app.use(PrimeVue, {
 
 
 app.component('v-chart', ECharts)
-
-app.directive('money', VMoney)
 
 app.mount('#app')
 

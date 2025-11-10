@@ -7,7 +7,9 @@ import SelectDropdown from '../SelectDropdown.vue'
 const props = defineProps({
   categorie: { type: Array, default: () => [] },
   conti: { type: Array, default: () => [] },
-  currency: { type: String, default: '€' }
+  currency: { type: String, default: '€' },
+  currencyFormat: { type: String, default: 'it-IT' },
+  currencySymbol: { type: String, default: 'EUR'}
 })
 
 
@@ -34,18 +36,108 @@ function openDatePicker() {
 
 
 
-//money object to format currency input
-const money = computed(() => {
-  const isEuro = props.currency === '€'
-  return {
-    prefix: props.currency + ' ',
-    thousands: isEuro ? '.' : ',',
-    decimal: isEuro ? ',' : '.',
-    precision: 2,
-    masked: false,
-    disableNegative: true
+// money object to format currency input
+const displayValue = ref('')
+
+const formatter = computed(() => {
+  try {
+    return new Intl.NumberFormat(props.currencyFormat, {
+      style: 'currency',
+      currency: props.currencySymbol,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
+  } catch (e) {
+    // fallback
+    return new Intl.NumberFormat('it-IT', {
+      style: 'currency',
+      currency: 'EUR',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })
   }
 })
+
+// derive decimal/group separators and currency symbol from formatToParts
+const formatParts = computed(() => {
+  try {
+    return formatter.value.formatToParts(1234567.89)
+  } catch (e) {
+    return []
+  }
+})
+const decimalSep = computed(() => formatParts.value.find(p => p.type === 'decimal')?.value || '.')
+const groupSep = computed(() => formatParts.value.find(p => p.type === 'group')?.value || ',')
+const currencySymbolStr = computed(() => formatParts.value.find(p => p.type === 'currency')?.value || props.currencySymbol)
+
+// helper to escape regex special chars
+const _escapeRegex = (s = '') => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+
+// on focus: normalize the displayed string to a plain numeric string
+const onFocus = () => {
+  if (displayValue.value !== '') {
+    let v = String(displayValue.value)
+  
+    // remove currency symbol occurrences
+    const sym = currencySymbolStr.value
+    if (sym) {
+      v = v.replace(new RegExp(_escapeRegex(sym), 'g'), '')
+    }
+
+    // remove spaces and NBSP
+    v = v.replace(/\s+/g, '')
+
+    // remove group separators (only if different from decimal separator)
+    if (groupSep.value && groupSep.value !== decimalSep.value) {
+      v = v.split(groupSep.value).join('')
+    } else {
+      // common fallback: remove dots used as thousands sep
+      v = v.replace(/\./g, '')
+    }
+
+    // replace locale decimal separator with '.' for JS parseFloat
+    if (decimalSep.value && decimalSep.value !== '.') {
+      v = v.split(decimalSep.value).join('.')
+    }
+
+    // Normalize numeric display: if number is integer show "12" not "12.00"
+    const parsed = parseFloat(v)
+    if (!isNaN(parsed)) {
+      if (Number.isInteger(parsed)) {
+        displayValue.value = String(Math.trunc(parsed))
+      } else {
+        // keep minimal decimal representation (remove trailing zeros)
+        // toLocaleString can reintroduce locale separators; keep plain JS string
+        let s = String(parsed)
+        // ensure dot as decimal separator in edit mode
+        if (s.indexOf('.') > -1) {
+          // trim trailing zeros
+          s = s.replace(/(\.\d*?[1-9])0+$/,'$1')
+          // if becomes "12." remove dot
+          s = s.replace(/\.0+$/,'')
+        }
+        displayValue.value = s
+      }
+    } else {
+      displayValue.value = v
+    }
+  }
+}
+
+// on blur: parse and format using the dynamic formatter
+const onBlur = () => {
+  const num = parseFloat(String(displayValue.value).replace(/\s+/g, ''))
+  if (!isNaN(num)) {
+    form.value.amount = num
+    displayValue.value = formatter.value.format(num)
+  } else {
+    displayValue.value = ''
+    form.value.amount = ''
+  }
+}
+
+
+
 
 
 
@@ -201,12 +293,15 @@ watch(() => form.value.date, (newDate) => {
                     <div class="flex flex-col gap-1">
                     <label class="text-sm font-semibold text-text text-center md:text-left">Importo ({{ props.currency }})</label>
                     <input
-                        v-money="money"
-                        inputmode="decimal"
-                        v-model="form.amount"
-                        required
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
+                      type="text"
+                      v-model="displayValue"
+                      @focus="onFocus"
+                      @blur="onBlur"
+                      inputmode="decimal"
+                      placeholder="00.00"
+                      class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
                     />
+                    <div class="text-sm text-gray-500">Usa il punto (.) come separatore decimale.</div>
                     </div>
 
                     <div class="flex flex-col gap-1">
