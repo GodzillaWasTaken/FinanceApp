@@ -13,7 +13,7 @@ function updateMenuState(newValue) {
 <template>
     <MainComponent
         :mainComponent="Settings"
-        showTopSection=true
+        :showTopSection=true
         topSectionTitle="Impostazioni"
         :defaultMenuOpen="settings.defaultMenuOpen"
         @update:defaultMenuOpen="updateMenuState"

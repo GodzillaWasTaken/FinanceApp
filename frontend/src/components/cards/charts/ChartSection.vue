@@ -1,24 +1,20 @@
 <script setup>
+import { computed } from 'vue';
 import ChartCard from './ChartCard.vue';
 import CumulativeExpInc from './types/CumulativeExpIncChart.vue';
 import MonthlyNetChart from './types/MonthlyNetChart.vue';
 
-defineProps({
-  months: {
+const props = defineProps({
+  income: {
     type: Array,
     default: () => []
   },
-  entrate: {
-    type: Array,
-    default: () => []
-  },
-  uscite: {
+  spending: {
     type: Array,
     default: () => []
   }
 })
 
-const numCard = 2
 </script>
 
 <template>
@@ -27,13 +23,13 @@ const numCard = 2
         <div class="flex-1 min-w-0 max-w-full h-full">
             <ChartCard
                 :chart="MonthlyNetChart"
-                :chartProps = "{ months: months, entrate: entrate, uscite: uscite }"
+                :chartProps="{ income: income, spending: spending}"
             />
         </div>
         <div class="flex-1 min-w-0 max-w-full h-full">
             <ChartCard
                 :chart="CumulativeExpInc" 
-                :chartProps = "{ months: months, entrate: entrate, uscite: uscite }"
+                :chartProps="{ income: income, spending: spending }"
                 />
         </div>    
     </div>

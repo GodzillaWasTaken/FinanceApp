@@ -1,30 +1,53 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
-  months: {
+  income: {
     type: Array,
     default: () => []
   },
-  entrate: {
-    type: Array,
-    default: () => []
-  },
-  uscite: {
+  spending: {
     type: Array,
     default: () => []
   }
 })
 
-// Calcolo cumulativi
-const entrateCumulative = props.entrate.map((val, i) =>
-  i === 0 ? val : val + props.entrate.slice(0, i).reduce((a, b) => a + b, 0)
-)
-const usciteCumulative = props.uscite.map((val, i) =>
-  i === 0 ? val : val + props.uscite.slice(0, i).reduce((a, b) => a + b, 0)
+// derive months from income and spending (unique, preserving order)
+const months = computed(() => {
+  const inc = (props.income || []).map(i => i.month)
+  const exp = (props.spending || []).map(s => s.month)
+  return [...new Set([...inc, ...exp])]
+})
+
+// align series to months (if a month is missing in income/spending, use 0)
+const incomeSeries = computed(() =>
+  months.value.map(m => {
+    const item = (props.income || []).find(i => i.month === m)
+    return Number(item?.amount || 0)
+  })
 )
 
-const option = ref({
+const spendingSeries = computed(() =>
+  months.value.map(m => {
+    const item = (props.spending || []).find(s => s.month === m)
+    return Number(item?.amount || 0)
+  })
+)
+
+// cumulative calculations based on aligned series
+const incomeCumulative = computed(() =>
+  incomeSeries.value.map((val, i) =>
+    val + (i > 0 ? incomeSeries.value.slice(0, i).reduce((a, b) => a + b, 0) : 0)
+  )
+)
+
+const spendingCumulative = computed(() =>
+  spendingSeries.value.map((val, i) =>
+    val + (i > 0 ? spendingSeries.value.slice(0, i).reduce((a, b) => a + b, 0) : 0)
+  )
+)
+
+const option = computed(() => ({
   title: {
     text: 'Cumulativo Entrate e Uscite'
   },
@@ -36,7 +59,7 @@ const option = ref({
   },
   xAxis: {
     type: 'category',
-    data: props.months
+    data: months.value
   },
   yAxis: {
     type: 'value',
@@ -46,19 +69,19 @@ const option = ref({
     {
       name: 'Entrate cumulative',
       type: 'line',
-      data: entrateCumulative,
+      data: incomeCumulative.value,
       smooth: true,
       itemStyle: { color: '#7FCB75' }
     },
     {
       name: 'Uscite cumulative',
       type: 'line',
-      data: usciteCumulative,
+      data: spendingCumulative.value,
       smooth: true,
       itemStyle: { color: '#FF5C61' }
     }
   ]
-})
+}))
 </script>
 
 <template>

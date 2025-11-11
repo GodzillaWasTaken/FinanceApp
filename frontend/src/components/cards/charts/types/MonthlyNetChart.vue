@@ -1,27 +1,45 @@
-
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 
 const props = defineProps({
-  months: {
+  income: {
     type: Array,
     default: () => []
   },
-  entrate: {
-    type: Array,
-    default: () => []
-  },
-  uscite: {
+  spending: {
     type: Array,
     default: () => []
   }
 })
 
+// derive months from income and spending (unique, preserving order)
+const months = computed(() => {
+  const inc = (props.income || []).map(i => i.month)
+  const exp = (props.spending || []).map(s => s.month)
+  return [...new Set([...inc, ...exp])]
+})
 
-// Calcolo netto mese per mese
-const netto = props.entrate.map((e, i) => e - props.uscite[i])
+// align series to months (if a month is missing in income/spending, use 0)
+const incomeSeries = computed(() =>
+  months.value.map(m => {
+    const item = (props.income || []).find(i => i.month === m)
+    return Number(item?.amount || 0)
+  })
+)
 
-const option = ref({
+const spendingSeries = computed(() =>
+  months.value.map(m => {
+    const item = (props.spending || []).find(s => s.month === m)
+    return Number(item?.amount || 0)
+  })
+)
+
+// net cash flow
+const netSeries = computed(() =>
+  months.value.map((_, i) => (incomeSeries.value[i] || 0) - (spendingSeries.value[i] || 0))
+)
+
+const option = computed(() => ({
   title: {
     text: 'CashFlow Mensile'
   },
@@ -33,34 +51,33 @@ const option = ref({
   },
   xAxis: {
     type: 'category',
-    data: props.months
+    data: months.value
   },
   yAxis: [
-    { type: 'value', name: 'Euro' }  // unico asse verticale per semplicità
+    { type: 'value', name: 'Euro' }
   ],
   series: [
     {
       name: 'Entrate',
       type: 'line',
-      data: props.entrate,
+      data: incomeSeries.value,
       itemStyle: { color: '#7FCB75' }
     },
     {
       name: 'Uscite',
       type: 'line',
-      data: props.uscite,
+      data: spendingSeries.value,
       itemStyle: { color: '#FF5C61' }
     },
     {
       name: 'Netto',
       type: 'bar',
-      data: netto,
+      data: netSeries.value,
       barWidth: '30%',
       itemStyle: { color: '#3C3C3C' }
-      
     }
   ]
-})
+}))
 </script>
 
 <template>

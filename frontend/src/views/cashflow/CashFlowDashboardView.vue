@@ -4,27 +4,46 @@ import CashFlowDashboard from '../../components/maincomponents/cashflow/CashFlow
 import MainComponent from '../../components/maincomponents/MainComponent.vue';
 
 
-//chiamate api per i dati
-/**
- * per ora metto dati finti e poi li raggruppo in un oggetto che passo per props al componente CashFlowDashboard
- */
+//api calls for data would be placed here
 
-const months = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
-const entrate = [5000, 4500, 6000, 5500, 7000, 500, 5000, 4500, 6000, 5500, 7000, 500]
-const uscite = [3000, 3500, 4000, 3800, 4200, 4500, 3000, 3500, 4000, 3800, 4200, 4500]
+const income = [
+  { month: 'Gen', amount: 5000 },
+  { month: 'Feb', amount: 4500 },
+  { month: 'Mar', amount: 6000 },
+  { month: 'Apr', amount: 5500 },
+  { month: 'Mag', amount: 7000 },
+  { month: 'Giu', amount: 500 },
+  { month: 'Lug', amount: 5000 },
+  { month: 'Ago', amount: 4500 },
+  { month: 'Set', amount: 6000 },
+  { month: 'Ott', amount: 5500 },
+  { month: 'Nov', amount: 7000 },
+  { month: 'Dic', amount: 500 }
+];
 
-const income = ref(1000);
-const expense = ref(500);
+const spending = [
+  { month: 'Gen', amount: 3000 },
+  { month: 'Feb', amount: 3500 },
+  { month: 'Mar', amount: 4000 },
+  { month: 'Apr', amount: 3800 },
+  { month: 'Mag', amount: 4200 },
+  { month: 'Giu', amount: 4500 },
+  { month: 'Lug', amount: 3000 },
+  { month: 'Ago', amount: 3500 },
+  { month: 'Set', amount: 4000 },
+  { month: 'Ott', amount: 3800 },
+  { month: 'Nov', amount: 4200 },
+  { month: 'Dic', amount: 4500 }
+];
 
-//
+const monthlyIncome = ref(1000);
+const monthlyExpense = ref(500);
 
-//creo oggetto da passare come props
 const financeData = {
-  months,
-  entrate,
-  uscite,
-  income: income.value,
-  expense: expense.value
+  income,   
+  spending,  
+  monthlyIncome: monthlyIncome.value,
+  monthlyExpense: monthlyExpense.value
 }
 </script>
 

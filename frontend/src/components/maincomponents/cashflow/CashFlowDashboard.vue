@@ -16,8 +16,8 @@ const props = defineProps({
     <!-- main -->
     <section class="bg-background">
       <CashFlowMainData 
-        :income="props.financeData.income"
-        :expense="props.financeData.expense"
+        :income="props.financeData.monthlyIncome"
+        :expense="props.financeData.monthlyExpense"
         class="md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"
       />
     </section>
@@ -25,9 +25,8 @@ const props = defineProps({
     <!-- graphs -->
     <section class="flex-1 h-full bg-background md:pb-0 pb-20">
       <ChartSection
-        :entrate="props.financeData.entrate"
-        :uscite="props.financeData.uscite"
-        :months="props.financeData.months" 
+        :income="props.financeData.income"
+        :spending="props.financeData.spending"
         class="md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"/>
     </section>
   </div>
