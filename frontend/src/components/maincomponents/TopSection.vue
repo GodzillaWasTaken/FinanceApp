@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import { PlusIcon } from '@heroicons/vue/24/outline';
-import TimeFrameChooser from '../buttons/TimeFrameChooser.vue';
+import TimeFrameButton from '../buttons/timeframechooserbutton/TimeFrameButton.vue';
 import { Cog8ToothIcon } from '@heroicons/vue/24/outline';
 import { Cog8ToothIcon as Cog8ToothIconSolid} from '@heroicons/vue/24/solid';
 import { RouterLink } from 'vue-router';
@@ -67,8 +67,8 @@ function updateTimeframe(newTimeframe) {
                         v-if="showTimeFrameButton" 
                         class="flex space-x-2"
                         >
-                        <TimeFrameChooser @timeFrameUpdated="updateTimeframe">
-                        </TimeFrameChooser>
+                        <TimeFrameButton @timeFrameUpdated="updateTimeframe">
+                        </TimeFrameButton>
                     </div>
                 </div>
             </div>

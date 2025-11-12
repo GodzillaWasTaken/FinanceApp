@@ -2,7 +2,7 @@
 import { ref, onBeforeUnmount, watch, nextTick, onMounted, onUnmounted} from 'vue'
 import { CalendarDateRangeIcon } from '@heroicons/vue/24/outline'
 import { CalendarDateRangeIcon as CalendarDateRangeIconSolid } from '@heroicons/vue/24/solid'
-import YearChooser from './YearChooser.vue'
+import YearChooser from './YearMonthChooser.vue'
 
 const props = defineProps({
   dataPeriod: {

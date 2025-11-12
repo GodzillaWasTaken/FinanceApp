@@ -2,7 +2,7 @@
 import { ref, watch, computed } from 'vue'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/vue/24/outline'
 import DatePicker from 'primevue/datepicker';
-import SelectDropdown from '../SelectDropdown.vue'
+import SelectDropdown from '../../formcomponents/SelectDropdown.vue'
 
 const props = defineProps({
   categorie: { type: Array, default: () => [] },
@@ -31,7 +31,6 @@ const showFutureWarning = ref(false) // new: briefly show UI warning when a futu
 
 function openDatePicker() {
   datepickerRef.value?.$el?.querySelector('input')?.focus();
-  console.log(datepickerRef.value)
 }
 
 
