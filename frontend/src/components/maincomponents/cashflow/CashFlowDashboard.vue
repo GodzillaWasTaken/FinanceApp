@@ -1,6 +1,8 @@
 <script setup>
 import CashFlowMainData from './CashFlowMainData.vue';
 import ChartSection from '../../cards/charts/ChartSection.vue';
+import MonthlyNetChart from '../../cards/charts/types/MonthlyNetChart.vue'
+import CumulativeExpInc from '../../cards/charts/types/CumulativeExpIncChart.vue'
 
 const props = defineProps({
   financeData: {
@@ -25,8 +27,9 @@ const props = defineProps({
     <!-- graphs -->
     <section class="flex-1 h-full bg-background md:pb-0 pb-20">
       <ChartSection
-        :income="props.financeData.income"
-        :spending="props.financeData.spending"
+        :leftChart="{ component: MonthlyNetChart, props: { income: props.financeData.income, spending: props.financeData.spending } }"
+        :rightChart="{ component: CumulativeExpInc, props: { income: props.financeData.income, spending: props.financeData.spending } }"
+        :height="'h-full'"
         class="md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"/>
     </section>
   </div>

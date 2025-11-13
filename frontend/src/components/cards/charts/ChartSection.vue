@@ -1,36 +1,28 @@
 <script setup>
-import { computed } from 'vue';
 import ChartCard from './ChartCard.vue';
-import CumulativeExpInc from './types/CumulativeExpIncChart.vue';
-import MonthlyNetChart from './types/MonthlyNetChart.vue';
 
 const props = defineProps({
-  income: {
-    type: Array,
-    default: () => []
-  },
-  spending: {
-    type: Array,
-    default: () => []
-  }
+  // riceve oggetti { component: Component, props: Object } dal genitore
+  leftChart: { type: Object, required: true },
+  rightChart: { type: Object, required: true },
+  height: { type: String, default: 'h-80' }
 })
 
 </script>
 
 <template>
-    <div class="flex flex-col md:flex-row gap-4 h-full ml-6 mr-6">
-        <!-- <div v-for="i in numCard" :key="i" class="flex-1 min-w-0 max-w-full"> -->
+    <div :class="['flex flex-col md:flex-row gap-4 ml-6 mr-6', height]">
         <div class="flex-1 min-w-0 max-w-full h-full">
             <ChartCard
-                :chart="MonthlyNetChart"
-                :chartProps="{ income: income, spending: spending}"
+                :chart="leftChart.component"
+                :chartProps="leftChart.props || {}"
             />
         </div>
         <div class="flex-1 min-w-0 max-w-full h-full">
             <ChartCard
-                :chart="CumulativeExpInc" 
-                :chartProps="{ income: income, spending: spending }"
-                />
+                :chart="rightChart.component"
+                :chartProps="rightChart.props || {}"
+            />
         </div>    
     </div>
 </template>
