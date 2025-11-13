@@ -2,33 +2,29 @@
 import { ref } from 'vue'
 import DatePicker from 'primevue/datepicker'
 
-const currentYear = ref(new Date().getFullYear())
-const currentMonthYear = ref(new Date())
-const today = new Date()
-today.setHours(0, 0, 0, 0)
+const today = ref(new Date())
+today.value.setHours(0, 0, 0, 0)
 
 const emit = defineEmits(['updateYear', 'updateMonthYear'])
 
-// Stato: quale tipo di selezione mostrare
-const mode = ref('year') // 'year' o 'monthYear'
+const mode = ref('year') 
 
-// --- FUNZIONI DI EMISSIONE ---
+// --- event emit functions ---
 function confirmYear(date) {
   if (date instanceof Date) {
-    currentYear.value = date.getFullYear()
-    console.log('Anno selezionato:', currentYear.value)
-    emit('updateYear', currentYear.value)
+    emit('updateYear', date.getFullYear())
   }
 }
 
 function confirmMonthYear(date) {
   if (date instanceof Date) {
-    const year = date.getFullYear()
-    const month = date.getMonth() + 1
-    console.log(`Mese/Anno selezionato: ${month}/${year}`)
-    emit('updateMonthYear', { month, year })
+    emit('updateMonthYear', {
+      month: date.getMonth() + 1,
+      year: date.getFullYear()
+    })
   }
 }
+
 </script>
 
 <template>

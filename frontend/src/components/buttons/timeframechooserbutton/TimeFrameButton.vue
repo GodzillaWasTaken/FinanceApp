@@ -2,12 +2,12 @@
 import { ref, onBeforeUnmount, watch, nextTick, onMounted, onUnmounted} from 'vue'
 import { CalendarDateRangeIcon } from '@heroicons/vue/24/outline'
 import { CalendarDateRangeIcon as CalendarDateRangeIconSolid } from '@heroicons/vue/24/solid'
-import YearChooser from './YearMonthChooser.vue'
+import YearMonthChooser from './YearMonthChooser.vue'
 
 const props = defineProps({
   dataPeriod: {
-    type: Number,
-    default: new Date().getFullYear()
+    type: String,
+    default: new Date().getFullYear().toString()
   }
 })
 const isOpen = ref(false)
@@ -48,11 +48,20 @@ function close() {
 
 const emit = defineEmits(['timeFrameUpdate'])
 
-function bottoneCliccato(label) {
-  emit('timeFrameUpdate', label)
-  buttonDesc.value = label
+function timeFrameUpdated(timeFrame, source) {
+  
+  emit('timeFrameUpdate', timeFrame, source)
+
+  if (source === 'monthYear') {
+    let label = timeFrame.month.toString().padStart(2, '0') + '/' + timeFrame.year
+    buttonDesc.value = label
+    return
+  }
+
+  buttonDesc.value = timeFrame
   close()
 }
+
 
 
 // doc handlers gestiti dinamicamente
@@ -156,12 +165,17 @@ onBeforeUnmount(() => {
         <!-- Content -->
         <div class="p-3 flex flex-col gap-2" ref="content" tabindex="-1">
 
-          <YearChooser @updateYear="bottoneCliccato"/>
+          <YearMonthChooser 
+            :timeFrame="props.dataPeriod"
+            @updateYear="(timeFrame) => timeFrameUpdated(timeFrame, 'year')"
+            @updateMonthYear="(timeFrame) => timeFrameUpdated(timeFrame, 'monthYear')"
+
+            />
 
           <!-- preset buttons -->
           <button v-for="button in preSetButtons" :key="button.id"
             class="w-full px-3 py-2 rounded-md text-center hover:bg-primary-clear/50 transition cursor-pointer"
-            @click=bottoneCliccato(button.label)
+            @click="timeFrameUpdated(button.label, 'preset')"
           >
             {{button.label}}
           </button>
@@ -197,11 +211,16 @@ onBeforeUnmount(() => {
         <!-- Content -->
         <div class="p-3 flex flex-col gap-4" ref="content" tabindex="-1">
 
-          <YearChooser @updateYear="bottoneCliccato"/>
+          <YearMonthChooser
+            :timeFrame="props.dataPeriod"
+            @updateYear="(timeFrame) => timeFrameUpdated(timeFrame, 'year')"
+            @updateMonthYear="(timeFrame) => timeFrameUpdated(timeFrame, 'monthYear')"
+
+          />
 
           <button v-for="button in preSetButtons" :key="button.id"
             class="w-full px-3 py-2 text-lg rounded-md text-center hover:bg-primary-clear/50 transition cursor-pointer"
-            @click=bottoneCliccato(button.label)
+            @click="timeFrameUpdated(button.label, 'preset')"
           >
             {{button.label}}
           </button>

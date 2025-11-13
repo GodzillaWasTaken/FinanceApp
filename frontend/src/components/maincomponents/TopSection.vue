@@ -19,7 +19,12 @@ const isSettingsHover = ref(false);
 
 const routeSettings = "/settings";
 
-function updateTimeframe(newTimeframe) {
+function updateTimeframe(newTimeframe, source) {
+
+    if (source === 'monthYear') {
+        settings.dataPeriod = newTimeframe.month.toString().padStart(2, '0')+ '/' +newTimeframe.year  ;
+        return;
+    }
     settings.dataPeriod = newTimeframe;
 }
 </script>
@@ -67,8 +72,10 @@ function updateTimeframe(newTimeframe) {
                         v-if="showTimeFrameButton" 
                         class="flex space-x-2"
                         >
-                        <TimeFrameButton @timeFrameUpdated="updateTimeframe">
-                        </TimeFrameButton>
+                        <TimeFrameButton 
+                            @timeFrameUpdate="(timeFrame, source) => updateTimeframe(timeFrame, source)"
+                            :dataPeriod="settings.dataPeriod"
+                            />
                     </div>
                 </div>
             </div>
