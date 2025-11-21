@@ -11,7 +11,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <div :class="['flex flex-col md:flex-row gap-4 ml-6 mr-6', height]">
+    <div :class="['flex flex-col md:flex-row gap-4', height]">
         <div class="flex-1 min-w-0 max-w-full h-full">
             <ChartCard
                 :chart="leftChart.component"

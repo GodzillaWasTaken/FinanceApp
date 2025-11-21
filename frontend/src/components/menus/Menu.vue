@@ -1,8 +1,8 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
-import { Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon} from '@heroicons/vue/24/outline'
+import { Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-         HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid} from '@heroicons/vue/24/solid'
+         HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid } from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
 
@@ -47,7 +47,7 @@ onUnmounted(() => {
     <!-- desktop menu sempre aperto -->
     <aside 
       v-if="defaultMenuOpen" 
-      class="hidden md:flex md:flex-col w-35 flex-1 bg-primary-light text-white text-center items-center"
+      class="hidden md:flex md:flex-col md:w-30 flex-1 bg-menuborder text-gray-800 text-center items-center"
     >
       <nav class="flex-1">
         <ul class="space-y-2 mt-10">
@@ -59,8 +59,8 @@ onUnmounted(() => {
               <component 
                 :is="isHoverHomeIcon ? HomeIconSolid : HomeIcon" 
                 :class="[
-                  'hidden md:block h-15 w-15 transform !duration-100',
-                  isHoverHomeIcon ? 'text-secondary' : 'text-white'
+                  'hidden md:block h-10 w-10 transform !duration-100',
+                  isHoverHomeIcon ? 'text-secondary' : 'text-gray-500'
                 ]"
               />
           </li>
@@ -75,6 +75,17 @@ onUnmounted(() => {
           </li>
         </ul>
       </nav>
+
+      <!-- Settings pinned bottom -->
+      <div class="mt-auto mb-10 pt-4">
+          <MenuVoice
+                menuVoice="Settings"
+                route="/settings"
+                :icon="Cog6ToothIcon"
+                :iconSolid="Cog6ToothIconSolid"
+              />
+        </div>
+
     </aside>
 
     <!-- Hamburger (mobile) DA RIMUOVERE METTERE UNA VOCE SOTTO CHE LO FA, L?ULTIMA A DX DEL MENU UN BASSO -->
@@ -92,7 +103,8 @@ onUnmounted(() => {
       <div
         v-if="isOpen"
         @click="toggleMenu"
-        :class="['fixed inset-0 bg-black/40 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
+        :class="['fixed inset-0 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
+        style="background: rgba(0,0,0,0.28); backdrop-filter: blur(3px);"
       ></div>
     </transition>
 
@@ -100,7 +112,7 @@ onUnmounted(() => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-55 md:w-35 bg-primary-light text-white p-4 z-40 flex flex-col"
+        class="fixed inset-y-0 left-0 w-72 md:w-44 bg-menuborder text-gray-800 p-4 z-40 flex flex-col"
       >
         <button 
           @click="toggleMenu" 
@@ -113,7 +125,7 @@ onUnmounted(() => {
               :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
               :class="[
                 'h-4.5 w-4.5 transform rotate-180 !duration-100',
-                isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-white'
+                isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-gray-600'
               ]"
             />
           </transition>
@@ -131,6 +143,17 @@ onUnmounted(() => {
             </li>
           </ul>
         </nav>
+
+        <!-- settings in mobile sidebar -->
+        <div class="mt-auto pt-4">
+          <MenuVoice
+                menuVoice="Settings"
+                route="/settings"
+                :icon="Cog6ToothIcon"
+                :iconSolid="Cog6ToothIconSolid"
+              />
+        </div>
+
       </aside>
     </transition>
 
@@ -138,9 +161,9 @@ onUnmounted(() => {
     <!-- Bottom Navigation (mobile) -->
 
     <nav 
-      class="fixed bottom-0 left-0 right-0 bg-primary-light text-white 
+      class="fixed bottom-4 left-4 right-4 bg-menuborder text-gray-800 
             flex justify-between items-center py-2 md:hidden z-50 shadow-lg
-            m-1 rounded-[10px]"
+            rounded-xl border border-gray-100 px-4"
     >
       <!-- Home -->
       <div class="flex-1 flex flex-col items-center">
@@ -182,10 +205,10 @@ onUnmounted(() => {
       <!-- Terza voce -->
       <div class="flex-1 flex flex-col items-center">
         <MenuVoice
-          :menuVoice="menuOptions[3].name"
-          :route="menuOptions[3].route"
-          :icon="menuOptions[3].icon"
-          :iconSolid="menuOptions[3].iconSolid"
+          menuVoice="Settings"
+                route="/settings"
+                :icon="Cog6ToothIcon"
+                :iconSolid="Cog6ToothIconSolid"
         />
       </div>
     </nav>

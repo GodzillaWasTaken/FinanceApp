@@ -41,7 +41,13 @@ const netSeries = computed(() =>
 
 const option = computed(() => ({
   title: {
-    text: 'CashFlow Mensile'
+    text: 'CashFlow Mensile',
+    padding: [
+      0,  // up
+      0, // right
+      5,  // down
+      0, // left
+    ]
   },
   tooltip: {
     trigger: 'axis'

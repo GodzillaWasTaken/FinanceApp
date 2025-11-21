@@ -7,7 +7,7 @@
   --color-primary-clear: rgba(48, 56, 212, 0.2);
   --color-primary-intermediate: rgba(58, 118, 248, 0.5); /*#3A76F8B3 blu pastello */
   --color-primary-light: #3A76F8;
-  --color-secondary: #F9D162;    /* giallo sole */
+  --color-secondary: #FF9800;    /* giallo sole */
   --color-secondary-clear: rgba(249, 209, 98, 0.2); 
   --color-secondary-light: rgba(249, 209, 98, 0.7);     /*#FF5A5FB3 rosa corallo */
   --color-secondary-hover: #F6C33F; 
@@ -15,9 +15,10 @@
   --color-accent-clear: rgba(193, 131, 159, 0.3); /* #C1839F4D  lilla pastello */
   --color-accent-hover: #A16D8A;
   --color-text: #3C3C3C;             /* grigio scuro per testo */
-  --color-background: #EBEEF2;       /* bianco sporco chiaro leggermente azzurrino */
+  --color-background: #F2F3F7;       /* bianco sporco chiaro leggermente azzurrino */
   --color-success: #7FCB75;          /* verde soft */
   --color-negative: #FF5C61;
   --color-card-background: #FFFFFF;   /* bianco puro per sfondi delle card */
-  --color-neutral: #B0B0B0;       
+  --color-neutral: #B0B0B0;    
+  --color-menuborder :#DCE4EF;   
 }

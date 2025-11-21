@@ -246,6 +246,7 @@ backend/src/.env
 backend/src/.venv
 
 # Frontend (Vue.js)
+frontend/src/mock_modules/
 frontend/src/node_modules/
 frontend/src/dist/
 frontend/src/.env

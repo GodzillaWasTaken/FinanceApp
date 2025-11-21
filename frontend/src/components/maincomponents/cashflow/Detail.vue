@@ -1,8 +1,16 @@
 <script setup>
 import ChartSection from '../../cards/charts/ChartSection.vue';
+import CumulativeLinear from '../../cards/charts/types/CumulativeLinear.vue';
+import StackedArea from '../../cards/charts/types/StackedArea.vue';
 const props = defineProps({
-    desc: String,
-    // detailData: Object DEVE ESSSERE UNA LISTA DI OGGETTI
+    desc: {
+        type: String,
+        default: 'Some details'
+    },
+    serie: {
+        type: Array,
+        default: () => []
+    }
 })
 
 </script>
@@ -11,6 +19,8 @@ const props = defineProps({
     <div class="flex flex-col h-full">
          <section class="flex-1 bg-background md:pb-0 pb-20">
         <ChartSection
+        :leftChart="{ component: CumulativeLinear, props: { income: props.financeData.income, spending: props.financeData.spending } }"
+        :rightChart="{ component: StackedArea, props: { income: props.financeData.income, spending: props.financeData.spending } }"
             height="h-100"
             class="mt-6 md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"/>
         </section>

@@ -14,23 +14,23 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="flex flex-col h-full">
+  <div class="flex flex-col h-full gap-10">
     <!-- main -->
     <section class="bg-background">
       <CashFlowMainData 
         :income="props.financeData.monthlyIncome"
         :expense="props.financeData.monthlyExpense"
-        class="md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"
       />
     </section>
 
     <!-- graphs -->
-    <section class="flex-1 h-full bg-background md:pb-0 pb-20">
+    <section class="flex-1 h-full bg-background">
       <ChartSection
         :leftChart="{ component: MonthlyNetChart, props: { income: props.financeData.income, spending: props.financeData.spending } }"
         :rightChart="{ component: CumulativeExpInc, props: { income: props.financeData.income, spending: props.financeData.spending } }"
-        :height="'h-full'"
-        class="md:ml-20 md:mr-20 2xl:ml-50 2xl:mr-50"/>
+        height="h-full"
+        />
     </section>
+
   </div>
 </template>

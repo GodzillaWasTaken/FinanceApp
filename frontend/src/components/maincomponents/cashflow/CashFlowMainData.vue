@@ -30,7 +30,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-background ml-6 mr-6 mt-10 mb-10 rounded-[10px] flex flex-col md:flex-row gap-4 ">
+  <div class="bg-background flex flex-col md:flex-row gap-4 ">
       <RouterLink 
         to="/notfound"
         class="flex-1">

@@ -6,5 +6,6 @@ import NotFoundComponent from '../components/maincomponents/notfound/NotFoundCom
 <template>
     <MainComponent
     :main-component="NotFoundComponent"
+    class="h-full"
     />
 </template>

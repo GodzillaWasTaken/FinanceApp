@@ -49,7 +49,13 @@ const spendingCumulative = computed(() =>
 
 const option = computed(() => ({
   title: {
-    text: 'Cumulativo Entrate e Uscite'
+    text: 'Cumulativo Entrate e Uscite',
+    padding: [
+      0,  // up
+      0, // right
+      5,  // down
+      0, // left
+    ]
   },
   tooltip: {
     trigger: 'axis'
@@ -63,7 +69,10 @@ const option = computed(() => ({
   },
   yAxis: {
     type: 'value',
-    name: 'Euro'
+    name: 'Euro',
+    nameTextStyle: {
+      fontSize: 12
+    }
   },
   series: [
     {
