@@ -36,11 +36,11 @@ const isActive = computed(() => {
           :is="(isHoverIcon || isActive) ? props.iconSolid : props.icon" 
           :class="[
             'hidden md:block h-6 w-6 transform',
-            (isHoverIcon || isActive) ? 'text-primary' : 'text-gray-600'
+            (isHoverIcon || isActive) ? ' text-primary-light' : 'text-gray-600'
           ]"
         />
       </div>
-      <div :class="(isHoverIcon || isActive) ? 'text-sm text-primary font-semibold' : 'text-sm text-gray-600'">
+      <div :class="(isHoverIcon || isActive) ? 'text-sm text-text font-semibold' : 'text-sm text-gray-600'">
         {{ props.menuVoice }}
       </div>
     </div>
@@ -55,10 +55,10 @@ const isActive = computed(() => {
       <div class="flex mb-1">
         <component 
           :is="isActive ? props.iconSolid : props.icon" 
-          :class="isActive ? 'h-6 w-6 text-primary' : 'h-6 w-6 text-gray-600'"
+          :class="isActive ? 'h-6 w-6 text-primary-light' : 'h-6 w-6 text-gray-600'"
         />
       </div>
-      <div :class="isActive ? 'text-gray-900 font-semibold text-xs' : 'text-gray-600 text-xs'">
+      <div :class="isActive ? 'text-text font-semibold text-xs' : 'text-gray-600 text-xs'">
         {{ props.menuVoice }}
       </div>
     </div>
