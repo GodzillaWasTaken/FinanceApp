@@ -1,22 +1,68 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import DatePicker from 'primevue/datepicker'
 
 const today = ref(new Date())
+const todayPlaceHolder = today.value;
 today.value.setHours(0, 0, 0, 0)
+const currentYear = computed (() => today.value.getFullYear());
+const currentMonth = computed (()=>today.value.getMonth() + 1);
+const timeFrameError = ref(false);
 
 const emit = defineEmits(['updateYear', 'updateMonthYear'])
 
 const mode = ref('year') 
 
+function isFutureTimeFrame(timeFrame, source) {
+    if (source === 'year') {
+        const year = parseInt(timeFrame);
+        console.log('Comparing year:', year, 'with currentYear:', currentYear.value);
+        return year > currentYear.value
+    }
+
+    if (source === 'monthYear') {
+        const year = parseInt(timeFrame.year);
+        const month = parseInt(timeFrame.month);
+
+        if (year > currentYear.value) {
+            return true;
+        }
+        if (year === currentYear.value && month > currentMonth) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // --- event emit functions ---
 function confirmYear(date) {
+  console.log('Future year selected:', date.getFullYear());
+  if(isFutureTimeFrame(date.getFullYear(), 'year')) {
+    
+    timeFrameError.value = true;
+    return;
+  }
+
+  if (timeFrameError.value) {
+    timeFrameError.value = false;
+  }
+
   if (date instanceof Date) {
     emit('updateYear', date.getFullYear())
   }
 }
 
 function confirmMonthYear(date) {
+
+  if(isFutureTimeFrame({ month: date.getMonth() + 1, year: date.getFullYear() }, 'monthYear')) {
+    timeFrameError.value = true;
+    return;
+  }
+
+  if (timeFrameError.value) {
+    timeFrameError.value = false;
+  }
+
   if (date instanceof Date) {
     emit('updateMonthYear', {
       month: date.getMonth() + 1,
@@ -24,7 +70,6 @@ function confirmMonthYear(date) {
     })
   }
 }
-
 </script>
 
 <template>
@@ -50,13 +95,12 @@ function confirmMonthYear(date) {
     <!-- Picker per ANNO -->
     <div v-if="mode === 'year'">
       <DatePicker
-        v-model="today"
+        v-model="todayPlaceHolder"
         view="year"
         dateFormat="yy"
-        :maxDate="today"
         append-to="body"
         @update:modelValue="confirmYear"
-        input-class="w-full px-3 py-2 focus:outline-none text-center text-lg font-medium cursor-pointer bg-secondary-light/80 border border-gray-200 rounded-lg shadow-sm"
+        input-class="w-full px-3 py-2 focus:outline-none text-center text-lg font-medium cursor-pointer bg-primary-light/80 border border-gray-200 rounded-lg shadow-sm"
         :pt="{
           panel: 'bg-white shadow-md border border-gray-200 rounded-xl p-3 mt-2 absolute z-50',
           header: 'flex justify-between items-center text-text mb-2',
@@ -72,13 +116,12 @@ function confirmMonthYear(date) {
     <!-- Picker per MESE/ANNO -->
     <div v-else-if="mode === 'monthYear'">
       <DatePicker
-        v-model="today"
+        v-model="todayPlaceHolder"
         view="month"
         dateFormat="mm/yy"
-        :maxDate="today"
         append-to="body"
         @update:modelValue="confirmMonthYear"
-        input-class="w-full px-3 py-2 focus:outline-none text-center text-lg font-medium cursor-pointer bg-secondary-light/80 border border-gray-200 rounded-lg shadow-sm"
+        input-class="w-full px-3 py-2 focus:outline-none text-center text-lg font-medium cursor-pointer bg-primary-light/80 border border-gray-200 rounded-lg shadow-sm"
         :pt="{
           panel: 'bg-white shadow-md border border-gray-200 rounded-xl p-3 mt-2 absolute z-50',
           header: 'flex justify-between items-center text-text mb-2',
@@ -91,6 +134,12 @@ function confirmMonthYear(date) {
           yearSelected: 'bg-primary text-white font-bold rounded'
         }"
       />
+    </div>
+
+    <div
+      v-if="timeFrameError" 
+      class="text-negative text-sm flex">
+         impossibile selezionare periodi futuri - RIPROVARE
     </div>
   </div>
 </template>

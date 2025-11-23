@@ -95,7 +95,7 @@ onUnmounted(() => {
         <ul role="listbox" class="max-h-56 overflow-y-auto divide-y divide-gray-100">
           <li v-if="(filtered || []).length === 0" class="px-3 py-2 text-sm text-gray-500">Nessuna voce trovata</li>
           <li v-for="item in filtered" :key="item.id" @click="choose(item)"
-              class="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-primary/10"
+              class="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-10"
               :aria-selected="selectedItem && selectedItem.id === item.id">
             <div class="flex items-center gap-3">
               <span v-if="props.showColor && item.color" :style="{ backgroundColor: item.color }" class="w-3.5 h-3.5 rounded-full inline-block"></span>

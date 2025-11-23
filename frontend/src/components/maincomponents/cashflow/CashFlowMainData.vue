@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 import { RouterLink } from 'vue-router';
 import NumberCard from '../../cards/NumberCard.vue';
 import { ArrowRightEndOnRectangleIcon } from '@heroicons/vue/24/outline';
@@ -11,26 +11,18 @@ const props = defineProps({
   expense: { type: Number, required: true }
 })
 
-const net = ref();
-const netSign = ref();
-
-const updateNet = () => {
-  net.value=props.income-props.expense;
-  updateNetSign(net.value);
-};
-
-const updateNetSign = (val)=>{
-  netSign.value = val>0 ? "+" : "-";
-}
-
-onMounted(() => {
-  updateNet();
+// Computed calculates the value immediatedly and updates when dependencies change, no undefined errors that comes with ref and onmounted
+const net = computed(() => {
+  return props.income - props.expense;
 });
 
+const netSign = computed(() => {
+  return net.value > 0 ? "+" : "-"; 
+});
 </script>
 
 <template>
-  <div class="bg-background flex flex-col md:flex-row gap-4 ">
+  <div class="bg-background flex flex-col lg:flex-row gap-4 ">
       <RouterLink 
         to="/notfound"
         class="flex-1">
@@ -40,7 +32,9 @@ onMounted(() => {
           color="bg-white"
           :icon="BanknotesIcon"
           :sign="netSign"
+          iconColor="text-nett"
           class="flex-1 items-center p-4"
+          iconBackground="bg-nett/20"
         />
       </RouterLink>
       <RouterLink 
@@ -51,8 +45,9 @@ onMounted(() => {
           :value="income" 
           color="bg-white"
           :icon="ArrowRightEndOnRectangleIcon"
-          iconClass="text-success"
+          iconColor="text-success"
           class="flex-1 items-center p-4"
+          iconBackground="bg-success/20"
         />
       </RouterLink>
       <RouterLink 
@@ -63,8 +58,9 @@ onMounted(() => {
           :value="expense"  
           color="bg-white"
           :icon="ArrowRightStartOnRectangleIcon"
-          iconClass="text-negative"
+          iconColor="text-negative"
           class="flex-1 items-center p-4"
+          iconBackground="bg-negative/20"
         />
       </RouterLink>
     </div>

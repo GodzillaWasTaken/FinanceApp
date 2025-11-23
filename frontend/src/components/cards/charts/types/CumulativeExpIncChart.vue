@@ -80,14 +80,14 @@ const option = computed(() => ({
       type: 'line',
       data: incomeCumulative.value,
       smooth: true,
-      itemStyle: { color: '#7FCB75' }
+      itemStyle: { color: '#41B646' }
     },
     {
       name: 'Uscite cumulative',
       type: 'line',
       data: spendingCumulative.value,
       smooth: true,
-      itemStyle: { color: '#FF5C61' }
+      itemStyle: { color: '#D6455D' }
     }
   ]
 }))

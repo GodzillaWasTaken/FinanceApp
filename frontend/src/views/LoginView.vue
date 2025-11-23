@@ -44,7 +44,7 @@ const isFormValid = computed(() => {
                 type="text"
                 placeholder="Username"
                 required
-                class="w-full px-4 py-2 rounded-lg border border-neutral bg-secondary-clear text-text focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                class="w-full px-4 py-2 rounded-lg border border-neutral bg-primary-clear text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
             </div>
 
@@ -56,7 +56,7 @@ const isFormValid = computed(() => {
                 v-model="password"
                 placeholder="Password"
                 required
-                class="w-full px-4 py-2 rounded-lg border border-neutral bg-secondary-clear text-text focus:outline-none focus:ring-2 focus:ring-secondary focus:border-transparent"
+                class="w-full px-4 py-2 rounded-lg border border-neutral bg-primary-clear text-text focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               <ShowHideButton 
                 class="show-button"
@@ -68,7 +68,7 @@ const isFormValid = computed(() => {
             <button
               type="submit"
               :disabled="!isFormValid"
-              :class="isFormValid ? 'bg-primary-light hover:bg-primary-hover text-white cursor-pointer' : 'bg-primary-intermediate text-text cursor-not-allowed'"
+              :class="isFormValid ? 'bg-primary-light hover:bg-primary text-white cursor-pointer' : 'bg-primary-light text-text cursor-not-allowed'"
               class="w-full py-3 rounded-lg font-bold transition-colors"
             >
               Accedi

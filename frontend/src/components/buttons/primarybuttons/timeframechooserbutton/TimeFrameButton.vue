@@ -3,6 +3,7 @@ import { ref, onBeforeUnmount, watch, nextTick, onMounted, onUnmounted} from 'vu
 import { CalendarDateRangeIcon } from '@heroicons/vue/24/outline'
 import { CalendarDateRangeIcon as CalendarDateRangeIconSolid } from '@heroicons/vue/24/solid'
 import YearMonthChooser from './YearMonthChooser.vue'
+import PrimaryButton from '@/components/buttons/primarybuttons/PrimaryButton.vue';
 
 const props = defineProps({
   dataPeriod: {
@@ -46,10 +47,11 @@ function close() {
 }
 
 
+
+
 const emit = defineEmits(['timeFrameUpdate'])
 
 function timeFrameUpdated(timeFrame, source) {
-  
   emit('timeFrameUpdate', timeFrame, source)
 
   if (source === 'monthYear') {
@@ -58,7 +60,7 @@ function timeFrameUpdated(timeFrame, source) {
     return
   }
 
-  buttonDesc.value = timeFrame
+  buttonDesc.value = timeFrame.toString()
   close()
 }
 
@@ -113,14 +115,14 @@ onBeforeUnmount(() => {
 <template>
   <div class="relative inline-block" ref="root">
     <!-- Trigger -->
-    <button 
-        class="px-4 py-1 rounded-md text-white text-md md:text-sm bg-primary-light hover:bg-primary flex items-center justify-center gap-2 cursor-pointer"
+    <PrimaryButton 
         ref="trigger"
         @click="toggle"
         @mouseenter="isHoverSelectDateIcon = true"
         @mouseleave="isHoverSelectDateIcon = false"
         :aria-expanded="isOpen"
         aria-haspopup="menu"
+        class="h-8 w-25 flex gap-2 items-center justify-center px-3 font-medium"
     >
       <transition name="fade" mode="out-in">
         <component 
@@ -129,7 +131,7 @@ onBeforeUnmount(() => {
         />
       </transition>
       {{buttonDesc}}
-    </button>
+    </PrimaryButton>
 
     <!-- opacità -->
     <transition name="fade">

@@ -2,22 +2,17 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #3038D4;          /* blu intenso */
-  --color-primary-hover: #292EB0;
-  --color-primary-clear: rgba(48, 56, 212, 0.2);
-  --color-primary-intermediate: rgba(58, 118, 248, 0.5); /*#3A76F8B3 blu pastello */
-  --color-primary-light: #3A76F8;
-  --color-secondary: #FF9800;    /* giallo sole */
-  --color-secondary-clear: rgba(249, 209, 98, 0.2); 
-  --color-secondary-light: rgba(249, 209, 98, 0.7);     /*#FF5A5FB3 rosa corallo */
-  --color-secondary-hover: #F6C33F; 
+  --color-primary: #FF9800;    /* giallo sole */ 
+  --color-primary-light: #FF980099;     /*#FF5A5FB3 rosa corallo */
+  --color-primary-hover: #F6C33F; 
   --color-accent: #C1839F;
   --color-accent-clear: rgba(193, 131, 159, 0.3); /* #C1839F4D  lilla pastello */
   --color-accent-hover: #A16D8A;
   --color-text: #3C3C3C;             /* grigio scuro per testo */
   --color-background: #F2F3F7;       /* bianco sporco chiaro leggermente azzurrino */
-  --color-success: #7FCB75;          /* verde soft */
-  --color-negative: #FF5C61;
+  --color-success: #41B646;
+  --color-negative: #D6455D;
+  --color-nett: #3A6C8A;
   --color-card-background: #FFFFFF;   /* bianco puro per sfondi delle card */
   --color-neutral: #B0B0B0;    
   --color-menuborder :#DCE4EF;   

@@ -67,20 +67,20 @@ const option = computed(() => ({
       name: 'Entrate',
       type: 'line',
       data: incomeSeries.value,
-      itemStyle: { color: '#7FCB75' }
+      itemStyle: { color: '#41B646' }
     },
     {
       name: 'Uscite',
       type: 'line',
       data: spendingSeries.value,
-      itemStyle: { color: '#FF5C61' }
+      itemStyle: { color: '#D6455D' }
     },
     {
       name: 'Netto',
       type: 'bar',
       data: netSeries.value,
       barWidth: '30%',
-      itemStyle: { color: '#3C3C3C' }
+      itemStyle: { color: '#3A6C8A' }
     }
   ]
 }))

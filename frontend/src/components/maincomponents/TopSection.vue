@@ -1,8 +1,6 @@
 <script setup>
-import { ref } from 'vue';
-import { PlusIcon } from '@heroicons/vue/24/outline';
-import TimeFrameButton from '../buttons/timeframechooserbutton/TimeFrameButton.vue';
-import { RouterLink } from 'vue-router';
+import AddButton from '@/components/buttons/primarybuttons/AddButton.vue';
+import TimeFrameButton from '@/components/buttons/primarybuttons/timeframechooserbutton/TimeFrameButton.vue';
 import { useSettingsStore } from '../../stores/settings'
 
 const settings = useSettingsStore();
@@ -12,10 +10,6 @@ defineProps({
     showTimeFrameButton: Boolean,
     showAddButton: Boolean
 })
-
-const isSettingsHover = ref(false);
-
-const routeSettings = "/settings";
 
 function updateTimeframe(newTimeframe, source) {
 
@@ -36,21 +30,18 @@ function updateTimeframe(newTimeframe, source) {
 
                 <!-- Container a destra -->
                 <div class="flex space-x-4">
-                    <RouterLink
-                    to="/addmodifytransaction"
-                    v-if="showAddButton"
-                    class="hidden md:block group bg-primary-light px-4 py-1 rounded-md text-white
-                                hover:bg-primary transition-transform origin-center duration-500 cursor-pointer"
-                    >
-                        <PlusIcon class="h-5.5 w-5.5 group-hover:rotate-90 duration-800" />
-                    </RouterLink>
+                    <AddButton
+                        v-if="showAddButton"
+                        to="/addmodifytransaction"
+                        class="hidden md:block"
+                        />
                     <div
                         v-if="showTimeFrameButton" 
                         class="flex space-x-2"
                         >
                         <TimeFrameButton 
                             @timeFrameUpdate="(timeFrame, source) => updateTimeframe(timeFrame, source)"
-                            :dataPeriod="settings.dataPeriod"
+                            :dataPeriod="settings.dataPeriod.toString()"
                             />
                     </div>
                 </div>

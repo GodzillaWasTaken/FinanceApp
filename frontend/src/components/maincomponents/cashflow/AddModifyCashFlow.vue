@@ -171,22 +171,20 @@ const emit = defineEmits(['submit'])
 
 
 function submitForm() {
-  // final safety check: clamp any future date before emit
   if (form.value.date) {
     const sel = new Date(form.value.date)
     sel.setHours(0,0,0,0)
     if (sel > today) {
       form.value.date = new Date(today)
-      // show warning to the user for a short time
       showFutureWarning.value = true
       setTimeout(() => (showFutureWarning.value = false), 3000)
+      return
     }
   }
 
   emit('submit', { ...form.value })
   form.value.amount = ''
   form.value.description = ''
-  // reset selectedCategoryNome? keep selectedCategory for UX
 }
 
 const formattedDate = computed(() => {
@@ -219,7 +217,7 @@ watch(() => form.value.date, (newDate) => {
 
 <template>
         <section class="flex-1 h-full justify-center overflow-auto bg-background">
-            <div class = "flex flex-col p-4 gap-4 bg-white ml-6 mr-6 md:ml-50 md:mr-50 2xl:ml-150 2xl:mr-150 mt-10 mb-20 md:mb-6 rounded-[10px] min-h-40">
+            <div class = "flex flex-col p-4 gap-4 bg-white mt-10 mb-20 md:mb-6 rounded-[10px] min-h-40">
                     <div class="flex items-center gap-2">
                         <PlusCircleIcon class="h-6 w-6 text-primary" />
                         <h2 class="text-xl font-bold text-text">Aggiungi Movimento</h2>
@@ -242,6 +240,7 @@ watch(() => form.value.date, (newDate) => {
                                         v-model="form.date"
                                         :maxDate="today"
                                         append-to="body"
+                                        dateFormat="dd/mm/yy"
                                         input-class="w-full px-3 py-2 focus:outline-none"
                                         :pt="{
                                             panel: 'flex-1 bg-white shadow-md border border-gray-200 rounded-xl p-3 mt-4',
@@ -257,7 +256,7 @@ watch(() => form.value.date, (newDate) => {
                                                 'w-10.5 h-9 flex items-center justify-center text-sm rounded cursor-pointer transition',
                                                 
                                                 { 
-                                                    'hover:bg-primary/80 hover:text-white': !context.selected && !context.disabled && !context.dayOtherMonth,
+                                                    'hover:bg-primary-light hover:text-white': !context.selected && !context.disabled && !context.dayOtherMonth,
                                                     'text-gray-500 cursor-not-allowed': context.dayOtherMonth,
                                                     'border border-primary text-primary font-semibold bg-primary/20': context.dayToday && !context.selected,
                                                     'bg-primary-light text-white font-bold rounded-full hover:bg-primary': context.selected,

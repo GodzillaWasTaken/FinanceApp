@@ -60,7 +60,7 @@ onUnmounted(() => {
                 :is="isHoverHomeIcon ? HomeIconSolid : HomeIcon" 
                 :class="[
                   'hidden md:block h-10 w-10 transform !duration-100',
-                  isHoverHomeIcon ? 'text-secondary' : 'text-gray-500'
+                  isHoverHomeIcon ? 'text-primary' : 'text-gray-500'
                 ]"
               />
           </li>
@@ -125,7 +125,7 @@ onUnmounted(() => {
               :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
               :class="[
                 'h-4.5 w-4.5 transform rotate-180 !duration-100',
-                isHoverCloseMenuOnMobileIcon ? 'text-secondary' : 'text-gray-600'
+                isHoverCloseMenuOnMobileIcon ? 'text-primary' : 'text-gray-600'
               ]"
             />
           </transition>
