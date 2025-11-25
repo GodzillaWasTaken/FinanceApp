@@ -49,7 +49,7 @@ const routes = [
     },
   },
   {
-    path: '/income',
+    path: '/cashflow/income',
     name: 'Income',
     component: IncomeDetailView,
     meta: {
@@ -57,7 +57,7 @@ const routes = [
     },
   },
   {
-    path: '/expenses',
+    path: '/cashflow/expenses',
     name: 'Expenses',
     component: ExpenseDetailView,
     meta: {

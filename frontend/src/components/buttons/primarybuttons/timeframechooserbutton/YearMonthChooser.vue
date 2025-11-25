@@ -16,7 +16,6 @@ const mode = ref('year')
 function isFutureTimeFrame(timeFrame, source) {
     if (source === 'year') {
         const year = parseInt(timeFrame);
-        console.log('Comparing year:', year, 'with currentYear:', currentYear.value);
         return year > currentYear.value
     }
 
@@ -36,7 +35,6 @@ function isFutureTimeFrame(timeFrame, source) {
 
 // --- event emit functions ---
 function confirmYear(date) {
-  console.log('Future year selected:', date.getFullYear());
   if(isFutureTimeFrame(date.getFullYear(), 'year')) {
     
     timeFrameError.value = true;

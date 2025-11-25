@@ -41,7 +41,6 @@ defineExpose({
 
 <style scoped>
 .base-button {
-  padding: 6px 12px;
   border-radius: 10px;
   cursor: pointer;
   font-size: small;

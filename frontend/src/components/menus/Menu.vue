@@ -1,40 +1,102 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue'
-import { Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon } from '@heroicons/vue/24/outline'
-import { PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-         HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid } from '@heroicons/vue/24/solid'
+import { 
+  Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon, 
+  ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon
+} from '@heroicons/vue/24/outline'
+import { 
+  PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
+  HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid 
+} from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
 
 const menuOptions = ref([
-  { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid},
-  { name: 'CashFlow', route: '/cashflow', icon: WalletIcon, iconSolid: WalletIconSolid},
-  { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid},
+  { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid },
+  { 
+    name: 'CashFlow', 
+    route: '/cashflow', 
+    icon: WalletIcon, 
+    iconSolid: WalletIconSolid,
+    voices: [
+      { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid },
+      { name: 'Spese', route: '/cashflow/expenses', icon: CreditCardIcon, iconSolid: CreditCardIcon },
+      { name: 'Entrate', route: '/cashflow/income', icon: BanknotesIcon, iconSolid: BanknotesIcon },
+      { name: 'Aggiungi', route: '/addmodifytransaction', icon: PlusIcon, iconSolid: PlusIcon }
+    ]
+  },
+  { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid },
   { name: 'Budget', route: '/notfound', icon: ClipboardIcon, iconSolid: ClipboardIconSolid }
 ])
 
 const settings = useSettingsStore();
 const defaultMenuOpen = settings.defaultMenuOpen;
 const isHoverHomeIcon = ref(false)
+const isHoverCloseMenuOnMobileIcon = ref(false)
+const isOpen = ref(false) // Sidebar mobile
+
+// --- LOGICA SOTTOMENU SIDEBAR ---
+const activeSubMenu = ref(null) 
+const isSubMenuVisible = ref(false)
+
+// --- LOGICA SOTTOMENU BOTTOM SHEET (MOBILE) ---
+const isMobileBottomSheetOpen = ref(false)
+const activeMobileBottomMenu = ref(null)
+
+// Gestione click dalla SIDEBAR (Desktop e Mobile Hamburger)
+const handleSidebarVoiceClick = (item) => {
+  if (item.voices && item.voices.length > 0) {
+    activeSubMenu.value = item
+    isSubMenuVisible.value = true
+  } else {
+    closeSubMenu()
+    if (!defaultMenuOpen) isOpen.value = false 
+  }
+}
+
+// Gestione click dalla BOTTOM NAV (Mobile fissa in basso)
+const handleBottomNavClick = (item) => {
+  if (item.voices && item.voices.length > 0) {
+    // Se è già aperto lo stesso menu, chiudilo, altrimenti aprilo
+    if (isMobileBottomSheetOpen.value && activeMobileBottomMenu.value?.name === item.name) {
+      closeBottomSheet()
+    } else {
+      activeMobileBottomMenu.value = item
+      isMobileBottomSheetOpen.value = true
+    }
+  } else {
+    // Navigazione normale
+    closeBottomSheet()
+  }
+}
+
+const closeSubMenu = () => {
+  isSubMenuVisible.value = false
+  setTimeout(() => {
+    activeSubMenu.value = null
+  }, 300) 
+}
+
+const closeBottomSheet = () => {
+  isMobileBottomSheetOpen.value = false
+  setTimeout(() => {
+    activeMobileBottomMenu.value = null
+  }, 300)
+}
 
 watch(() => settings.defaultMenuOpen, () => {
   window.location.reload()
 })
 
-const isOpen = ref(false)
-const isHoverCloseMenuOnMobileIcon = ref(false)
-
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
+  // Se apro la sidebar, chiudo il bottom sheet per evitare confusione
+  if(isOpen.value) closeBottomSheet()
 }
 
-// Evita lo scroll quando il menu mobile è aperto
 watch(isOpen, (val) => {
-  if (val) {
-    document.body.classList.add('overflow-hidden')
-  } else {
-    document.body.classList.remove('overflow-hidden')
-  }
+  if (val) document.body.classList.add('overflow-hidden')
+  else document.body.classList.remove('overflow-hidden')
 })
 
 onUnmounted(() => {
@@ -44,51 +106,90 @@ onUnmounted(() => {
 
 <template>
   <div class="flex">
-    <!-- desktop menu sempre aperto -->
+    
     <aside 
       v-if="defaultMenuOpen" 
-      class="hidden md:flex md:flex-col md:w-30 flex-1 bg-menuborder text-gray-800 text-center items-center"
+      class="hidden md:flex md:flex-col md:w-30 flex-1 bg-menuborder text-gray-800 text-center items-center overflow-hidden relative"
     >
-      <nav class="flex-1">
-        <ul class="space-y-2 mt-10">
-        <RouterLink to="/" class="group">
-          <li
-            @mouseenter="isHoverHomeIcon = true"
-            @mouseleave="isHoverHomeIcon = false" 
-            class="flex justify-center hover:cursor-pointer mb-10">
-              <component 
-                :is="isHoverHomeIcon ? HomeIconSolid : HomeIcon" 
-                :class="[
-                  'hidden md:block h-10 w-10 transform !duration-100',
-                  isHoverHomeIcon ? 'text-primary' : 'text-gray-500'
-                ]"
+      <nav class="flex-1 w-full relative">
+        
+        <div 
+          class="absolute inset-0 flex flex-col w-full transition-transform duration-300 ease-in-out"
+          :class="isSubMenuVisible ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'"
+        >
+          <ul class="space-y-2 mt-10 w-full px-2">
+            <RouterLink to="/" class="group">
+              <li
+                @mouseenter="isHoverHomeIcon = true"
+                @mouseleave="isHoverHomeIcon = false" 
+                class="flex justify-center hover:cursor-pointer mb-10"
+                @click="closeSubMenu"
+              >
+                  <component 
+                    :is="isHoverHomeIcon ? HomeIconSolid : HomeIcon" 
+                    :class="[
+                      'hidden md:block h-10 w-10 transform !duration-100',
+                      isHoverHomeIcon ? 'text-primary' : 'text-gray-500'
+                    ]"
+                  />
+              </li>
+            </RouterLink>
+            
+            <li v-for="item in menuOptions" :key="item.name">
+              <MenuVoice
+                :menuVoice="item.name"
+                :route="item.route"
+                :icon="item.icon"
+                :iconSolid="item.iconSolid"
+                :voices="item.voices"
+                @click="() => handleSidebarVoiceClick(item)"
               />
-          </li>
-        </RouterLink>
-          <li v-for="item in menuOptions" :key="item.name">
-            <MenuVoice
-              :menuVoice="item.name"
-              :route="item.route"
-              :icon="item.icon"
-              :iconSolid="item.iconSolid"
-            />
-          </li>
-        </ul>
-      </nav>
+            </li>
+          </ul>
 
-      <!-- Settings pinned bottom -->
-      <div class="mt-auto mb-10 pt-4">
-          <MenuVoice
+           <div class="mt-auto mb-10 pt-4">
+              <MenuVoice
                 menuVoice="Settings"
                 route="/settings"
                 :icon="Cog6ToothIcon"
                 :iconSolid="Cog6ToothIconSolid"
+                @click="closeSubMenu"
               />
+            </div>
         </div>
 
+        <div 
+          class="absolute inset-0 flex flex-col w-full bg-menuborder transition-transform duration-300 ease-in-out pt-10"
+          :class="isSubMenuVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'"
+        >
+            <div class="mb-6 px-4">
+              <button 
+                @click="closeSubMenu"
+                class="flex flex-col items-center justify-center w-full text-gray-500 hover:text-primary transition-colors gap-1"
+              >
+                <ChevronLeftIcon class="h-6 w-6" />
+                <span class="text-xs font-bold uppercase tracking-wider">Back</span>
+              </button>
+            </div>
+
+            <h3 class="text-sm font-bold text-gray-400 mb-4 uppercase tracking-widest">{{ activeSubMenu?.name }}</h3>
+
+            <ul class="space-y-4 px-2">
+              <li v-for="subItem in activeSubMenu?.voices" :key="subItem.name">
+                <MenuVoice
+                  :menuVoice="subItem.name"
+                  :route="subItem.route"
+                  :icon="subItem.icon"
+                  :iconSolid="subItem.iconSolid"
+                  @click="() => handleSidebarVoiceClick(subItem)"
+                />
+              </li>
+            </ul>
+        </div>
+
+      </nav>
     </aside>
 
-    <!-- Hamburger (mobile) DA RIMUOVERE METTERE UNA VOCE SOTTO CHE LO FA, L?ULTIMA A DX DEL MENU UN BASSO -->
     <button 
       v-if="!isOpen"
       @click="toggleMenu"
@@ -98,29 +199,27 @@ onUnmounted(() => {
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
     </button>
 
-    <!-- sfondo opaco VORREI RENDERLO TIPO PIENO A TUTTO SCHERMO DI LARGHEZZA E LASCIAR NERO SOPRA-->
     <transition name="fade">
       <div
-        v-if="isOpen"
-        @click="toggleMenu"
+        v-if="isOpen || isMobileBottomSheetOpen"
+        @click="() => { if(isOpen) toggleMenu(); if(isMobileBottomSheetOpen) closeBottomSheet(); }"
         :class="['fixed inset-0 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
         style="background: rgba(0,0,0,0.28); backdrop-filter: blur(3px);"
       ></div>
     </transition>
 
-    <!-- Sidebar mobile -->
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-72 md:w-44 bg-menuborder text-gray-800 p-4 z-40 flex flex-col"
+        class="fixed inset-y-0 left-0 w-72 md:w-44 bg-menuborder text-gray-800 p-4 z-40 flex flex-col overflow-hidden"
       >
         <button 
           @click="toggleMenu" 
-          class="absolute top-4 right-4 text-white cursor-pointer"
+          class="absolute top-4 right-4 text-white cursor-pointer z-50"
           @mouseenter="isHoverCloseMenuOnMobileIcon = true"
           @mouseleave="isHoverCloseMenuOnMobileIcon = false"
         >
-          <transition name="fade" mode="out-in">
+           <transition name="fade" mode="out-in">
             <component 
               :is="isHoverCloseMenuOnMobileIcon ? PaperAirplaneIconSolid : PaperAirplaneIcon" 
               :class="[
@@ -131,85 +230,135 @@ onUnmounted(() => {
           </transition>
         </button>
 
-        <nav class="flex-1 justify-center">
-          <ul class="flex flex-col space-y-8 text-xl md:space-y-2 md:text-base items-center mt-30">
-            <li v-for="item in menuOptions" :key="item.name">
-              <MenuVoice
-                :menuVoice="item.name"
-                :route="item.route"
-                :icon="item.icon"
-                :iconSolid="item.iconSolid"
-              />
-            </li>
-          </ul>
+        <nav class="flex-1 w-full relative mt-16">
+           <div 
+             class="absolute inset-0 w-full transition-transform duration-300"
+             :class="isSubMenuVisible ? '-translate-x-full' : 'translate-x-0'"
+           >
+              <ul class="flex flex-col space-y-6 text-xl md:space-y-2 md:text-base items-center">
+                <li v-for="item in menuOptions" :key="item.name" class="w-full">
+                   <MenuVoice
+                    :menuVoice="item.name"
+                    :route="item.route"
+                    :icon="item.icon"
+                    :iconSolid="item.iconSolid"
+                    :voices="item.voices"
+                    @click="() => handleSidebarVoiceClick(item)"
+                  />
+                </li>
+              </ul>
+              
+               <div class="mt-10 pt-4 flex justify-center">
+                <MenuVoice
+                      menuVoice="Settings"
+                      route="/settings"
+                      :icon="Cog6ToothIcon"
+                      :iconSolid="Cog6ToothIconSolid"
+                       @click="closeSubMenu"
+                    />
+              </div>
+           </div>
+
+           <div 
+             class="absolute inset-0 w-full transition-transform duration-300 bg-menuborder"
+             :class="isSubMenuVisible ? 'translate-x-0' : 'translate-x-full'"
+           >
+              <button @click="closeSubMenu" class="flex items-center text-gray-500 mb-6">
+                 <ChevronLeftIcon class="h-5 w-5 mr-1" /> Indietro
+              </button>
+               <h3 class="text-lg font-bold text-gray-800 mb-6 text-center">{{ activeSubMenu?.name }}</h3>
+               
+               <ul class="flex flex-col space-y-6 items-center">
+                  <li v-for="subItem in activeSubMenu?.voices" :key="subItem.name" class="w-full">
+                    <MenuVoice
+                      :menuVoice="subItem.name"
+                      :route="subItem.route"
+                      :icon="subItem.icon"
+                      :iconSolid="subItem.iconSolid"
+                      @click="() => handleSidebarVoiceClick(subItem)"
+                    />
+                  </li>
+               </ul>
+           </div>
         </nav>
-
-        <!-- settings in mobile sidebar -->
-        <div class="mt-auto pt-4">
-          <MenuVoice
-                menuVoice="Settings"
-                route="/settings"
-                :icon="Cog6ToothIcon"
-                :iconSolid="Cog6ToothIconSolid"
-              />
-        </div>
-
       </aside>
     </transition>
 
 
-    <!-- Bottom Navigation (mobile) -->
+
+    <!-- mobile -->
+    <transition name="slide-up">
+      <div 
+        v-if="isMobileBottomSheetOpen"
+        class="fixed bottom-24 left-4 right-4 bg-white rounded-2xl shadow-2xl z-40 p-6 md:hidden border border-gray-100"
+      >
+         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+            <h3 class="text-lg font-bold text-gray-800">{{ activeMobileBottomMenu?.name }}</h3>
+            <button @click="closeBottomSheet" class="text-gray-400 hover:text-gray-600">
+               <XMarkIcon class="h-6 w-6" />
+            </button>
+         </div>
+         
+         <!-- sub menu -->
+         <div class="grid grid-cols-2 gap-4">
+            <div v-for="subItem in activeMobileBottomMenu?.voices" :key="subItem.name" class="flex flex-col items-center">
+               <MenuVoice
+                  :menuVoice="subItem.name"
+                  :route="subItem.route"
+                  :icon="subItem.icon"
+                  :iconSolid="subItem.iconSolid"
+                  @click="closeBottomSheet" 
+               />
+            </div>
+         </div>
+      </div>
+    </transition>
+
 
     <nav 
       class="fixed bottom-4 left-4 right-4 bg-menuborder text-gray-800 
             flex justify-between items-center py-2 md:hidden z-50 shadow-lg
-            rounded-xl border border-gray-100 px-4"
+            rounded-xl border border-gray-100 px-2"
     >
-      <!-- Home -->
-      <div class="flex-1 flex flex-col items-center">
-        <MenuVoice
-          :menuVoice="menuOptions[0].name"
-          :route="menuOptions[0].route"
-          :icon="menuOptions[0].icon"
-          :iconSolid="menuOptions[0].iconSolid"
-        />
+      <div class="flex flex-1 justify-around">
+        <div v-for="item in menuOptions.slice(0, 2)" :key="item.name" class="flex flex-col items-center min-w-0">
+           <MenuVoice
+            :menuVoice="item.name"
+            :route="item.route"
+            :icon="item.icon"
+            :iconSolid="item.iconSolid"
+            :voices="item.voices"
+            @click="() => handleBottomNavClick(item)"
+          />
+        </div>
       </div>
 
-      <!-- Prima voce -->
-      <div class="flex-1 flex flex-col items-center">
-        <MenuVoice
-          :menuVoice="menuOptions[1].name"
-          :route="menuOptions[1].route"
-          :icon="menuOptions[1].icon"
-          :iconSolid="menuOptions[1].iconSolid"
-        />
-      </div>
-
-      <!-- Pulsante centrale floating -->
       <RouterLink to="/addmodifytransaction" 
-        class="w-14 h-14 -mt-6 flex items-center justify-center rounded-full bg-primary text-white shadow-lg"
+        class="flex-shrink-0 w-14 h-14 -mt-8 flex items-center justify-center rounded-full bg-primary text-white shadow-xl  z-50"
       >
         <PlusIcon class="w-8 h-8" />
       </RouterLink>
 
-      <!-- Seconda voce -->
-      <div class="flex-1 flex flex-col items-center">
-        <MenuVoice
-          :menuVoice="menuOptions[2].name"
-          :route="menuOptions[2].route"
-          :icon="menuOptions[2].icon"
-          :iconSolid="menuOptions[2].iconSolid"
-        />
-      </div>
+      <div class="flex flex-1 justify-around">
+        <div v-for="item in menuOptions.slice(2, 3)" :key="item.name" class="flex flex-col items-center min-w-0">
+          <MenuVoice
+            :menuVoice="item.name"
+            :route="item.route"
+            :icon="item.icon"
+            :iconSolid="item.iconSolid"
+            @click="() => handleBottomNavClick(item)"
+          />
+        </div>
 
-      <!-- Terza voce -->
-      <div class="flex-1 flex flex-col items-center">
-        <MenuVoice
-          menuVoice="Settings"
-                route="/settings"
-                :icon="Cog6ToothIcon"
-                :iconSolid="Cog6ToothIconSolid"
-        />
+         <div class="flex flex-col items-center min-w-0">
+          <MenuVoice
+            menuVoice="Settings"
+            route="/settings"
+            :icon="Cog6ToothIcon"
+            :iconSolid="Cog6ToothIconSolid"
+            @click="closeBottomSheet"
+          />
+        </div>
       </div>
     </nav>
 
@@ -217,17 +366,20 @@ onUnmounted(() => {
 </template>
 
 <style>
-/* Transizione slide in/out per la sidebar */
-.slide-enter-active, .slide-leave-active {
-  transition: transform 0.3s ease;
+/* Sidebar laterale */
+.slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
+.slide-enter-from, .slide-leave-to { transform: translateX(-100%); }
+
+/* Overlay e dissolvenze */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+/* Bottom Sheet che sale dal basso */
+.slide-up-enter-active, .slide-up-leave-active { 
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
 }
-.slide-enter-from, .slide-leave-to {
-  transform: translateX(-100%);
-}
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0.6;
+.slide-up-enter-from, .slide-up-leave-to { 
+  transform: translateY(100%); 
+  opacity: 0; 
 }
 </style>

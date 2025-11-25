@@ -38,7 +38,7 @@ const netSign = computed(() => {
         />
       </RouterLink>
       <RouterLink 
-        to="/income"
+        to="/cashflow/income"
         class="flex-1">
         <NumberCard 
           title="Entrate" 
@@ -51,7 +51,7 @@ const netSign = computed(() => {
         />
       </RouterLink>
       <RouterLink 
-        to="/expenses"
+        to="/cashflow/expenses"
         class="flex-1">
         <NumberCard 
           title="Uscite" 
