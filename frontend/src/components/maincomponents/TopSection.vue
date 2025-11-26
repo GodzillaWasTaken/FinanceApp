@@ -8,7 +8,7 @@ const settings = useSettingsStore();
 defineProps({
     title: String,
     showTimeFrameButton: Boolean,
-    showAddButton: Boolean
+    showAddButton: Boolean,
 })
 
 function updateTimeframe(newTimeframe, source) {
@@ -26,7 +26,7 @@ function updateTimeframe(newTimeframe, source) {
         <section class="bg-background md:min-h-[70px] min-h-24 flex items-center md:justify-between ">
             <div class="md:flex-row flex flex-col items-center w-full h-full px-4 justify-center gap-2.5 md:justify-between md:gap-0 ">
                 <!-- Titolo a sinistra -->
-                <h1 class=" text-2xl font-bold text-text">{{ title }}</h1>
+                <h1 class=" text-2xl font-bold text-text px-6 py-2">{{ title }}</h1>
 
                 <!-- Container a destra -->
                 <div class="flex space-x-4">

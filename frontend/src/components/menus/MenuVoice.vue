@@ -68,7 +68,6 @@ const isActive = computed(() => {
     v-else
     :as="voices.length > 0 ? 'div' : RouterLink"
     :to="voices.length === 0 ? props.route : null"
-    @click="handleClick"
     class=" flex flex-col items-center justify-center cursor-pointer relative"
   >
     <div class="flex relative mb-0.5">
