@@ -34,6 +34,10 @@ defineProps({
         type: Boolean,
         default: false
     },
+    listen: {
+        type: Object,
+        default: () => ({})
+    },
 
 })
 
@@ -74,6 +78,7 @@ const settings = useSettingsStore();
                 :is="mainComponent" 
                 class="flex-1" 
                 v-bind="{ ...mainProps, ...$attrs }" 
+                v-on="listen"
               />
               <div class="block bg-background md:hidden w-full h-45">&nbsp;</div>
                 

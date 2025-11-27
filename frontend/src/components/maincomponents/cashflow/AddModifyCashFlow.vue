@@ -1,5 +1,6 @@
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/vue/24/outline'
 import DatePicker from 'primevue/datepicker';
 import SelectDropdown from '../../formcomponents/SelectDropdown.vue'
@@ -9,7 +10,8 @@ const props = defineProps({
   conti: { type: Array, default: () => [] },
   currency: { type: String, default: '€' },
   currencyFormat: { type: String, default: 'it-IT' },
-  currencySymbol: { type: String, default: 'EUR'}
+  currencySymbol: { type: String, default: 'EUR'},
+  prefillMovement: { type: Object, default: null }
 })
 
 
@@ -23,6 +25,13 @@ const form = ref({
   title: ''
 
 })
+
+
+// Determine if we are adding a new movement or modifying an existing one, check based on prefillMovement prop
+const isNewMovement = computed(() => props.prefillMovement === null || props.prefillMovement.id === undefined);
+
+console.log('isNewMovement:', isNewMovement.value);
+console.log('prefillMovement:', props.prefillMovement);
 
 
 
@@ -165,10 +174,13 @@ watch(() => form.value.category, (val) => {
 })
 
 
-// Emits
+
+
+
+
+
+// Emit event on submission
 const emit = defineEmits(['submit'])
-
-
 
 function submitForm() {
   if (form.value.date) {
@@ -182,10 +194,21 @@ function submitForm() {
     }
   }
 
-  emit('submit', { ...form.value })
+  emit('submit', { 
+    ...form.value, 
+    type: isNewMovement.value ? 'add' : 'edit',
+  })
+ 
   form.value.amount = ''
   form.value.description = ''
+  form.value.id = undefined
 }
+
+
+
+
+
+
 
 const formattedDate = computed(() => {
   if (!form.value.date) return ''
@@ -195,6 +218,67 @@ const formattedDate = computed(() => {
   const dd = String(d.getDate()).padStart(2, '0')
   return `${yyyy}-${mm}-${dd}`
 })
+
+// prefill from prop (preferred) or route query if provided
+const route = useRoute()
+onMounted(() => {
+  // first try prop-based prefill
+  if (props.prefillMovement) {
+    const raw = props.prefillMovement
+    applyPrefill(raw)
+    return
+  }
+
+  // fallback to route query (legacy)
+  const payload = route.query?.data
+  if (!payload) return
+  try {
+    const raw = JSON.parse(decodeURIComponent(String(payload)))
+    applyPrefill(raw)
+  } catch (e) {
+    console.warn('Invalid prefill data for AddModifyCashFlow', e)
+  }
+})
+
+function applyPrefill(raw) {
+  // raw may have date as dd/mm/yyyy or yyyy-mm-dd
+  if (raw.date) {
+    const parts = String(raw.date).split(/[-\/]/)
+    if (parts.length === 3) {
+      // try dd/mm/yyyy or yyyy-mm-dd
+      if (parts[0].length === 4) {
+        // yyyy-mm-dd
+        form.value.date = new Date(raw.date)
+      } else {
+        // dd/mm/yyyy
+        const dd = parseInt(parts[0], 10)
+        const mm = parseInt(parts[1], 10) - 1
+        const yyyy = parseInt(parts[2], 10)
+        form.value.date = new Date(yyyy, mm, dd)
+      }
+    }
+  }
+  if (raw.amount !== undefined) {
+    form.value.amount = Number(raw.amount) || ''
+    displayValue.value = formatter.value.format(Number(raw.amount) || 0)
+  }
+  if (raw.title) form.value.title = raw.title
+  if (raw.description) form.value.description = raw.description
+  if (raw.category) {
+    // try to map category name to id in props.categorie
+    const found = (props.categorie || []).find(c => String(c.name) === String(raw.category) || String(c.id) === String(raw.category))
+    if (found) {
+      form.value.category = found.id
+      selectedCategoryName.value = found.name || ''
+    } else {
+      selectedCategoryName.value = raw.category
+    }
+  }
+  // If raw contains id, keep it for submission
+  if (raw.id) {
+    form.value.id = raw.id
+  }
+}
 
 // Add a normalized "today" (midnight) for comparisons and DatePicker max binding
 const today = new Date()

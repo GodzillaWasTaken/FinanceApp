@@ -10,7 +10,7 @@ const financials = useFinancialsStore();
 
 const expenses = [
   // GENNAIO
-  { date: "10/01/2025", amount: 20,  category: "Car" },
+  { id: 1, date: "10/01/2025", amount: 20,  category: "Car" },
   { date: "12/01/2025", amount: 60,  category: "Food" },
   { date: "22/01/2025", amount: 80,  category: "Shopping" },
 

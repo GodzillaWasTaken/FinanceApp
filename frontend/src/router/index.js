@@ -68,9 +68,13 @@ const routes = [
     path: '/addmodifytransaction',
     name: 'AddModifyTransaction',
     component: AddModifiyView,
+    props: () => ({
+      movement: history.state?.movement ?? null
+    }),
+
     meta: {
       authenticationRequired: true,
-    },
+    }
   },
   {
     path: '/:catchAll(.*)', 
