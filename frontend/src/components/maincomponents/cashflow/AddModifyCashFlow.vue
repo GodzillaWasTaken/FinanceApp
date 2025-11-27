@@ -30,10 +30,6 @@ const form = ref({
 // Determine if we are adding a new movement or modifying an existing one, check based on prefillMovement prop
 const isNewMovement = computed(() => props.prefillMovement === null || props.prefillMovement.id === undefined);
 
-console.log('isNewMovement:', isNewMovement.value);
-console.log('prefillMovement:', props.prefillMovement);
-
-
 
 const datepickerRef = ref(null)  // ref del DatePicker
 const showFutureWarning = ref(false) // new: briefly show UI warning when a future date is attempted

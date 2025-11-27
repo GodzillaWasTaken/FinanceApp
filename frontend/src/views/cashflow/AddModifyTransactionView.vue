@@ -14,14 +14,14 @@ const props = defineProps({
   }
 })
 
-console.log('AddModifyTransactionView movement prop:', props.movement);
+
 
 function handleSubmit(movementData) {
-    console.log('Submitted movement data:', movementData);
+ 
     if (movementData.type === 'add') {
-        console.log('Adding new movement');
+    
     } else if (movementData.type === 'edit') {
-       console.log('Editing existing movement');
+      
     }
 }
 </script>

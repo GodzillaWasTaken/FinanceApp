@@ -21,8 +21,6 @@ const props = defineProps({
   }
 })
 
-console.log('Detail.vue received serie prop:', props.serie);
-
 const emit = defineEmits(['delete-movement', 'load-more']);
 
 const router = useRouter();
@@ -49,7 +47,7 @@ function confirmDelete() {
 
 function onModify(mv) {
     // set the editing movement in the store and navigate to the add/modify view
-    console.log('Modifying movement:', mv);
+    ('Modifying movement:', mv);
     router.push({ name: 'AddModifyTransaction', state: { movement: mv } });
 }
 
