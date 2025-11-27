@@ -11,7 +11,11 @@ const props = defineProps({
     serie: {
         type: Array,
         default: () => []
-    }
+    }, 
+    categories: {
+    type: Object,
+    default: () => ({})
+  }
 })
 
 
@@ -21,8 +25,8 @@ const props = defineProps({
     <div class="flex flex-col h-full gap-4">
         <section class="flex-1 bg-background">
             <ChartSection
-                :leftChart="{ component: CumulativeLinear, props: { serie: serie } }"
-                :rightChart="{ component: StackedArea, props: { serie: serie } }"
+                :leftChart="{ component: CumulativeLinear, props: { serie: serie, categories: categories} }"
+                :rightChart="{ component: StackedArea, props: { serie: serie, categories: categories  } }"
                 height="h-full"
             />
         </section>

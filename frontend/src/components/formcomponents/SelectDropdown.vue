@@ -6,7 +6,7 @@ const props = defineProps({
   items: { type: Array, default: () => [] },
   modelValue: { type: [String, Number], default: '' },
   placeholder: { type: String, default: 'Select' },
-  itemLabel: { type: String, default: 'nome' },
+  itemLabel: { type: String, default: 'name' },
   showColor: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   searchEnabled: { type: Boolean, default: true },

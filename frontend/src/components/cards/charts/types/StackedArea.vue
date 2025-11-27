@@ -10,6 +10,10 @@ const props = defineProps({
   title: {
     type: String,
     default: 'Stacked Area Percentuale'
+  },
+  categories: {
+    type: Object,
+    default: () => ({})
   }
 })
 
@@ -47,7 +51,23 @@ const dynamicSeries = computed(() => {
       return total > 0 ? (v / total) * 100 : 0
     })
 
-    series.push({
+    // resolve color from props.categories (support array or object)
+    let color = undefined
+    if (props.categories) {
+      // array of category objects (e.g. { id, nome, color })
+      if (Array.isArray(props.categories)) {
+        const found = props.categories.find(c => c.nome === cat || c.name === cat || c.label === cat)
+        if (found && found.color) color = found.color
+      } else if (typeof props.categories === 'object') {
+        // object mapping name -> { color } or name -> color
+        if (props.categories[cat]) {
+          if (typeof props.categories[cat] === 'string') color = props.categories[cat]
+          else if (props.categories[cat].color) color = props.categories[cat].color
+        }
+      }
+    }
+    
+    const serieObj = {
       name: cat,
       type: 'line',
       stack: 'total',
@@ -55,7 +75,15 @@ const dynamicSeries = computed(() => {
       emphasis: { focus: 'series' },
       data: percValues,
       smooth: true
-    })
+    }
+
+    if (color) {
+      // apply color to line and area
+      serieObj.itemStyle = { color }
+      serieObj.areaStyle = { color }
+    }
+
+    series.push(serieObj)
   }
 
   return series

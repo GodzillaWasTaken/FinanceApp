@@ -140,28 +140,28 @@ const onBlur = () => {
 
 
 
-const selectedCategoryNome = ref('') // synced for hidden required input
+const selectedCategoryName = ref('') // synced for hidden required input
 
 // handlers for SelectDropdown events
 function onCategorySelect(cat) {
   // cat is the full item object
-  selectedCategoryNome.value = cat.nome || ''
+  selectedCategoryName.value = cat.name || ''
   form.value.category = cat.id
 }
 
 function onCategoryClear() {
-  selectedCategoryNome.value = ''
+  selectedCategoryName.value = ''
   form.value.category = ''
 }
 
-// keep selectedCategoryNome in sync if parent sets form.category directly
+// keep selectedCategoryName in sync if parent sets form.category directly
 watch(() => form.value.category, (val) => {
   if (!val) {
-    selectedCategoryNome.value = ''
+    selectedCategoryName.value = ''
     return
   }
   const found = (props.categorie || []).find(c => String(c.id) === String(val))
-  if (found) selectedCategoryNome.value = found.nome || ''
+  if (found) selectedCategoryName.value = found.name || ''
 })
 
 
@@ -228,7 +228,7 @@ watch(() => form.value.date, (newDate) => {
                       <!-- off-screen inputs used to enforce required validation for custom controls -->
                       <input type="text" :value="formattedDate" required aria-hidden="true"
                              style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"/>
-                      <input type="text" v-model="selectedCategoryNome" required aria-hidden="true"
+                      <input type="text" v-model="selectedCategoryName" required aria-hidden="true"
                              style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"/>
 
                     <div class="flex flex-col gap-1">
@@ -307,7 +307,7 @@ watch(() => form.value.date, (newDate) => {
                       <SelectDropdown
                         :items="props.categorie"
                         v-model="form.category"
-                        itemLabel="nome"
+                        itemLabel="name"
                         :showColor="true"
                         placeholder="Seleziona categoria"
                         @select="onCategorySelect"
@@ -321,7 +321,7 @@ watch(() => form.value.date, (newDate) => {
                       <SelectDropdown
                         :items="props.conti"
                         v-model="form.account"
-                        itemLabel="nome"
+                        itemLabel="name"
                         placeholder="Seleziona conto"
                         :showColor="true"
                         :required="true"

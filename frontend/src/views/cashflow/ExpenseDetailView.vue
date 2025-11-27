@@ -2,6 +2,12 @@
 import Detail from '../../components/maincomponents/cashflow/Detail.vue';
 import MainComponent from '../../components/maincomponents/MainComponent.vue';
 
+
+//api mocks
+import { useFinancialsStore } from '../../stores/financials';
+
+const financials = useFinancialsStore();
+
 const expenses = [
   // GENNAIO
   { date: "10/01/2025", amount: 20,  category: "Car" },
@@ -69,7 +75,7 @@ const expenses = [
 <template>
   <MainComponent
   :mainComponent="Detail"
-  :mainProps="{ desc: 'Dettagli Spese', serie: expenses }"
+  :mainProps="{ desc: 'Dettagli Spese', serie: expenses, categories: financials.cashFlowCategories }"
   :showTopSection=true
   topSectionTitle="Dettagli Spese"
   :showAddButton=true
