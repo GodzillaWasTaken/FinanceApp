@@ -1,10 +1,10 @@
 <script setup>
-import Detail from '../../components/maincomponents/cashflow/Detail.vue';
-import MainComponent from '../../components/maincomponents/MainComponent.vue';
+import Detail from '@/components/maincomponents/cashflow/detail/Detail.vue';
+import MainComponent from '@/components/maincomponents/MainComponent.vue';
 
 
 //api mocks
-import { useFinancialsStore } from '../../stores/financials';
+import { useFinancialsStore } from '@/stores/financials';
 
 const financials = useFinancialsStore();
 

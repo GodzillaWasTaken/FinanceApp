@@ -11,7 +11,7 @@ export const useFinancialsStore = defineStore('financials', () => {
     { id: 5, name: 'Shopping', type: "expense", user: 1, color: '#8b5cf6' },// purple
     { id: 6, name: 'Travel', type: "expense", user: 1, color: '#06b6d4' },  // teal
     { id: 7, name: 'Entertainment', type: "expense", user: 1, color: '#db2777' }, // pink
-    { id: 7, name: 'Gifts', type: "expense", user: 1, color: '#16a34a' },
+    { id: 8, name: 'Gifts', type: "expense", user: 1, color: '#16a34a' },
   ]);
 
 
