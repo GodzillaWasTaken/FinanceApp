@@ -22,45 +22,45 @@ const netSign = computed(() => {
 </script>
 
 <template>
-  <div class="bg-background flex flex-col lg:flex-row gap-4 ">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
       <RouterLink 
         to="/notfound"
-        class="flex-1">
+        class="group">
         <NumberCard 
           title="Netto" 
           :value="net"
-          color="bg-white"
+          color="bg-card-background"
           :icon="BanknotesIcon"
           :sign="netSign"
           iconColor="text-nett"
-          class="flex-1 items-center p-4"
-          iconBackground="bg-nett/20"
+          class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
+          iconBackground="bg-nett/10"
         />
       </RouterLink>
       <RouterLink 
         to="/cashflow/income"
-        class="flex-1">
+        class="group">
         <NumberCard 
           title="Entrate" 
           :value="income" 
-          color="bg-white"
+          color="bg-card-background"
           :icon="ArrowRightEndOnRectangleIcon"
           iconColor="text-success"
-          class="flex-1 items-center p-4"
-          iconBackground="bg-success/20"
+          class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
+          iconBackground="bg-success/10"
         />
       </RouterLink>
       <RouterLink 
         to="/cashflow/expenses"
-        class="flex-1">
+        class="group">
         <NumberCard 
           title="Uscite" 
           :value="expense"  
-          color="bg-white"
+          color="bg-card-background"
           :icon="ArrowRightStartOnRectangleIcon"
           iconColor="text-negative"
-          class="flex-1 items-center p-4"
-          iconBackground="bg-negative/20"
+          class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
+          iconBackground="bg-negative/10"
         />
       </RouterLink>
     </div>

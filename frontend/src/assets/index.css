@@ -2,18 +2,79 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #FF9800;    /* giallo sole */ 
-  --color-primary-light: #FF980099;     /*#FF5A5FB3 rosa corallo */
-  --color-primary-hover: #F6C33F; 
-  --color-accent: #C1839F;
-  --color-accent-clear: rgba(193, 131, 159, 0.3); /* #C1839F4D  lilla pastello */
-  --color-accent-hover: #A16D8A;
-  --color-text: #3C3C3C;             /* grigio scuro per testo */
-  --color-background: #F2F3F7;       /* bianco sporco chiaro leggermente azzurrino */
-  --color-success: #41B646;
-  --color-negative: #D6455D;
-  --color-nett: #3A6C8A;
-  --color-card-background: #FFFFFF;   /* bianco puro per sfondi delle card */
-  --color-neutral: #B0B0B0;    
-  --color-menuborder :#DCE4EF;   
+  --color-primary: #6366f1;
+  /* Indigo 500 */
+  --color-primary-light: #818cf8;
+  /* Indigo 400 */
+  --color-primary-hover: #4f46e5;
+  /* Indigo 600 */
+
+  --color-accent: #8b5cf6;
+  /* Violet 500 */
+  --color-accent-clear: rgba(139, 92, 246, 0.1);
+  --color-accent-hover: #7c3aed;
+  /* Violet 600 */
+
+  --color-text: #1f2937;
+  /* Gray 800 */
+  --color-text-light: #6b7280;
+  /* Gray 500 */
+
+  --color-background: #f9fafb;
+  /* Gray 50 */
+  --color-card-background: #ffffff;
+
+  --color-success: #10b981;
+  /* Emerald 500 */
+  --color-negative: #ef4444;
+  /* Red 500 */
+  --color-nett: #3b82f6;
+  /* Blue 500 */
+
+  --color-neutral: #9ca3af;
+  /* Gray 400 */
+  --color-menuborder: #e5e7eb;
+  /* Gray 200 */
+}
+
+
+/* --- Custom Scrollbar Style --- */
+
+/* Style for Firefox (Standard) */
+.custom-scrollbar {
+  /* Makes the scrollbar thinner */
+  scrollbar-width: thin;
+  /* Sets the color of the thumb and the track using theme variables */
+  /* THUMB (neutral) on TRACK (background) */
+  scrollbar-color: var(--color-neutral) var(--color-background);
+}
+
+/* Style for Chrome, Safari, Edge, Opera (Webkit) */
+
+/* General definition of the scrollbar area */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 18px;
+  /* Width for the vertical scrollbar */
+  height: 8px;
+  /* Height for the horizontal scrollbar */
+}
+
+/* Style for the track (the background groove) */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: #153f91 !important;
+  /* Uses the theme background color to match the container's background */
+  border-radius: 10px;
+}
+
+/* Style for the thumb (the draggable element) */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #153f91 !important;
+  /* Uses the theme neutral color for the thumb */
+  border-radius: 10px;
+}
+
+/* Style for the thumb on mouse hover */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  /* Uses a slightly darker grey for hover interaction */
+  background: #909090;
 }

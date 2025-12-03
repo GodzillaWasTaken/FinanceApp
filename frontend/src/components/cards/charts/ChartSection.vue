@@ -11,14 +11,14 @@ const props = defineProps({
 </script>
 
 <template>
-    <div :class="['flex flex-col md:flex-row gap-4', height]">
-        <div class="flex-1 min-w-0 max-w-full h-full">
+    <div :class="['grid grid-cols-1 lg:grid-cols-2 gap-6', height]">
+        <div class="w-full h-full min-h-80">
             <ChartCard
                 :chart="leftChart.component"
                 :chartProps="leftChart.props || {}"
             />
         </div>
-        <div class="flex-1 min-w-0 max-w-full h-full">
+        <div class="w-full h-full min-h-80">
             <ChartCard
                 :chart="rightChart.component"
                 :chartProps="rightChart.props || {}"
