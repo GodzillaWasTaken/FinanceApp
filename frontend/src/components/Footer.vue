@@ -6,7 +6,7 @@ const appVersion = ref('0.0.0');
 </script>
 
 <template>
-  <footer class="bg-menuborder text-gray-600 text-center">
+  <footer class="text-gray-600 text-center">
     <p class="text-sm mb-2 mt-2 inline-block">
         @FinanceApp - {{ authorName }} - v {{ appVersion }}
     </p>

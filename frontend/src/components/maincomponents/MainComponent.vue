@@ -46,7 +46,17 @@ const settings = useSettingsStore();
 </script>
 
 <template>
-  <div class="flex h-screen bg-background text-text">
+  <div class="flex h-screen text-text relative overflow-hidden">
+      
+      <!-- Background Color Layer -->
+      <div class="absolute inset-0 bg-background z-[-20]"></div>
+
+      <!-- Global Background Elements (Root Level) -->
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-10]">
+          <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-3xl"></div>
+      </div>
+
       <div class="flex z-50">
         <Menu />
       </div>
@@ -60,7 +70,7 @@ const settings = useSettingsStore();
             
           <section 
             v-if="showTopSection" 
-            class="sticky top-0 z-40 bg-background/95 backdrop-blur-sm"
+            class="sticky top-0 z-40 backdrop-blur-sm"
           >
             <TopSection
               :title="topSectionTitle"

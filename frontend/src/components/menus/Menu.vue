@@ -109,7 +109,7 @@ onUnmounted(() => {
     
     <aside 
       v-if="defaultMenuOpen" 
-      class="hidden md:flex md:flex-col md:w-30 flex-1 bg-menuborder text-gray-800 text-center items-center overflow-hidden relative"
+      class="hidden md:flex md:flex-col md:w-30 flex-1 text-gray-800 text-center items-center overflow-hidden relative"
     >
       <nav class="flex-1 w-full relative">
         
@@ -159,7 +159,7 @@ onUnmounted(() => {
         </div>
 
         <div 
-          class="absolute inset-0 flex flex-col w-full bg-menuborder transition-transform duration-300 ease-in-out pt-10"
+          class="absolute inset-0 flex flex-col w-full transition-transform duration-300 ease-in-out pt-10"
           :class="isSubMenuVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'"
         >
             <div class="mb-6 px-4">
@@ -211,7 +211,7 @@ onUnmounted(() => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-72 md:w-44 bg-menuborder text-gray-800 p-4 z-40 flex flex-col overflow-hidden"
+        class="fixed inset-y-0 left-0 w-72 md:w-44 text-gray-800 p-4 z-40 flex flex-col overflow-hidden"
       >
         <button 
           @click="toggleMenu" 
@@ -260,7 +260,7 @@ onUnmounted(() => {
            </div>
 
            <div 
-             class="absolute inset-0 w-full transition-transform duration-300 bg-menuborder"
+             class="absolute inset-0 w-full transition-transform duration-300"
              :class="isSubMenuVisible ? 'translate-x-0' : 'translate-x-full'"
            >
               <button @click="closeSubMenu" class="flex items-center text-gray-500 mb-6">
@@ -316,7 +316,7 @@ onUnmounted(() => {
 
 
     <nav 
-      class="fixed bottom-4 left-4 right-4 bg-menuborder text-gray-800 
+      class="fixed bottom-4 left-4 right-4 bg-white text-gray-800 
             flex justify-between items-center py-2 md:hidden z-50 shadow-lg
             rounded-xl border border-gray-100 px-2"
     >

@@ -16,7 +16,7 @@ const props = defineProps({
 <template>
   <div class="flex flex-col h-full gap-10">
     <!-- main -->
-    <section class="flex bg-background 2xl:min-h-60 justify-center items-center">
+    <section class="flex 2xl:min-h-60 justify-center items-center">
       <CashFlowMainData 
         :income="props.financeData.monthlyIncome"
         :expense="props.financeData.monthlyExpense"
@@ -24,7 +24,7 @@ const props = defineProps({
     </section>
 
     <!-- graphs -->
-    <section class="flex-1 h-full bg-background 2xl:pb-20">
+    <section class="flex-1 h-full 2xl:pb-20">
       <ChartSection
         :leftChart="{ component: MonthlyNetChart, props: { income: props.financeData.income, spending: props.financeData.spending } }"
         :rightChart="{ component: CumulativeExpInc, props: { income: props.financeData.income, spending: props.financeData.spending } }"

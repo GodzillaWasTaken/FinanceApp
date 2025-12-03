@@ -67,7 +67,7 @@ function formatAmount(v) {
 
 <template>
     <div class="flex flex-col h-full gap-4">
-        <section class="bg-background">
+        <section>
             <ChartSection
                 :leftChart="{ component: CumulativeLinear, props: { serie: serie, categories: categories} }"
                 :rightChart="{ component: StackedArea, props: { serie: serie, categories: categories  } }"
