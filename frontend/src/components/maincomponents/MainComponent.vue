@@ -100,22 +100,21 @@ function close() {
             </transition>
             
           <section 
-            class="flex-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-10 mb-25 md:mb-0 overflow-y-auto custom-scrollbar"
+            class="flex-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-10 md:mb-0 overflow-y-auto custom-scrollbar z-40"
           >
-            <div class="w-full h-full max-w-8xl mx-auto">
+            <div class="w-full md:h-full max-w-8xl mx-auto pb-15 md:pb-0">
               <component 
-                :is="mainComponent" 
-                class="flex-1" 
+                :is="mainComponent"
                 v-bind="{ ...mainProps, ...$attrs }" 
                 v-on="listen"
               />
-              <div class="block md:hidden w-full h-24">&nbsp;</div>
             </div>
-           
-          </section>
 
+          </section>
+          
         </div>
-        
+         
+           
         <Footer class="hidden md:block py-4 px-8 text-sm text-text-light"/>
         
       </div>
