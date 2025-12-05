@@ -23,6 +23,10 @@ const props = defineProps({
     type: String,
     default: "bg-indigo-50"
   },
+  iconContainerClass: {
+    type: String,
+    default: ""
+  },
   sign: String,
 })
 
@@ -88,7 +92,8 @@ const formattedCurrency = computed(() => {
         :class="[
           'flex items-center justify-center w-12 h-12 rounded-xl shadow-inner transition-colors ml-5', 
           iconBackground, 
-          iconColor
+          iconColor,
+          iconContainerClass
         ]"
       >
         <component :is="icon" class="h-6 w-6" />

@@ -35,6 +35,7 @@ const netSign = computed(() => {
           iconColor="text-nett"
           class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
           iconBackground="bg-nett/10"
+          iconContainerClass="hide-icon-custom"
         />
       </RouterLink>
       <RouterLink 
@@ -48,6 +49,7 @@ const netSign = computed(() => {
           iconColor="text-success"
           class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
           iconBackground="bg-success/10"
+          iconContainerClass="hide-icon-custom"
         />
       </RouterLink>
       <RouterLink 
@@ -61,7 +63,16 @@ const netSign = computed(() => {
           iconColor="text-negative"
           class="h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1"
           iconBackground="bg-negative/10"
+          iconContainerClass="hide-icon-custom"
         />
       </RouterLink>
     </div>
 </template>
+
+<style scoped>
+@media (min-width: 769px) and (max-width: 920px) {
+  :deep(.hide-icon-custom) {
+    display: none !important;
+  }
+}
+</style>

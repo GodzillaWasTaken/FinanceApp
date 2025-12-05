@@ -39,17 +39,15 @@ onUnmounted(() => {
   window.removeEventListener('resize', handleResize)
 })
 
+const emit = defineEmits(['timeFrameUpdate', 'buttonToggled'])
+
 function toggle() {
   isOpen.value = !isOpen.value
-}
-function close() {
-  isOpen.value = false
+  emit('buttonToggled', isOpen.value)
 }
 
 
 
-
-const emit = defineEmits(['timeFrameUpdate'])
 
 function timeFrameUpdated(timeFrame, source) {
   emit('timeFrameUpdate', timeFrame, source)
@@ -61,7 +59,7 @@ function timeFrameUpdated(timeFrame, source) {
   }
 
   buttonDesc.value = timeFrame.toString()
-  close()
+  toggle()
 }
 
 
@@ -69,10 +67,10 @@ function timeFrameUpdated(timeFrame, source) {
 // doc handlers gestiti dinamicamente
 const docClickHandler = (e) => {
   if (!root.value) return
-  if (!root.value.contains(e.target)) close()
+  if (!root.value.contains(e.target)) toggle()
 }
 const keydownHandler = (e) => {
-  if (e.key === 'Escape') close()
+  if (e.key === 'Escape') toggle()
 }
 function addDocListeners() {
   document.addEventListener('click', docClickHandler)
@@ -133,14 +131,7 @@ onBeforeUnmount(() => {
       {{buttonDesc}}
     </PrimaryButton>
 
-    <!-- opacità -->
-    <transition name="fade">
-          <div
-            v-if="isOpen"
-            @click="close"
-            class="fixed inset-0 bg-black/40 z-30"
-          ></div>
-    </transition>
+
 
     <!-- Popover desktop-->
     <transition
@@ -182,7 +173,7 @@ onBeforeUnmount(() => {
             {{button.label}}
           </button>
           <button
-            @click="close" 
+            @click="toggle" 
             class="text-center text-sm text-text/50 cursor-pointer hover:underline"
           >
               Chiudi
@@ -227,7 +218,7 @@ onBeforeUnmount(() => {
             {{button.label}}
           </button>
           <button
-            @click="close" 
+            @click="toggle" 
             class="text-center text-sm text-text/50 cursor-pointer hover:underline"
           >
               Chiudi
@@ -237,12 +228,3 @@ onBeforeUnmount(() => {
     </transition>
   </div>
 </template>
-
-<style scoped>
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.25s ease;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0.5;
-}
-</style>

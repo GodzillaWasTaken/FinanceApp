@@ -3,6 +3,7 @@ import Footer from '../../components/Footer.vue';
 import Menu from '../../components/menus/Menu.vue';
 import TopSection from './TopSection.vue';
 import { useSettingsStore } from '../../stores/settings';
+import { ref } from 'vue';
 
 // Disabilita l'ereditarietà degli attributi per evitare che gli eventi/attributi
 // siano applicati al div radice di MainComponent
@@ -43,6 +44,16 @@ defineProps({
 
 const settings = useSettingsStore();
 
+const isTimeFrameButtonActive = ref(false)
+
+function timeFrameButtonToggled(isOpen) {
+    isTimeFrameButtonActive.value = isOpen 
+}
+
+function close() {
+    isTimeFrameButtonActive.value = false
+}
+
 </script>
 
 <template>
@@ -52,9 +63,7 @@ const settings = useSettingsStore();
       <div class="absolute inset-0 bg-background z-[-20]"></div>
 
       <!-- Global Background Elements (Root Level) -->
-      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-10]">
-          <div class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-primary/10 rounded-full blur-3xl"></div>
-          <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-accent/10 rounded-full blur-3xl"></div>
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-10] bg-gradient-to-br from-blue-50 via-slate-50 to-slate-100">
       </div>
 
       <div class="flex z-50">
@@ -76,9 +85,19 @@ const settings = useSettingsStore();
               :title="topSectionTitle"
               :show-time-frame-button="showTimeButton"
               :show-add-button="showAddButton"
+              @timeFrameButtonToggled="(isOpen) => timeFrameButtonToggled(isOpen)"
               class="px-8 py-6"
             />
           </section>
+
+              <!-- opacty when selecting time frame-->
+            <transition name="fade">
+                  <div
+                    v-if="isTimeFrameButtonActive"
+                    @click="close"
+                    class="fixed inset-0 bg-black/40 z-30"
+                  ></div>
+            </transition>
             
           <section 
             class="flex-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-10 mb-25 md:mb-0 overflow-y-auto custom-scrollbar"
@@ -102,3 +121,13 @@ const settings = useSettingsStore();
       </div>
 </div>
 </template>
+
+
+<style scoped>
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0.5;
+}
+</style>

@@ -11,6 +11,12 @@ defineProps({
     showAddButton: Boolean,
 })
 
+const emit = defineEmits(['timeFrameButtonToggled'])
+
+function timeFrameButtonToggled(isOpen) {
+    emit('timeFrameButtonToggled', isOpen)
+}
+
 function updateTimeframe(newTimeframe, source) {
 
     if (source === 'monthYear') {
@@ -41,6 +47,7 @@ function updateTimeframe(newTimeframe, source) {
                         >
                         <TimeFrameButton 
                             @timeFrameUpdate="(timeFrame, source) => updateTimeframe(timeFrame, source)"
+                            @buttonToggled = "(isOpen) => timeFrameButtonToggled(isOpen)"
                             :dataPeriod="settings.dataPeriod.toString()"
                             />
                     </div>

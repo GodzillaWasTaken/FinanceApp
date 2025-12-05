@@ -287,6 +287,8 @@ onUnmounted(() => {
 
 
     <!-- mobile -->
+
+    <!-- submenu mobile -->
     <transition name="slide-up">
       <div 
         v-if="isMobileBottomSheetOpen"
@@ -299,7 +301,6 @@ onUnmounted(() => {
             </button>
          </div>
          
-         <!-- sub menu -->
          <div class="grid grid-cols-2 gap-4">
             <div v-for="subItem in activeMobileBottomMenu?.voices" :key="subItem.name" class="flex flex-col items-center">
                <MenuVoice
@@ -315,6 +316,7 @@ onUnmounted(() => {
     </transition>
 
 
+    <!-- bottom nav mobile -->
     <nav 
       class="fixed bottom-4 left-4 right-4 bg-white text-gray-800 
             flex justify-between items-center py-2 md:hidden z-50 shadow-lg
