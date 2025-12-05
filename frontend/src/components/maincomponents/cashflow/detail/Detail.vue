@@ -75,8 +75,8 @@ function formatAmount(v) {
             />
         </section>
 
-        <section class="flex-1 bg-background">
-                <div class = "flex flex-col bg-white rounded-[10px] min-h-40 p-4 gap-4">
+        <section class="flex-1 bg-background md:pb-10">
+                <div class = "flex flex-col bg-white rounded-[10px] min-h-40 p-4 gap-4 shadow-sm">
                         <div class="flex items-center justify-between">
                             <h1 class="text-2xl font-semibold">{{ desc }}</h1>
                         </div>
