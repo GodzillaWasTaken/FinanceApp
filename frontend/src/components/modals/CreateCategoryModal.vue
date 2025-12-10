@@ -15,7 +15,7 @@ const emit = defineEmits(['close', 'created'])
 const form = ref({
   name: '',
   type: 'expense',
-  color: '#000000'
+  color: '#1FBC9C'
 })
 
 const loading = ref(false)
@@ -113,7 +113,7 @@ function close() {
                 <v-swatches
                 v-model="form.color"
                 :inline="isMobile"
-                class="flex p-2 justify-center items-center"
+                class="flex py-2 justify-center items-center"
               />
             </div>
           </div>
