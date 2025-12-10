@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import BaseButton from '@/components/buttons/BaseButton.vue'
+import SelectDropdown from '@/components/formcomponents/SelectDropdown.vue'
 
 const props = defineProps({
   isOpen: {
@@ -92,10 +93,17 @@ function close() {
           <!-- Type -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-            <select v-model="form.type" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light">
-              <option value="income">Entrata</option>
-              <option value="expense">Uscita</option>
-            </select>
+            <SelectDropdown
+              v-model="form.type"
+              :items="[
+                { id: 'income', name: 'Entrata' },
+                { id: 'expense', name: 'Uscita' }
+              ]"
+              placeholder="Seleziona tipo"
+              :search-enabled="false"
+              :clearable="false"
+              class="w-full"
+            />
           </div>
 
           <!-- Color -->

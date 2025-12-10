@@ -1,7 +1,7 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { ChevronDownIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/outline'
-import CreateCategoryModal from '@/components/modals/CreateCategoryModal.vue'
+const CreateCategoryModal = defineAsyncComponent(() => import('@/components/modals/CreateCategoryModal.vue'))
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
