@@ -393,6 +393,8 @@ watch(() => form.value.date, (newDate) => {
                         @select="onCategorySelect"
                         @clear="onCategoryClear"
                         :required="true"
+                        :allowCreateCategory="true"
+                        @item-created="(c) => emit('newCategoryCreated', c)"
                       />
                     </div>
 

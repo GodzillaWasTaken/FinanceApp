@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { ChevronDownIcon, CheckIcon } from '@heroicons/vue/24/outline'
+import { ChevronDownIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/outline'
+import CreateCategoryModal from '@/components/modals/CreateCategoryModal.vue'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -10,14 +11,18 @@ const props = defineProps({
   showColor: { type: Boolean, default: false },
   clearable: { type: Boolean, default: true },
   searchEnabled: { type: Boolean, default: true },
-  required: { type: Boolean, default: false }
+  required: { type: Boolean, default: false },
+
+  allowCreateCategory: { type: Boolean, default: false }
 })
 
-const emit = defineEmits(['update:modelValue', 'select', 'clear'])
+const emit = defineEmits(['update:modelValue', 'select', 'clear', 'item-created'])
 
 const open = ref(false)
 const search = ref('')
+
 const containerRef = ref(null)
+const showCreateModal = ref(false)
 
 const filtered = computed(() => {
   if (!props.searchEnabled || !search.value) return props.items || []
@@ -104,8 +109,27 @@ onUnmounted(() => {
             <span v-if="selectedItem && selectedItem.id === item.id" class="text-primary"><CheckIcon class="h-4 w-4" /></span>
           </li>
         </ul>
+
+        <div v-if="props.allowCreateCategory" class="group p-2 border-t border-gray-100 flex items-center justify-center">
+          <div class="flex items-center justify-center gap-2  text-sm text-text">
+            <button type="button" @click="showCreateModal = true" class=" cursor-pointer flex items-center gap-2 justify-center transition-colors hover:bg-primary/10 rounded-lg px-3 py-2">
+                <PlusIcon class="h-4 w-4" />
+                <span>Crea nuova categoria</span>
+            </button>
+          </div>
+        </div>
       </div>
     </transition>
+    
+    <CreateCategoryModal 
+      :is-open="showCreateModal" 
+      @close="showCreateModal = false"
+      @created="(newItem) => { 
+        emit('item-created', newItem); 
+        choose(newItem); 
+        showCreateModal = false; 
+      }" 
+    />
   </div>
 </template>
 

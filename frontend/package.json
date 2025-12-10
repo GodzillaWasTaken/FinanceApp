@@ -19,7 +19,8 @@
     "tailwindcss": "^4.1.13",
     "vue": "^3.5.17",
     "vue-echarts": "^8.0.0",
-    "vue-router": "^4.5.1"
+    "vue-router": "^4.5.1",
+    "vue3-swatches": "^1.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.13",

@@ -24,6 +24,10 @@ function handleSubmit(movementData) {
       
     }
 }
+
+function handleNewCategoryCreated(category) {
+  //update new cathegory created, handle both refresh on the ui and the backend uodate using api
+}
 </script>
 
 <template>
@@ -42,5 +46,6 @@ function handleSubmit(movementData) {
   :listen="{
     submit: handleSubmit
   }"
+  @newCategoryCreated="handleNewCategoryCreated"
   />
 </template>
