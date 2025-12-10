@@ -15,12 +15,12 @@ const props = defineProps({
 })
 
 
-// Stato form
+
 const form = ref({
   date: new Date(),
   amount: '',
-  category: '', // Il valore sarà l'ID
-  account: '', // Il valore sarà l'ID
+  category: '', //id will be the value
+  account: '', //id will be the value
   description: '',
   title: ''
 
@@ -296,8 +296,8 @@ watch(() => form.value.date, (newDate) => {
 </script>
 
 <template>
-        <section class="flex-1 h-full justify-center overflow-auto bg-background">
-            <div class = "flex flex-col p-4 gap-4 bg-white mt-10 mb-20 md:mb-6 rounded-[10px] min-h-40">
+        <section class="flex-1 h-full justify-center overflow-auto">
+            <div class = "flex flex-col p-4 gap-4 bg-white mt-10 mb-20 md:mb-6 rounded-[10px] min-h-40 shadow-sm">
                     <div class="flex items-center gap-2">
                         <PlusCircleIcon class="h-6 w-6 text-primary" />
                         <h2 class="text-xl font-bold text-text">Aggiungi Movimento</h2>
