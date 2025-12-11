@@ -26,9 +26,91 @@ const form = ref({
 
 })
 
+const resetForm = () => {
+  form.value = {
+    date: new Date(),
+    amount: '',
+    category: '', 
+    account: '', 
+    description: '',
+    title: ''
+  }
+
+  displayValue.value = ''
+}
+
 
 // Determine if we are adding a new movement or modifying an existing one, check based on prefillMovement prop
 const isNewMovement = computed(() => props.prefillMovement === null || props.prefillMovement.id === undefined);
+
+
+// prefill from prop (preferred) or route query if provided
+const route = useRoute()
+onMounted(() => {
+  //control on whether we are adding a new movement or modifying an existing one
+  if (route.query.new === '1') {
+    return
+  }
+
+  // first try prop-based prefill
+  if (props.prefillMovement) {
+    const raw = props.prefillMovement
+    applyPrefill(raw)
+    return
+  }
+
+  // fallback to route query (legacy)
+  const payload = route.query?.data
+  if (!payload) return
+  try {
+    const raw = JSON.parse(decodeURIComponent(String(payload)))
+    applyPrefill(raw)
+  } catch (e) {
+    console.warn('Invalid prefill data for AddModifyCashFlow', e)
+  }
+})
+
+function applyPrefill(raw) {
+  // raw may have date as dd/mm/yyyy or yyyy-mm-dd
+  if (raw.date) {
+    const parts = String(raw.date).split(/[-\/]/)
+    if (parts.length === 3) {
+      // try dd/mm/yyyy or yyyy-mm-dd
+      if (parts[0].length === 4) {
+        // yyyy-mm-dd
+        form.value.date = new Date(raw.date)
+      } else {
+        // dd/mm/yyyy
+        const dd = parseInt(parts[0], 10)
+        const mm = parseInt(parts[1], 10) - 1
+        const yyyy = parseInt(parts[2], 10)
+        form.value.date = new Date(yyyy, mm, dd)
+      }
+    }
+  }
+  if (raw.amount !== undefined) {
+    form.value.amount = Number(raw.amount) || ''
+    displayValue.value = formatter.value.format(Number(raw.amount) || 0)
+  }
+  if (raw.title) form.value.title = raw.title
+  if (raw.description) form.value.description = raw.description
+  if (raw.category) {
+    // try to map category name to id in props.categorie
+    const found = (props.categorie || []).find(c => String(c.name) === String(raw.category) || String(c.id) === String(raw.category))
+    if (found) {
+      form.value.category = found.id
+      selectedCategoryName.value = found.name || ''
+    } else {
+      selectedCategoryName.value = raw.category
+    }
+  }
+  // If raw contains id, keep it for submission
+  if (raw.id) {
+    form.value.id = raw.id
+  }
+}
+
+
 
 
 const datepickerRef = ref(null)  // ref del DatePicker
@@ -159,18 +241,6 @@ function onCategoryClear() {
   form.value.category = ''
 }
 
-// keep selectedCategoryName in sync if parent sets form.category directly
-watch(() => form.value.category, (val) => {
-  if (!val) {
-    selectedCategoryName.value = ''
-    return
-  }
-  const found = (props.categorie || []).find(c => String(c.id) === String(val))
-  if (found) selectedCategoryName.value = found.name || ''
-})
-
-
-
 
 
 
@@ -215,70 +285,12 @@ const formattedDate = computed(() => {
   return `${yyyy}-${mm}-${dd}`
 })
 
-// prefill from prop (preferred) or route query if provided
-const route = useRoute()
-onMounted(() => {
-  // first try prop-based prefill
-  if (props.prefillMovement) {
-    const raw = props.prefillMovement
-    applyPrefill(raw)
-    return
-  }
-
-  // fallback to route query (legacy)
-  const payload = route.query?.data
-  if (!payload) return
-  try {
-    const raw = JSON.parse(decodeURIComponent(String(payload)))
-    applyPrefill(raw)
-  } catch (e) {
-    console.warn('Invalid prefill data for AddModifyCashFlow', e)
-  }
-})
-
-function applyPrefill(raw) {
-  // raw may have date as dd/mm/yyyy or yyyy-mm-dd
-  if (raw.date) {
-    const parts = String(raw.date).split(/[-\/]/)
-    if (parts.length === 3) {
-      // try dd/mm/yyyy or yyyy-mm-dd
-      if (parts[0].length === 4) {
-        // yyyy-mm-dd
-        form.value.date = new Date(raw.date)
-      } else {
-        // dd/mm/yyyy
-        const dd = parseInt(parts[0], 10)
-        const mm = parseInt(parts[1], 10) - 1
-        const yyyy = parseInt(parts[2], 10)
-        form.value.date = new Date(yyyy, mm, dd)
-      }
-    }
-  }
-  if (raw.amount !== undefined) {
-    form.value.amount = Number(raw.amount) || ''
-    displayValue.value = formatter.value.format(Number(raw.amount) || 0)
-  }
-  if (raw.title) form.value.title = raw.title
-  if (raw.description) form.value.description = raw.description
-  if (raw.category) {
-    // try to map category name to id in props.categorie
-    const found = (props.categorie || []).find(c => String(c.name) === String(raw.category) || String(c.id) === String(raw.category))
-    if (found) {
-      form.value.category = found.id
-      selectedCategoryName.value = found.name || ''
-    } else {
-      selectedCategoryName.value = raw.category
-    }
-  }
-  // If raw contains id, keep it for submission
-  if (raw.id) {
-    form.value.id = raw.id
-  }
-}
 
 // Add a normalized "today" (midnight) for comparisons and DatePicker max binding
 const today = new Date()
 today.setHours(0,0,0,0)
+
+
 
 // Watch and clamp form.date if user picks or types a future date
 watch(() => form.value.date, (newDate) => {
@@ -292,6 +304,30 @@ watch(() => form.value.date, (newDate) => {
     setTimeout(() => (showFutureWarning.value = false), 3000)
   }
 })
+
+// keep selectedCategoryName in sync if parent sets form.category directly
+watch(() => form.value.category, (val) => {
+  if (!val) {
+    selectedCategoryName.value = ''
+    return
+  }
+  const found = (props.categorie || []).find(c => String(c.id) === String(val))
+  if (found) selectedCategoryName.value = found.name || ''
+})
+
+
+//reset form when route changes with new=1 query param
+watch(
+  () => route.fullPath,
+  (newVal, oldVal) => {
+    const wasNew = oldVal.includes("?new=1")
+    const isNew = newVal.includes("?new=1")
+
+    if (!wasNew && isNew) {
+      resetForm()
+    }
+  }
+)
 
 </script>
 

@@ -335,7 +335,8 @@ onUnmounted(() => {
         </div>
       </div>
 
-      <RouterLink to="/addmodifytransaction" 
+      <RouterLink 
+        :to="{ path: '/addmodifytransaction', query: { new: '1' } }"
         class="flex-shrink-0 w-14 h-14 -mt-8 flex items-center justify-center rounded-full bg-primary text-white shadow-xl  z-50"
       >
         <PlusIcon class="w-8 h-8" />

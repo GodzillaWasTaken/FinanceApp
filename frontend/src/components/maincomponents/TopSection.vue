@@ -38,7 +38,7 @@ function updateTimeframe(newTimeframe, source) {
                 <div class="flex space-x-4">
                     <AddButton
                         v-if="showAddButton"
-                        to="/addmodifytransaction"
+                        :to="{ path: '/addmodifytransaction', query: { new: '1' } }"
                         class="hidden md:block"
                         />
                     <div

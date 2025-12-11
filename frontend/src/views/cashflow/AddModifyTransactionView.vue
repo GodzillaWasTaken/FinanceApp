@@ -41,7 +41,8 @@ function handleNewCategoryCreated(category) {
     currencyFormat: settings.currencyFormat || 'it-IT',
     currencySymbol: financials.currencySymbol || 'EUR'
   }"
-  :showTopSection="true"
+  :showTopSection=true
+  :showAddButton= true
   topSectionTitle="Aggiungi/Modifica Movimento"
   :listen="{
     submit: handleSubmit
