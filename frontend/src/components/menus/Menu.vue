@@ -317,54 +317,60 @@ onUnmounted(() => {
 
 
     <!-- bottom nav mobile -->
-    <nav 
-      class="fixed bottom-4 left-4 right-4 bg-white text-gray-800 
-            flex justify-between items-center py-2 md:hidden z-50 shadow-lg
-            rounded-xl border border-gray-100 px-2"
-    >
-      <div class="flex flex-1 justify-around">
-        <div v-for="item in menuOptions.slice(0, 2)" :key="item.name" class="flex flex-col items-center min-w-0">
-           <MenuVoice
-            :menuVoice="item.name"
-            :route="item.route"
-            :icon="item.icon"
-            :iconSolid="item.iconSolid"
-            :voices="item.voices"
-            @click="() => handleBottomNavClick(item)"
-          />
-        </div>
+    <!-- blur background -->
+    <div class="mobile-blur-bg md:hidden fixed bottom-0 left-0 right-0 h-24 z-40"/>
+
+    <!-- bottom nav -->
+    <div class="md:hidden z-50 fixed bottom-0 w-full">
+        <nav 
+          class="m-4 bg-white text-gray-800 
+                flex justify-between items-center p-2 shadow-lg
+                rounded-xl border border-gray-100 z-50"
+        >
+          <div class="flex flex-1 justify-around">
+            <div v-for="item in menuOptions.slice(0, 2)" :key="item.name" class="flex flex-col items-center min-w-0">
+              <MenuVoice
+                :menuVoice="item.name"
+                :route="item.route"
+                :icon="item.icon"
+                :iconSolid="item.iconSolid"
+                :voices="item.voices"
+                @click="() => handleBottomNavClick(item)"
+              />
+            </div>
+          </div>
+
+          <RouterLink 
+            :to="{ path: '/addmodifytransaction', query: { new: '1' } }"
+            class="flex-shrink-0 w-14 h-14 -mt-8 flex items-center justify-center rounded-full bg-primary text-white shadow-xl  z-50"
+          >
+            <PlusIcon class="w-8 h-8" />
+          </RouterLink>
+
+          <div class="flex flex-1 justify-around">
+            <div v-for="item in menuOptions.slice(2, 3)" :key="item.name" class="flex flex-col items-center min-w-0">
+              <MenuVoice
+                :menuVoice="item.name"
+                :route="item.route"
+                :icon="item.icon"
+                :iconSolid="item.iconSolid"
+                @click="() => handleBottomNavClick(item)"
+              />
+            </div>
+
+            <div class="flex flex-col items-center min-w-0">
+              <MenuVoice
+                menuVoice="Settings"
+                route="/settings"
+                :icon="Cog6ToothIcon"
+                :iconSolid="Cog6ToothIconSolid"
+                @click="closeBottomSheet"
+              />
+            </div>
+          </div>
+        </nav>
       </div>
-
-      <RouterLink 
-        :to="{ path: '/addmodifytransaction', query: { new: '1' } }"
-        class="flex-shrink-0 w-14 h-14 -mt-8 flex items-center justify-center rounded-full bg-primary text-white shadow-xl  z-50"
-      >
-        <PlusIcon class="w-8 h-8" />
-      </RouterLink>
-
-      <div class="flex flex-1 justify-around">
-        <div v-for="item in menuOptions.slice(2, 3)" :key="item.name" class="flex flex-col items-center min-w-0">
-          <MenuVoice
-            :menuVoice="item.name"
-            :route="item.route"
-            :icon="item.icon"
-            :iconSolid="item.iconSolid"
-            @click="() => handleBottomNavClick(item)"
-          />
-        </div>
-
-         <div class="flex flex-col items-center min-w-0">
-          <MenuVoice
-            menuVoice="Settings"
-            route="/settings"
-            :icon="Cog6ToothIcon"
-            :iconSolid="Cog6ToothIconSolid"
-            @click="closeBottomSheet"
-          />
-        </div>
-      </div>
-    </nav>
-
+      
   </div>
 </template>
 
@@ -385,4 +391,29 @@ onUnmounted(() => {
   transform: translateY(100%); 
   opacity: 0; 
 }
+.mobile-blur-bg {
+  /* altezza del gradiente (modifica liberamente) */
+  height: 120px;
+
+  /* background trasparente */
+  background: transparent;
+
+  /* blur forte dietro */
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  /* GRADIENTE: 0% blur in alto → 100% blur in basso */
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 1) 100%
+  );
+}
+
+
 </style>
