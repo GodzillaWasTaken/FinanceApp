@@ -63,10 +63,10 @@ function close() {
       <div class="absolute inset-0 bg-background z-[-20]"></div>
 
       <!-- Global Background Elements (Root Level) -->
-      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-10] bg-gradient-to-br from-blue-50 via-slate-50 to-slate-100">
+      <div class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none z-[-10] bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50">
       </div>
 
-      <div class="flex z-50">
+      <div class="flex z-50 md:backdrop-blur-2xl md:bg-white/60 md:shadow-[6px_0_24px_rgba(0,0,0,0.04)] md:border-r md:border-white/60 md:rounded-r-3xl">
         <Menu />
       </div>
 

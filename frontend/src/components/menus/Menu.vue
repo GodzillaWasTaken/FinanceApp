@@ -211,7 +211,7 @@ onUnmounted(() => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
-        class="fixed inset-y-0 left-0 w-72 md:w-44 text-gray-800 p-4 z-40 flex flex-col overflow-hidden"
+        class="fixed inset-y-0 left-0 w-72 md:w-44 text-gray-800 p-4 z-40 flex flex-col overflow-hidden backdrop-blur-2xl bg-white shadow-[6px_0_24px_rgba(0,0,0,0.04)] border-r border-white/60 rounded-r-3xl"
       >
         <button 
           @click="toggleMenu" 
