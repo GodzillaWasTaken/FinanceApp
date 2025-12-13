@@ -16,7 +16,7 @@ const props = defineProps({
 <template>
   <div class="flex flex-col h-full gap-6 md:gap-10">
     <!-- main -->
-    <section class="flex 2xl:min-h-60 justify-center items-center">
+    <section class="flex 2xl:min-h-60 justify-center items-center pt-10">
       <CashFlowMainData 
         :income="props.financeData.monthlyIncome"
         :expense="props.financeData.monthlyExpense"
