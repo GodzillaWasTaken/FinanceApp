@@ -16,7 +16,7 @@ function toggleMenu(newValue) {
 </script>
 
 <template>
-        <section class="flex-1 bg-background h-full pt-10 pb-6">
+        <section class="flex-1 h-full pt-10 pb-6">
             <div class = "flex flex-col bg-white rounded-[10px] shadow-lg ">
                 <div>
                     <div class="text-text m-6 text-xl font-bold">Menu</div>
