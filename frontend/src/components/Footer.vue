@@ -3,23 +3,12 @@ import { ref } from 'vue';
 
 const authorName = ref('Riccardo Modina'); 
 const appVersion = ref('0.0.0');
-const currentYear = ref(new Date().getFullYear());
 </script>
 
 <template>
-  <footer class="bg-secondary-clear text-text py-4 text-center rounded-b-xl font-sans select-none shadow-inner">
-    
-    <p class="text-sm mb-5 inline-block">
-        FinanceApp
+  <footer class="text-gray-600 text-center">
+    <p class="text-sm mb-2 mt-2 inline-block">
+        @FinanceApp - {{ authorName }} - v {{ appVersion }}
     </p>
-
-    <div 
-      class="mx-auto mb-4"
-      style="width: 360px; height: 0; border-bottom: 1px; border-bottom-style: solid; border-bottom-color: rgb(51, 65, 85);"
-    ></div>
-
-
-    <p class="text-sm">&copy; {{ currentYear }} by {{ authorName }}</p>
-    <p class="text-sm">Version {{ appVersion }}</p>
   </footer>
 </template>

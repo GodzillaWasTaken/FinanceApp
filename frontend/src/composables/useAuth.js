@@ -49,7 +49,7 @@ export function useAuth() {
       authToken.value = access
       refreshToken.value = refresh
       authError.value = null
-      router.push('/')
+      router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
     } catch (err) {
       authError.value = parseError(err, 'Credenziali non valide')
     } finally {
