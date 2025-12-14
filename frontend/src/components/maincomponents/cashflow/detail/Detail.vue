@@ -71,7 +71,7 @@ function formatAmount(v) {
             <ChartSection
                 :leftChart="{ component: CumulativeLinear, props: { serie: serie, categories: categories} }"
                 :rightChart="{ component: StackedArea, props: { serie: serie, categories: categories  } }"
-                height="h-full md:h-[300px] xl:h-[400px] 2xl:h-[500px]"
+                height="h-full md:h-auto lg:h-[400px] 2xl:h-[500px]"
             />
         </section>
 
