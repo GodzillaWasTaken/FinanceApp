@@ -109,15 +109,15 @@ onUnmounted(() => {
     
     <aside 
       v-if="defaultMenuOpen" 
-      class="hidden md:flex md:flex-col md:w-30 flex-1 text-gray-800 text-center items-center overflow-hidden relative"
+      class="hidden md:flex md:flex-col md:w-30 flex-1 text-gray-800 text-center items-center overflow-hidden relative h-full"
     >
-      <nav class="flex-1 w-full relative">
+      <nav class="flex-1 w-full relative h-full mt-10">
         
         <div 
-          class="absolute inset-0 flex flex-col w-full transition-transform duration-300 ease-in-out"
+          class="absolute inset-0 flex-1 flex-col w-full transition-transform duration-300 ease-in-out h-full"
           :class="isSubMenuVisible ? '-translate-x-full opacity-0' : 'translate-x-0 opacity-100'"
         >
-          <ul class="space-y-2 mt-10 w-full px-2">
+          <ul class="flex flex-col space-y-6 w-full px-2 h-full">
             <RouterLink to="/" class="group">
               <li
                 @mouseenter="isHoverHomeIcon = true"
@@ -145,19 +145,19 @@ onUnmounted(() => {
                 @click="() => handleSidebarVoiceClick(item)"
               />
             </li>
+            <MenuVoice
+              class="flex-1 justify-end mb-4"
+              menuVoice="Settings"
+              route="/settings"
+              :icon="Cog6ToothIcon"
+              :iconSolid="Cog6ToothIconSolid"
+              @click="closeSubMenu"
+            />
           </ul>
 
-           <div class="mt-auto mb-10 pt-4">
-              <MenuVoice
-                menuVoice="Settings"
-                route="/settings"
-                :icon="Cog6ToothIcon"
-                :iconSolid="Cog6ToothIconSolid"
-                @click="closeSubMenu"
-              />
-            </div>
         </div>
 
+        <!-- sub menu -->
         <div 
           class="absolute inset-0 flex flex-col w-full transition-transform duration-300 ease-in-out pt-10"
           :class="isSubMenuVisible ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'"
@@ -168,7 +168,7 @@ onUnmounted(() => {
                 class="flex flex-col items-center justify-center w-full text-gray-500 hover:text-primary transition-colors gap-1"
               >
                 <ChevronLeftIcon class="h-6 w-6" />
-                <span class="text-xs font-bold uppercase tracking-wider">Back</span>
+                <span class="text-xs font-bold uppercase tracking-wider">Indietro</span>
               </button>
             </div>
 
@@ -190,6 +190,10 @@ onUnmounted(() => {
       </nav>
     </aside>
 
+
+
+
+    <!-- button to slide the menu out -->
     <button 
       v-if="!isOpen"
       @click="toggleMenu"
@@ -208,6 +212,8 @@ onUnmounted(() => {
       ></div>
     </transition>
 
+    
+    <!-- slide menu when open (default menu open settings false) -->
     <transition name="slide">
       <aside 
         v-if="isOpen" 
@@ -235,7 +241,7 @@ onUnmounted(() => {
              class="absolute inset-0 w-full transition-transform duration-300"
              :class="isSubMenuVisible ? '-translate-x-full' : 'translate-x-0'"
            >
-              <ul class="flex flex-col space-y-6 text-xl md:space-y-2 md:text-base items-center">
+              <ul class="flex flex-col space-y-6 text-xl md:space-y-2 md:text-base items-center h-full">
                 <li v-for="item in menuOptions" :key="item.name" class="w-full">
                    <MenuVoice
                     :menuVoice="item.name"
@@ -246,25 +252,25 @@ onUnmounted(() => {
                     @click="() => handleSidebarVoiceClick(item)"
                   />
                 </li>
-              </ul>
-              
-               <div class="mt-10 pt-4 flex justify-center">
                 <MenuVoice
+                      class="flex-1 justify-end"
                       menuVoice="Settings"
                       route="/settings"
                       :icon="Cog6ToothIcon"
                       :iconSolid="Cog6ToothIconSolid"
                        @click="closeSubMenu"
                     />
-              </div>
+              </ul>
            </div>
 
+
+           <!-- sub menu on false as default menu open settings -->
            <div 
              class="absolute inset-0 w-full transition-transform duration-300"
              :class="isSubMenuVisible ? 'translate-x-0' : 'translate-x-full'"
            >
-              <button @click="closeSubMenu" class="flex items-center text-gray-500 mb-6">
-                 <ChevronLeftIcon class="h-5 w-5 mr-1" /> Indietro
+              <button @click="closeSubMenu" class="flex items-center text-gray-500 mb-6 cursor-pointer">
+                 <ChevronLeftIcon class="h-5 w-5 mr-1 ml-5" /> Indietro
               </button>
                <h3 class="text-lg font-bold text-gray-800 mb-6 text-center">{{ activeSubMenu?.name }}</h3>
                
@@ -323,9 +329,9 @@ onUnmounted(() => {
     <!-- bottom nav -->
     <div class="md:hidden z-50 fixed bottom-0 w-full">
         <nav 
-          class="m-4 bg-white text-gray-800 
+          class="m-4 text-gray-800 
                 flex justify-between items-center p-2 shadow-lg
-                rounded-xl border border-gray-100 z-50"
+                rounded-xl border border-gray-100 z-50 bg-white"
         >
           <div class="flex flex-1 justify-around">
             <div v-for="item in menuOptions.slice(0, 2)" :key="item.name" class="flex flex-col items-center min-w-0">
