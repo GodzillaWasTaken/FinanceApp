@@ -100,7 +100,7 @@ function close() {
             </transition>
             
           <section 
-            class="flex-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-10 md:mb-0 overflow-y-auto custom-scrollbar z-40"
+            class="flex-1 px-4 md:px-8 lg:px-12 xl:px-16 2xl:px-24 pb-10 md:mb-0 overflow-y-auto custom-scrollbar z-20"
           >
             <div class="w-full md:h-full max-w-8xl mx-auto pb-15 md:pb-0">
               <component 
