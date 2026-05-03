@@ -10,5 +10,6 @@ router.register('movimenti', views.MovimentoViewSet)
 urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('auth/profile/', views.UserProfileView.as_view(), name='user-profile'),
     path('', include(router.urls)),
 ]

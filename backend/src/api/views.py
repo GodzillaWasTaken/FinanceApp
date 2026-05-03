@@ -1,12 +1,17 @@
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import Conto, Categoria, Movimento
+from .models import Conto, Categoria, Movimento, UserProfile
 from .serializers import (
     ContoListSerializer, ContoDetailSerializer, ContoEditSerializer,
     CategoriaListSerializer, CategoriaDetailSerializer, CategoriaEditSerializer,
     MovimentoListSerializer, MovimentoDetailSerializer, MovimentoEditSerializer,
+    UserProfileSerializer
 )
 from .pagination import DefaultPagination
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+
 
 
 # ----------------- MIXIN PER CAMBIO SERIALIZER -----------------
@@ -63,3 +68,24 @@ class MovimentoViewSet(BaseModelViewSet):
     serializer_class = MovimentoListSerializer
     detail_serializer_class = MovimentoDetailSerializer
     edit_serializer_class = MovimentoEditSerializer
+
+
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile = getattr(request.user, 'profile', None)
+        if not profile:
+            profile = UserProfile.objects.create(user=request.user)
+        serializer = UserProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def patch(self, request):
+        profile = getattr(request.user, 'profile', None)
+        if not profile:
+            profile = UserProfile.objects.create(user=request.user)
+        serializer = UserProfileSerializer(profile, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

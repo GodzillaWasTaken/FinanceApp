@@ -93,3 +93,9 @@ class MovimentoDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movimento
         fields = "__all__"
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        from .models import UserProfile
+        model = UserProfile
+        fields = ["encrypted_master_key", "recovery_encrypted_master_key"]

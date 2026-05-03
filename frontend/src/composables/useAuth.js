@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import axiosInstance, { axiosEventBus } from '../axios'
+import { generateMasterKey, generateRecoveryKey, deriveKeyEncryptionKey, encryptKey, decryptKey } from '../helpers/crypto'
 
 const authToken = ref(localStorage.getItem('authToken') || null)
 const refreshToken = ref(localStorage.getItem('refreshToken') || null)
@@ -49,9 +50,50 @@ export function useAuth() {
       authToken.value = access
       refreshToken.value = refresh
       authError.value = null
+
+      // Fetch or generate E2EE Master Key
+      try {
+        const profileRes = await axiosInstance.get('api/auth/profile/')
+        const profile = profileRes.data
+        let encryptedMasterKey = profile.encrypted_master_key
+        
+        const kek = deriveKeyEncryptionKey(password, username)
+
+        if (!encryptedMasterKey) {
+            // New user or no key yet
+            const newMasterKey = generateMasterKey()
+            encryptedMasterKey = encryptKey(newMasterKey, kek)
+            
+            const recoveryKey = generateRecoveryKey()
+            const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
+            const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
+            
+            await axiosInstance.patch('api/auth/profile/', {
+                encrypted_master_key: encryptedMasterKey,
+                recovery_encrypted_master_key: recoveryEncryptedKey
+            })
+
+            sessionStorage.setItem('masterKey', newMasterKey)
+            sessionStorage.setItem('tempRecoveryKey', recoveryKey)
+        } else {
+            const decryptedMasterKey = decryptKey(encryptedMasterKey, kek)
+            if (decryptedMasterKey) {
+                sessionStorage.setItem('masterKey', decryptedMasterKey)
+            } else {
+                throw new Error("Impossibile decifrare la chiave master. Dati corrotti.")
+            }
+        }
+      } catch(e) {
+          console.error("Errore E2EE:", e)
+          authError.value = "Errore durante l'inizializzazione della crittografia."
+          return
+      }
+
       router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
     } catch (err) {
-      authError.value = parseError(err, 'Credenziali non valide')
+      if(!authError.value) {
+        authError.value = parseError(err, 'Credenziali non valide')
+      }
     } finally {
       // try {
       //   const permissionsRes = await axiosInstance.get('api/auth/permissions/')
@@ -66,8 +108,8 @@ export function useAuth() {
   const logout = async () => {
     localStorage.removeItem('authToken')
     localStorage.removeItem('refreshToken')
-    // localStorage.removeItem('userPermissions')
-    // permissions.value = null
+    sessionStorage.removeItem('masterKey')
+    sessionStorage.removeItem('tempRecoveryKey')
     authToken.value = null
     refreshToken.value = null
     router.push('/login')
