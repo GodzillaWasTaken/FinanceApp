@@ -47,8 +47,6 @@ export function useAuth() {
       const refresh = res.data.refresh
       localStorage.setItem('authToken', access)
       localStorage.setItem('refreshToken', refresh)
-      authToken.value = access
-      refreshToken.value = refresh
       authError.value = null
 
       // Fetch or generate E2EE Master Key
@@ -86,9 +84,16 @@ export function useAuth() {
       } catch(e) {
           console.error("Errore E2EE:", e)
           authError.value = "Errore durante l'inizializzazione della crittografia."
+          // Clear tokens since login is effectively failed if E2EE fails
+          localStorage.removeItem('authToken')
+          localStorage.removeItem('refreshToken')
           return
       }
 
+      // Update reactive variables now that sessionStorage has the key
+      authToken.value = access
+      refreshToken.value = refresh
+      
       router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
     } catch (err) {
       if(!authError.value) {
