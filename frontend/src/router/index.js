@@ -9,6 +9,8 @@ import ExpenseDetailView from '../views/cashflow/ExpenseDetailView.vue';
 import AddModifiyView from '../views/cashflow/AddModifyTransactionView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import AdminSettingsView from '../views/AdminSettingsView.vue';
+import SetupView from '../views/SetupView.vue';
+import { getGlobalSettings } from '../apicalls/apiCalls';
 
 const routes = [
   {
@@ -20,6 +22,11 @@ const routes = [
     path: '/register',
     name: 'Register',
     component: RegisterView,
+  },
+  {
+    path: '/setup',
+    name: 'Setup',
+    component: SetupView,
   },
   {
     path: '/admin-settings',
@@ -102,7 +109,28 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+  let isInitialized = sessionStorage.getItem('isInitialized');
+  
+  if (isInitialized === null) {
+    try {
+        const settings = await getGlobalSettings();
+        isInitialized = settings.is_initialized ? 'true' : 'false';
+        sessionStorage.setItem('isInitialized', isInitialized);
+    } catch (e) {
+        console.error("Failed to check initialization status:", e);
+        isInitialized = 'true'; // Fallback
+    }
+  }
+
+  if (isInitialized === 'false' && to.path !== '/setup') {
+      return next('/setup');
+  }
+
+  if (isInitialized === 'true' && to.path === '/setup') {
+      return next('/login');
+  }
+
   const isAuthenticated = !!localStorage.getItem('authToken');
   if (to.meta.authenticationRequired && !isAuthenticated) {
     next('/login');

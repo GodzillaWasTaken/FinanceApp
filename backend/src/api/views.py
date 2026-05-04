@@ -99,8 +99,10 @@ class CustomRegistrationView(APIView):
 
     def post(self, request):
         from .models import GlobalSettings
+        is_first_user = not User.objects.exists()
         settings = GlobalSettings.load()
-        if not settings.allow_registration:
+        
+        if not is_first_user and not settings.allow_registration:
             return Response({"error": "Le registrazioni sono chiuse."}, status=status.HTTP_403_FORBIDDEN)
         
         username = request.data.get("username")
@@ -119,13 +121,18 @@ class CustomRegistrationView(APIView):
 
         with transaction.atomic():
             user = User.objects.create_user(username=username, email=email, password=password)
+            if is_first_user:
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+                
             # Il profilo viene creato dal signal
             profile = user.profile
             profile.encrypted_master_key = encrypted_master_key
             profile.recovery_encrypted_master_key = recovery_encrypted_master_key
             profile.save()
 
-        return Response({"message": "Utente creato con successo."}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Utente creato con successo.", "is_admin": is_first_user}, status=status.HTTP_201_CREATED)
 
 
 class GlobalSettingsView(APIView):
@@ -140,7 +147,11 @@ class GlobalSettingsView(APIView):
     def get(self, request):
         from .models import GlobalSettings
         settings = GlobalSettings.load()
-        return Response({"allow_registration": settings.allow_registration})
+        is_initialized = User.objects.exists()
+        return Response({
+            "allow_registration": settings.allow_registration,
+            "is_initialized": is_initialized
+        })
 
     def patch(self, request):
         from .models import GlobalSettings
