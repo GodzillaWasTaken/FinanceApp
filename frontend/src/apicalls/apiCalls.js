@@ -124,6 +124,6 @@ export function getGlobalSettings() {
     return apiRequest('/api/settings/', 'GET');
 }
 
-export function updateGlobalSettings(allow_registration) {
+export function updateRegistrationGlobalSettings(allow_registration) {
     return apiRequest('/api/settings/', 'PATCH', { allow_registration });
 }

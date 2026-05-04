@@ -1,5 +1,7 @@
 <script setup>
+import { ref, onMounted } from 'vue';
 import { Switch } from '@headlessui/vue';
+import { getCurrentUser } from '../../../apicalls/apiCalls';
 
 defineProps({
     defaultMenuOpen: {
@@ -9,6 +11,20 @@ defineProps({
 });
 
 const emit = defineEmits(['update:defaultMenuOpen']); 
+
+const isAdmin = ref(false);
+const loadingAdminSettings = ref(true);
+
+onMounted(async () => {
+    try {
+        const user = await getCurrentUser();
+        isAdmin.value = user.is_staff || user.is_superuser;
+    } catch (e) {
+        console.error("Failed to load user settings", e);
+    } finally {
+        loadingAdminSettings.value = false;
+    }
+});
 
 function toggleMenu(newValue) {
     emit('update:defaultMenuOpen', newValue);
@@ -39,6 +55,24 @@ function toggleMenu(newValue) {
                         </Switch>
                     </div>
                 </div>
+                
+                <div v-if="isAdmin && !loadingAdminSettings" class="border-t border-neutral mt-4 pt-4">
+                    <div class="text-primary-light m-6 text-xl font-bold">Impostazioni Amministratore</div>
+                    <div class="flex flex-col text-text m-6 gap-4">
+                        <p class="text-sm text-gray-500">
+                            In quanto amministratore del sistema, puoi accedere al pannello di controllo per gestire permessi e funzioni globali dell'applicazione.
+                        </p>
+                        <div>
+                            <router-link 
+                                to="/admin-settings"
+                                class="inline-block px-6 py-2.5 bg-primary text-white font-bold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/20 transition-all duration-200"
+                            >
+                                Apri Pannello Amministratore
+                            </router-link>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </section>
 </template>
