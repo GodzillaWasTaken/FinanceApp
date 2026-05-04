@@ -8,8 +8,10 @@ router.register('categorie', views.CategoriaViewSet)
 router.register('movimenti', views.MovimentoViewSet)
 
 urlpatterns = [
+    path('auth/register/', views.CustomRegistrationView.as_view(), name='custom-register'),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('auth/profile/', views.UserProfileView.as_view(), name='user-profile'),
+    path('settings/', views.GlobalSettingsView.as_view(), name='global-settings'),
     path('', include(router.urls)),
 ]

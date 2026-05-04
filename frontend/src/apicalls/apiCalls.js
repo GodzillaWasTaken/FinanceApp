@@ -106,3 +106,24 @@ export function getCurrentUser() {
 export function updateCurrentUser(data) {
     return apiRequest('/api/auth/users/me/', 'PATCH', data);
 }
+
+// -------------------- AUTHENTICATION & SETTINGS --------------------
+export function login(username, password) {
+    return apiRequest('/api/auth/jwt/create/', 'POST', { username, password });
+}
+
+export function customRegister(data) {
+    return apiRequest('/api/auth/register/', 'POST', data);
+}
+
+export function getUserProfile() {
+    return apiRequest('/api/auth/profile/', 'GET');
+}
+
+export function getGlobalSettings() {
+    return apiRequest('/api/settings/', 'GET');
+}
+
+export function updateGlobalSettings(allow_registration) {
+    return apiRequest('/api/settings/', 'PATCH', { allow_registration });
+}

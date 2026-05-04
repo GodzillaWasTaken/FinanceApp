@@ -130,15 +130,33 @@ export function useAuth() {
 
   const register = async (email, username, password) => {
     try {
-      await axiosInstance.post('api/auth/users/', {
-        email,
+      // 1. Generate E2EE keys
+      const newMasterKey = generateMasterKey()
+      const kek = deriveKeyEncryptionKey(password, username)
+      const encryptedMasterKey = encryptKey(newMasterKey, kek)
+      
+      const recoveryKey = generateRecoveryKey()
+      const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
+      const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
+
+      // 2. Register user with keys
+      await axiosInstance.post('api/auth/register/', {
         username,
+        email,
         password,
+        encrypted_master_key: encryptedMasterKey,
+        recovery_encrypted_master_key: recoveryEncryptedKey
       })
+
+      // Save recovery key to session temporary so Register UI can show it
+      sessionStorage.setItem('tempRecoveryKey', recoveryKey)
+
+      // 3. Login
       await login(username, password)
     } catch (err) {
       authError.value = parseError(err, 'Registrazione fallita')
       console.error(err)
+      throw err // Rilancia per gestirlo nel componente
     }
   }
 

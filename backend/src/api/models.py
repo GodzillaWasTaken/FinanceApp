@@ -90,3 +90,24 @@ class Movimento(models.Model):
     def __str__(self):
         conto_nome = self.conto.nome if self.conto else "Nessun conto"
         return f"{self.tipo.capitalize()} - {self.importo}€ ({conto_nome}) il {self.data}"
+
+
+class GlobalSettings(models.Model):
+    allow_registration = models.BooleanField(default=True, help_text="Permetti nuove registrazioni")
+
+    class Meta:
+        verbose_name = "Global Settings"
+        verbose_name_plural = "Global Settings"
+
+    def __str__(self):
+        return "Impostazioni Globali"
+
+    def save(self, *args, **kwargs):
+        # Singleton pattern: ci deve essere sempre e solo una riga (ID 1)
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        return obj

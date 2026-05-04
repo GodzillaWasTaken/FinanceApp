@@ -7,13 +7,27 @@ import NotFundView from '../views/NotFundView.vue';
 import IncomeDetailView from '../views/cashflow/IncomeDetailView.vue';
 import ExpenseDetailView from '../views/cashflow/ExpenseDetailView.vue';
 import AddModifiyView from '../views/cashflow/AddModifyTransactionView.vue';
-
+import RegisterView from '../views/RegisterView.vue';
+import AdminSettingsView from '../views/AdminSettingsView.vue';
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: LoginView,
+  },
+  {
+    path: '/register',
+    name: 'Register',
+    component: RegisterView,
+  },
+  {
+    path: '/admin-settings',
+    name: 'AdminSettings',
+    component: AdminSettingsView,
+    meta: {
+      authenticationRequired: true,
+    },
   },
   {
     path: '/cashflow',
@@ -24,7 +38,7 @@ const routes = [
     },
   },
   {
-      // temporanea per sviluppo una volta inclusa la dashbpard completa sarà quella l'endpoint
+    // temporanea per sviluppo una volta inclusa la dashbpard completa sarà quella l'endpoint
     path: '/',
     name: 'Home',
     component: CashFlowDashboardView,
@@ -77,9 +91,9 @@ const routes = [
     }
   },
   {
-    path: '/:catchAll(.*)', 
-    name: 'NotFound',     
-    component: NotFundView, 
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFundView,
   }
 ];
 

@@ -1,4 +1,22 @@
 services:
+  frontend:
+    build:
+      context: ./frontend
+      target: build-stage
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    env_file:
+      - ./frontend/.env.local
+    depends_on:
+      - backend
+    networks:
+      # - swag_network
+      - finance_internal
+
   backend:
     build: ./backend
     volumes:
@@ -7,15 +25,38 @@ services:
       - .env.local
     ports:
       - "8080:8080"
+    depends_on:
+      - database
+    networks:
+      # - swag_network
+      - finance_internal
 
   database:
-    image: postgres:latest
+    image: postgres:18
     env_file:
       - .env.local
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data_financeapp:/var/lib/postgresql/data
+      - postgres_data_financeapp:/var/lib/postgresql
+    networks:
+      - finance_internal
+
+  adminer:
+    image: adminer
+    ports:
+      - "8081:8080"
+    depends_on:
+      - database
+    networks:
+      - finance_internal
 
 volumes:
   postgres_data_financeapp:
+
+networks:
+  # swag_network:
+  #   external: true
+  finance_internal:
+    name: finance_internal
+    driver: bridge

@@ -11,6 +11,9 @@ from .pagination import DefaultPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from django.contrib.auth.models import User
+from django.db import transaction
+from rest_framework.permissions import AllowAny, IsAdminUser
 
 
 
@@ -89,3 +92,62 @@ class UserProfileView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CustomRegistrationView(APIView):
+    permission_classes = [] # Public
+
+    def post(self, request):
+        from .models import GlobalSettings
+        settings = GlobalSettings.load()
+        if not settings.allow_registration:
+            return Response({"error": "Le registrazioni sono chiuse."}, status=status.HTTP_403_FORBIDDEN)
+        
+        username = request.data.get("username")
+        password = request.data.get("password")
+        email = request.data.get("email", "")
+        encrypted_master_key = request.data.get("encrypted_master_key")
+        recovery_encrypted_master_key = request.data.get("recovery_encrypted_master_key")
+
+        if not username or not password or not encrypted_master_key or not recovery_encrypted_master_key:
+            return Response({"error": "Campi mancanti."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if User.objects.filter(username=username).exists():
+            return Response({"error": "Username già in uso."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Creazione atomica utente e salvataggio chiavi
+
+        with transaction.atomic():
+            user = User.objects.create_user(username=username, email=email, password=password)
+            # Il profilo viene creato dal signal
+            profile = user.profile
+            profile.encrypted_master_key = encrypted_master_key
+            profile.recovery_encrypted_master_key = recovery_encrypted_master_key
+            profile.save()
+
+        return Response({"message": "Utente creato con successo."}, status=status.HTTP_201_CREATED)
+
+
+class GlobalSettingsView(APIView):
+    # GET è pubblico per sapere se poter mostrare il bottone
+    # PATCH è solo per gli admin
+    
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [IsAdminUser()]
+
+    def get(self, request):
+        from .models import GlobalSettings
+        settings = GlobalSettings.load()
+        return Response({"allow_registration": settings.allow_registration})
+
+    def patch(self, request):
+        from .models import GlobalSettings
+        settings = GlobalSettings.load()
+        allow_registration = request.data.get("allow_registration")
+        if allow_registration is not None:
+            settings.allow_registration = bool(allow_registration)
+            settings.save()
+        return Response({"allow_registration": settings.allow_registration})
+

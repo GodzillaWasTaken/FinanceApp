@@ -37,8 +37,8 @@ const isActive = computed(() => {
 <template>
   <BaseButton
     v-if="isDesktop"
-    :as="voices.length > 0 ? 'div' : RouterLink"
-    :to="voices.length === 0 ? props.route : null"
+    :as="voices.length > 0 ? 'div' : (props.route ? RouterLink : 'button')"
+    :to="(voices.length === 0 && props.route) ? props.route : null"
     @mouseenter="isHoverIcon = true"
     @mouseleave="isHoverIcon = false"
     class="flex flex-col items-center justify-center md:gap-2
@@ -66,8 +66,8 @@ const isActive = computed(() => {
   <!-- mobile -->
   <BaseButton
     v-else
-    :as="voices.length > 0 ? 'div' : RouterLink"
-    :to="voices.length === 0 ? props.route : null"
+    :as="voices.length > 0 ? 'div' : (props.route ? RouterLink : 'button')"
+    :to="(voices.length === 0 && props.route) ? props.route : null"
     class=" flex flex-col items-center justify-center cursor-pointer relative"
   >
     <div class="flex relative mb-0.5">

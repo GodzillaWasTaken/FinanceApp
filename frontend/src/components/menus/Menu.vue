@@ -2,14 +2,21 @@
 import { ref, watch, onUnmounted } from 'vue'
 import { 
   Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon, 
-  ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon
+  ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon, ArrowRightStartOnRectangleIcon
 } from '@heroicons/vue/24/outline'
 import { 
   PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-  HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid 
+  HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid, ArrowRightStartOnRectangleIcon as ArrowRightStartOnRectangleIconSolid
 } from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
+import { useAuth } from '../../composables/useAuth'
+
+const { logout } = useAuth()
+
+const handleLogout = () => {
+  logout()
+}
 
 const menuOptions = ref([
   { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid },
@@ -145,14 +152,21 @@ onUnmounted(() => {
                 @click="() => handleSidebarVoiceClick(item)"
               />
             </li>
-            <MenuVoice
-              class="flex-1 justify-end mb-4"
-              menuVoice="Settings"
-              route="/settings"
-              :icon="Cog6ToothIcon"
-              :iconSolid="Cog6ToothIconSolid"
-              @click="closeSubMenu"
-            />
+            <div class="flex-1 flex flex-col justify-end mb-4 space-y-2">
+              <MenuVoice
+                menuVoice="Settings"
+                route="/settings"
+                :icon="Cog6ToothIcon"
+                :iconSolid="Cog6ToothIconSolid"
+                @click="closeSubMenu"
+              />
+              <MenuVoice
+                menuVoice="Logout"
+                :icon="ArrowRightStartOnRectangleIcon"
+                :iconSolid="ArrowRightStartOnRectangleIconSolid"
+                @click="handleLogout"
+              />
+            </div>
           </ul>
 
         </div>
@@ -252,14 +266,22 @@ onUnmounted(() => {
                     @click="() => handleSidebarVoiceClick(item)"
                   />
                 </li>
-                <MenuVoice
-                      class="flex-1 justify-end"
-                      menuVoice="Settings"
-                      route="/settings"
-                      :icon="Cog6ToothIcon"
-                      :iconSolid="Cog6ToothIconSolid"
-                       @click="closeSubMenu"
+                <div class="flex-1 flex flex-col justify-end w-full space-y-2 mb-4">
+                    <MenuVoice
+                          menuVoice="Settings"
+                          route="/settings"
+                          :icon="Cog6ToothIcon"
+                          :iconSolid="Cog6ToothIconSolid"
+                           @click="closeSubMenu"
+                        />
+                    <MenuVoice
+                        menuVoice="Logout"
+                        :icon="ArrowRightStartOnRectangleIcon"
+                        :iconSolid="ArrowRightStartOnRectangleIconSolid"
+                        @click="handleLogout"
+                        class="text-red-500 hover:text-red-600 hover:bg-red-50"
                     />
+                </div>
               </ul>
            </div>
 
@@ -371,6 +393,16 @@ onUnmounted(() => {
                 :icon="Cog6ToothIcon"
                 :iconSolid="Cog6ToothIconSolid"
                 @click="closeBottomSheet"
+              />
+            </div>
+
+            <div class="flex flex-col items-center min-w-0">
+              <MenuVoice
+                menuVoice="Logout"
+                :icon="ArrowRightStartOnRectangleIcon"
+                :iconSolid="ArrowRightStartOnRectangleIconSolid"
+                @click="handleLogout"
+                class="text-red-500"
               />
             </div>
           </div>

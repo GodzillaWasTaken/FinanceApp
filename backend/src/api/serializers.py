@@ -99,3 +99,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         from .models import UserProfile
         model = UserProfile
         fields = ["encrypted_master_key", "recovery_encrypted_master_key"]
+
+class UserMeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'email', 'first_name', 'last_name']
