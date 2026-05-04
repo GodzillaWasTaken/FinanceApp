@@ -37,7 +37,7 @@ function parseError(err, fallbackMessage = 'Si è verificato un errore.') {
 export function useAuth() {
   const router = useRouter()
 
-  const login = async (username, password) => {
+  const login = async (username, password, shouldRedirect = true) => {
     try {
       const res = await axiosInstance.post('api/auth/jwt/create/', {
         username,
@@ -94,7 +94,9 @@ export function useAuth() {
       authToken.value = access
       refreshToken.value = refresh
       
-      router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
+      if (shouldRedirect) {
+        router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
+      }
     } catch (err) {
       if(!authError.value) {
         authError.value = parseError(err, 'Credenziali non valide')
@@ -156,8 +158,8 @@ export function useAuth() {
       // Save recovery key to session temporary so Register UI can show it
       sessionStorage.setItem('tempRecoveryKey', recoveryKey)
 
-      // 3. Login
-      await login(username, password)
+      // 3. Login without immediate redirect so UI can show recovery key
+      await login(username, password, false)
     } catch (err) {
       authError.value = parseError(err, 'Registrazione fallita')
       console.error(err)
