@@ -1,7 +1,8 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { ChevronDownIcon, CheckIcon, PlusIcon } from '@heroicons/vue/24/outline'
-const CreateCategoryModal = defineAsyncComponent(() => import('@/components/modals/CreateCategoryModal.vue'))
+import CreateCategoryModal from '@/components/modals/CreateCategoryModal.vue'
+import CreateAccountModal from '@/components/modals/CreateAccountModal.vue'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -13,7 +14,8 @@ const props = defineProps({
   searchEnabled: { type: Boolean, default: true },
   required: { type: Boolean, default: false },
 
-  allowCreateCategory: { type: Boolean, default: false }
+  allowCreateCategory: { type: Boolean, default: false },
+  allowCreateAccount: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:modelValue', 'select', 'clear', 'item-created'])
@@ -31,13 +33,16 @@ const filtered = computed(() => {
 })
 
 const selectedItem = computed(() => {
-  return (props.items || []).find(i => String(i.id) === String(props.modelValue)) || null
+  const val = String(props.modelValue)
+  return (props.items || []).find(i => String(i.id) === val || String(i.nome) === val) || null
 })
 
 function toggle() { open.value = !open.value }
 
 function choose(item) {
-  emit('update:modelValue', item.id)
+  // If it's a new item (backend response mapping 'nome' to 'id')
+  const val = item.id || item.nome;
+  emit('update:modelValue', val)
   emit('select', item)
   search.value = ''
   open.value = false
@@ -77,7 +82,7 @@ onUnmounted(() => {
        <div class="flex items-center gap-3">
         <span v-if="selectedItem && props.showColor && selectedItem.color" :style="{ backgroundColor: selectedItem.color }" class="w-3.5 h-3.5 rounded-full inline-block"></span>
         <span
-          class="block whitespace-normal"
+          class="block whitespace-normal text-left"
           :title="selectedItem ? selectedItem[props.itemLabel] : placeholder"
         >
           {{ selectedItem ? selectedItem[props.itemLabel] : placeholder }}
@@ -99,22 +104,22 @@ onUnmounted(() => {
 
         <ul role="listbox" class="max-h-56 overflow-y-auto divide-y divide-gray-100">
           <li v-if="(filtered || []).length === 0" class="px-3 py-2 text-sm text-gray-500">Nessuna voce trovata</li>
-          <li v-for="item in filtered" :key="item.id" @click="choose(item)"
+          <li v-for="item in filtered" :key="item.id || item.nome" @click="choose(item)"
               class="px-3 py-2 cursor-pointer flex items-center justify-between hover:bg-10"
-              :aria-selected="selectedItem && selectedItem.id === item.id">
+              :aria-selected="selectedItem && (selectedItem.id === item.id || selectedItem.nome === item.nome)">
             <div class="flex items-center gap-3">
               <span v-if="props.showColor && item.color" :style="{ backgroundColor: item.color }" class="w-3.5 h-3.5 rounded-full inline-block"></span>
               <span class="text-sm text-text">{{ item[props.itemLabel] }}</span>
             </div>
-            <span v-if="selectedItem && selectedItem.id === item.id" class="text-primary"><CheckIcon class="h-4 w-4" /></span>
+            <span v-if="selectedItem && (selectedItem.id === item.id || selectedItem.nome === item.nome)" class="text-primary"><CheckIcon class="h-4 w-4" /></span>
           </li>
         </ul>
 
-        <div v-if="props.allowCreateCategory" class="group p-2 border-t border-gray-100 flex items-center justify-center">
+        <div v-if="props.allowCreateCategory || props.allowCreateAccount" class="group p-2 border-t border-gray-100 flex items-center justify-center">
           <div class="flex items-center justify-center gap-2  text-sm text-text">
-            <button type="button" @click="showCreateModal = true" class=" cursor-pointer flex items-center gap-2 justify-center transition-colors hover:bg-primary/10 rounded-lg px-3 py-2">
+            <button type="button" @click.stop="showCreateModal = true" class=" cursor-pointer flex items-center gap-2 justify-center transition-colors hover:bg-primary/10 rounded-lg px-3 py-2">
                 <PlusIcon class="h-4 w-4" />
-                <span>Crea nuova categoria</span>
+                <span>{{ props.allowCreateCategory ? 'Crea nuova categoria' : 'Crea nuovo conto' }}</span>
             </button>
           </div>
         </div>
@@ -122,6 +127,18 @@ onUnmounted(() => {
     </transition>
     
     <CreateCategoryModal 
+      v-if="props.allowCreateCategory"
+      :is-open="showCreateModal" 
+      @close="showCreateModal = false"
+      @created="(newItem) => { 
+        emit('item-created', newItem); 
+        choose(newItem); 
+        showCreateModal = false; 
+      }" 
+    />
+
+    <CreateAccountModal 
+      v-if="props.allowCreateAccount"
       :is-open="showCreateModal" 
       @close="showCreateModal = false"
       @created="(newItem) => { 

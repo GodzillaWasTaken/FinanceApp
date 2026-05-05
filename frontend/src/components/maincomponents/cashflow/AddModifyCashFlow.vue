@@ -26,6 +26,8 @@ const form = ref({
 
 })
 
+const validationError = ref('')
+
 const resetForm = () => {
   form.value = {
     date: new Date(),
@@ -95,13 +97,24 @@ function applyPrefill(raw) {
   if (raw.title) form.value.title = raw.title
   if (raw.description) form.value.description = raw.description
   if (raw.category) {
-    // try to map category name to id in props.categorie
-    const found = (props.categorie || []).find(c => String(c.name) === String(raw.category) || String(c.id) === String(raw.category))
+    const found = (props.categorie || []).find(c => String(c.nome) === String(raw.category) || String(c.id) === String(raw.category))
     if (found) {
-      form.value.category = found.id
-      selectedCategoryName.value = found.name || ''
+      form.value.category = found.id || found.nome
+      selectedCategoryName.value = found.nome || ''
     } else {
       selectedCategoryName.value = raw.category
+      form.value.category = raw.category
+    }
+  }
+  if (raw.conto || raw.account) {
+    const accVal = raw.conto || raw.account
+    const found = (props.conti || []).find(c => String(c.nome) === String(accVal) || String(c.id) === String(accVal))
+    if (found) {
+      form.value.account = found.id || found.nome
+      selectedAccountName.value = found.nome || ''
+    } else {
+      selectedAccountName.value = accVal
+      form.value.account = accVal
     }
   }
   // If raw contains id, keep it for submission
@@ -228,12 +241,13 @@ const onBlur = () => {
 
 
 const selectedCategoryName = ref('') // synced for hidden required input
+const selectedAccountName = ref('')  // synced for hidden required input
 
 // handlers for SelectDropdown events
 function onCategorySelect(cat) {
   // cat is the full item object
-  selectedCategoryName.value = cat.name || ''
-  form.value.category = cat.id
+  selectedCategoryName.value = cat.nome || ''
+  form.value.category = cat.id || cat.nome
 }
 
 function onCategoryClear() {
@@ -241,14 +255,43 @@ function onCategoryClear() {
   form.value.category = ''
 }
 
+function onAccountSelect(acc) {
+  selectedAccountName.value = acc.nome || ''
+  form.value.account = acc.id || acc.nome
+}
+
+function onAccountClear() {
+  selectedAccountName.value = ''
+  form.value.account = ''
+}
+
 
 
 
 
 // Emit event on submission
-const emit = defineEmits(['submit'])
+const emit = defineEmits(['submit', 'newCategoryCreated', 'newAccountCreated'])
 
 function submitForm() {
+  validationError.value = ''
+
+  if (!form.value.title) {
+    validationError.value = 'Inserisci un titolo per il movimento'
+    return
+  }
+  if (!form.value.amount && form.value.amount !== 0) {
+    validationError.value = 'Inserisci un importo valido'
+    return
+  }
+  if (!form.value.category) {
+    validationError.value = 'Seleziona una categoria'
+    return
+  }
+  if (!form.value.account) {
+    validationError.value = 'Seleziona un conto'
+    return
+  }
+
   if (form.value.date) {
     const sel = new Date(form.value.date)
     sel.setHours(0,0,0,0)
@@ -265,9 +308,7 @@ function submitForm() {
     type: isNewMovement.value ? 'add' : 'edit',
   })
  
-  form.value.amount = ''
-  form.value.description = ''
-  form.value.id = undefined
+  resetForm()
 }
 
 
@@ -342,9 +383,11 @@ watch(
                     <!-- wrap fields in a native form to enable browser required validation -->
                     <form @submit.prevent="submitForm" class="flex flex-col gap-4">
                       <!-- off-screen inputs used to enforce required validation for custom controls -->
-                      <input type="text" :value="formattedDate" required aria-hidden="true"
+                      <input type="text" :value="formattedDate" aria-hidden="true"
                              style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"/>
-                      <input type="text" v-model="selectedCategoryName" required aria-hidden="true"
+                      <input type="text" v-model="selectedCategoryName" aria-hidden="true"
+                             style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"/>
+                      <input type="text" v-model="selectedAccountName" aria-hidden="true"
                              style="position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden;"/>
 
                     <div class="flex flex-col gap-1">
@@ -399,7 +442,6 @@ watch(
                           rows="1"
                           type="text"
                           placeholder="Inserisci il titolo"
-                          required
                           class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
                       ></input>
                     </div>
@@ -423,7 +465,7 @@ watch(
                       <SelectDropdown
                         :items="props.categorie"
                         v-model="form.category"
-                        itemLabel="name"
+                        itemLabel="nome"
                         :showColor="true"
                         placeholder="Seleziona categoria"
                         @select="onCategorySelect"
@@ -439,10 +481,14 @@ watch(
                       <SelectDropdown
                         :items="props.conti"
                         v-model="form.account"
-                        itemLabel="name"
+                        itemLabel="nome"
                         placeholder="Seleziona conto"
                         :showColor="true"
+                        @select="onAccountSelect"
+                        @clear="onAccountClear"
                         :required="true"
+                        :allowCreateAccount="true"
+                        @item-created="(a) => emit('newAccountCreated', a)"
                       />
                     </div>
 
@@ -453,6 +499,10 @@ watch(
                         rows="3"
                         class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
                     ></textarea>
+                    </div>
+
+                    <div v-if="validationError" class="bg-red-50 text-red-600 p-3 rounded-md text-sm font-medium border border-red-100">
+                      {{ validationError }}
                     </div>
 
                     <button

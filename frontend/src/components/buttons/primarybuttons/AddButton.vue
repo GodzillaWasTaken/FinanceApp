@@ -4,7 +4,7 @@ import { RouterLink } from 'vue-router';
 import { PlusIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
-  to: { type: String, default: null }
+  to: { type: [String, Object], default: null }
 });
 
 </script>

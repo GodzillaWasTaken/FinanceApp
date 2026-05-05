@@ -14,6 +14,8 @@ from rest_framework import status
 from django.contrib.auth.models import User
 from django.db import transaction
 from rest_framework.permissions import AllowAny, IsAdminUser
+from django.db.models.functions import TruncMonth
+from django.db.models import Sum
 
 
 
@@ -71,6 +73,29 @@ class MovimentoViewSet(BaseModelViewSet):
     serializer_class = MovimentoListSerializer
     detail_serializer_class = MovimentoDetailSerializer
     edit_serializer_class = MovimentoEditSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        year = self.request.query_params.get('year')
+        month = self.request.query_params.get('month')
+        if year and year != 'Totale':
+            queryset = queryset.filter(data__year=year)
+        if month:
+            queryset = queryset.filter(data__month=month)
+        return queryset
+
+    def perform_create(self, serializer):
+        # Automatically set 'tipo' from category if not provided
+        categoria = serializer.validated_data.get('categoria')
+        tipo = categoria.tipo if categoria else 'uscita'
+        serializer.save(user=self.request.user, tipo=tipo)
+
+    def perform_update(self, serializer):
+        categoria = serializer.validated_data.get('categoria')
+        if categoria:
+            serializer.save(tipo=categoria.tipo)
+        else:
+            serializer.save()
 
 
 class UserProfileView(APIView):
@@ -162,3 +187,74 @@ class GlobalSettingsView(APIView):
             settings.save()
         return Response({"allow_registration": settings.allow_registration})
 
+
+class MonthlyStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        year = request.query_params.get('year', '2025')
+        month = request.query_params.get('month')
+
+        base_filter = {"user": request.user}
+        if year != 'Totale':
+            base_filter["data__year"] = year
+        
+        # Aggregate income by month
+        income_stats = Movimento.objects.filter(
+            tipo='entrata',
+            **base_filter
+        ).annotate(
+            month=TruncMonth('data')
+        ).values('month').annotate(
+            total=Sum('importo')
+        ).order_by('month')
+
+        # Aggregate spending by month
+        spending_stats = Movimento.objects.filter(
+            tipo='uscita',
+            **base_filter
+        ).annotate(
+            month=TruncMonth('data')
+        ).values('month').annotate(
+            total=Sum('importo')
+        ).order_by('month')
+
+        # Format for frontend (using short month names like 'Gen', 'Feb', etc.)
+        months_it = ['Gen', 'Feb', 'Mar', 'Apr', 'Mag', 'Giu', 'Lug', 'Ago', 'Set', 'Ott', 'Nov', 'Dic']
+        
+        income_result = {m: 0 for m in months_it}
+        for item in income_stats:
+            month_idx = item['month'].month - 1
+            income_result[months_it[month_idx]] = float(item['total'])
+
+        spending_result = {m: 0 for m in months_it}
+        for item in spending_stats:
+            month_idx = item['month'].month - 1
+            spending_result[months_it[month_idx]] = float(item['total'])
+
+        # Calculate requested month stats or current month
+        import datetime
+        now = datetime.datetime.now()
+        
+        if month:
+            # If a specific month is requested, return its stats
+            current_month_income = income_result.get(months_it[int(month) - 1], 0)
+            current_month_spending = spending_result.get(months_it[int(month) - 1], 0)
+        elif year == str(now.year):
+            # If current year is requested, return current month stats
+            current_month_income = income_result.get(months_it[now.month - 1], 0)
+            current_month_spending = spending_result.get(months_it[now.month - 1], 0)
+        else:
+            # Otherwise return 0 or total for the year? 
+            # Let's return the sum of the selected year for the top cards if no month is selected
+            current_month_income = sum(income_result.values())
+            current_month_spending = sum(spending_result.values())
+
+        return Response({
+            "year": year,
+            "month": month,
+            "income": [{"month": m, "amount": val} for m, val in income_result.items()],
+            "spending": [{"month": m, "amount": val} for m, val in spending_result.items()],
+            "monthlyIncome": current_month_income,
+            "monthlyExpense": current_month_spending
+        })

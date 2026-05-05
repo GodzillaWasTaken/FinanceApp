@@ -2,7 +2,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import BaseButton from '@/components/buttons/BaseButton.vue'
 import SelectDropdown from '@/components/formcomponents/SelectDropdown.vue'
-import { createCategoria } from '@/apicalls/apiCalls'
+import { createConto } from '@/apicalls/apiCalls'
 
 const props = defineProps({
   isOpen: {
@@ -15,8 +15,8 @@ const emit = defineEmits(['close', 'created'])
 
 const form = ref({
   name: '',
-  type: 'uscita',
-  color: '#1FBC9C'
+  type: 'conto_corrente',
+  color: '#3498DB'
 })
 
 const loading = ref(false)
@@ -41,8 +41,8 @@ onBeforeUnmount(() => {
 function resetForm() {
   form.value = {
     name: '',
-    type: 'uscita',
-    color: '#000000'
+    type: 'conto_corrente',
+    color: '#3498DB'
   }
   error.value = ''
 }
@@ -57,7 +57,7 @@ async function save() {
   error.value = ''
 
   try {
-    const res = await createCategoria({
+    const res = await createConto({
       nome: form.value.name,
       tipo: form.value.type,
       color: form.value.color
@@ -73,7 +73,6 @@ async function save() {
   }
 }
 
-
 function close() {
   resetForm()
   emit('close')
@@ -85,14 +84,14 @@ function close() {
     <div v-if="isOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="close"></div>
       <div class="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md z-10 transform transition-all">
-        <h3 class="text-lg font-semibold mb-4 text-gray-900">Nuova Categoria</h3>
+        <h3 class="text-lg font-semibold mb-4 text-gray-900">Nuovo Conto</h3>
 
         <form @submit.prevent="save" class="space-y-4">
 
           <!-- Name -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
-            <input v-model="form.name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light" placeholder="Es. Viaggi" />
+            <input v-model="form.name" type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light" placeholder="Es. Banca Intesa" />
           </div>
 
           <!-- Type -->
@@ -101,8 +100,9 @@ function close() {
             <SelectDropdown
               v-model="form.type"
               :items="[
-                { id: 'entrata', name: 'Entrata' },
-                { id: 'uscita', name: 'Uscita' }
+                { id: 'conto_corrente', name: 'Conto Corrente' },
+                { id: 'revolut', name: 'Revolut' },
+                { id: 'contanti', name: 'Contanti' }
               ]"
               placeholder="Seleziona tipo"
               :search-enabled="false"

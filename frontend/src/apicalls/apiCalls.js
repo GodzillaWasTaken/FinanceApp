@@ -74,8 +74,12 @@ export function getAllCategorie() {
 }
 
 // -------------------- MOVEMENTS --------------------
-export function getMovimenti(page = 1, pageSize = 10) {
-    return apiRequest('/api/movimenti/', 'GET', null, { page, page_size: pageSize }).then(res => {
+export function getMovimenti(page = 1, pageSize = 10, year = null, month = null) {
+    const params = { page, page_size: pageSize };
+    if (year) params.year = year;
+    if (month) params.month = month;
+
+    return apiRequest('/api/movimenti/', 'GET', null, params).then(res => {
         if (res.results) {
             res.results = res.results.map(decryptMovimentoResponse);
         } else if (Array.isArray(res)) {
@@ -126,4 +130,11 @@ export function getGlobalSettings() {
 
 export function updateRegistrationGlobalSettings(allow_registration) {
     return apiRequest('/api/settings/', 'PATCH', { allow_registration });
+}
+
+// -------------------- STATISTICS --------------------
+export function getMonthlyStats(year = '2025', month = null) {
+    const params = { year };
+    if (month) params.month = month;
+    return apiRequest('/api/stats/monthly/', 'GET', null, params);
 }

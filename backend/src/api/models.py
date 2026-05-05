@@ -33,6 +33,7 @@ class Conto(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES, default="contanti")
     valuta = models.CharField(max_length=10, default="EUR")
     saldo_iniziale = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    color = models.CharField(max_length=20, default="#3498DB")
 
     class Meta:
         unique_together = ("user", "nome")
@@ -52,6 +53,7 @@ class Categoria(models.Model):
     user = models.ForeignKey('auth.User', on_delete=models.CASCADE, related_name="categorie")
     nome = models.CharField(max_length=100, primary_key=True)
     tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    color = models.CharField(max_length=20, default="#1FBC9C")
 
     class Meta:
         unique_together = ("user", "nome", "tipo")

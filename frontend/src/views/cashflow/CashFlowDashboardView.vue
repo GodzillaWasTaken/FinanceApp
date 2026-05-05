@@ -1,59 +1,66 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import CashFlowDashboard from '../../components/maincomponents/cashflow/CashFlowDashboard.vue';
 import MainComponent from '../../components/maincomponents/MainComponent.vue';
+import { getMonthlyStats } from '../../apicalls/apiCalls';
+import { useFinancialsStore } from '../../stores/financials';
+import { useSettingsStore } from '../../stores/settings';
 
+const financials = useFinancialsStore();
+const settings = useSettingsStore();
 
-//api calls for data would be placed here
+const financeData = ref({
+  income: [],
+  spending: [],
+  monthlyIncome: 0,
+  monthlyExpense: 0
+});
+const loading = ref(true);
 
-const income = [
-  { month: 'Gen', amount: 5000 },
-  { month: 'Feb', amount: 4500 },
-  { month: 'Mar', amount: 6000 },
-  { month: 'Apr', amount: 5500 },
-  { month: 'Mag', amount: 7000 },
-  { month: 'Giu', amount: 500 },
-  { month: 'Lug', amount: 5000 },
-  { month: 'Ago', amount: 4500 },
-  { month: 'Set', amount: 6000 },
-  { month: 'Ott', amount: 5500 },
-  { month: 'Nov', amount: 7000 },
-  { month: 'Dic', amount: 500 }
-];
+const parseDataPeriod = (period) => {
+  const p = String(period || '');
+  if (!p || p === 'Totale') return { year: 'Totale', month: null };
+  if (p.includes('/')) {
+    const [month, year] = p.split('/');
+    return { year, month: parseInt(month) };
+  }
+  return { year: p, month: null };
+};
 
-const spending = [
-  { month: 'Gen', amount: 3000 },
-  { month: 'Feb', amount: 3500 },
-  { month: 'Mar', amount: 4000 },
-  { month: 'Apr', amount: 3800 },
-  { month: 'Mag', amount: 4200 },
-  { month: 'Giu', amount: 4500 },
-  { month: 'Lug', amount: 3000 },
-  { month: 'Ago', amount: 3500 },
-  { month: 'Set', amount: 4000 },
-  { month: 'Ott', amount: 3800 },
-  { month: 'Nov', amount: 4200 },
-  { month: 'Dic', amount: 4500 }
-];
+const fetchData = async () => {
+  loading.value = true;
+  try {
+    const { year, month } = parseDataPeriod(settings.dataPeriod);
+    const res = await getMonthlyStats(year, month);
+    financeData.value = res;
+  } catch (err) {
+    console.error("Error loading dashboard stats:", err);
+  } finally {
+    loading.value = false;
+  }
+};
 
-const monthlyIncome = ref(1000);
-const monthlyExpense = ref(500);
+watch(() => settings.dataPeriod, fetchData);
 
-const financeData = {
-  income,   
-  spending,  
-  monthlyIncome: monthlyIncome.value,
-  monthlyExpense: monthlyExpense.value
-}
+onMounted(async () => {
+  // Load categories and accounts if not loaded
+  if (financials.cashFlowCategories.length === 0) {
+    financials.fetchAll();
+  }
+  await fetchData();
+});
+
 </script>
 
 <template>
   <MainComponent
   :mainComponent="CashFlowDashboard"
-  :mainProps="{ financeData }"
+  :mainProps="{ financeData: financeData }"
   :showTopSection= true
   topSectionTitle="Riepilogo Movimenti"
   :showAddButton= true
   :showTimeButton= true
   /> 
 </template>
+
+

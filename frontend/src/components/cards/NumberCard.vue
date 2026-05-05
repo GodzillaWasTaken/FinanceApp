@@ -47,7 +47,7 @@ const formattedCurrency = computed(() => {
     
     // Reconstruct the number excluding the symbol and extra spaces
     const number = parts
-      .filter(part => part.type !== 'currency' && part.type !== 'literal') // literal rimuove spazi superflui
+      .filter(part => part.type !== 'currency' && part.type !== 'literal' && part.type !== 'minusSign')
       .map(part => part.value)
       .join('');
 

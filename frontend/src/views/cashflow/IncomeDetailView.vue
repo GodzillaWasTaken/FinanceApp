@@ -1,47 +1,75 @@
 <script setup>
+import { ref, onMounted, watch } from 'vue';
 import Detail from '@/components/maincomponents/cashflow/detail/Detail.vue';
 import MainComponent from '@/components/maincomponents/MainComponent.vue';
-
-
-//comes from api
-
+import { getMovimenti, deleteMovimento } from '@/apicalls/apiCalls';
 import { useFinancialsStore } from '@/stores/financials';
+import { useSettingsStore } from '@/stores/settings';
 
 const financials = useFinancialsStore();
+const settings = useSettingsStore();
+const incomes = ref([]);
+const page = ref(1);
+const loading = ref(false);
 
-const incomes = [
-  // 2015
-  { date: "05/01/2015", amount: 1500, category: "Income" },
-  { date: "12/01/2015", amount: 200, category: "Ripetizioni" },
-  { date: "20/01/2015", amount: 1300, category: "Income" },
-  { date: "03/02/2015", amount: 150, category: "Ripetizioni" },
-  { date: "15/02/2015", amount: 1200, category: "Income" },
-  { date: "28/02/2015", amount: 100, category: "Ripetizioni" },
-  { date: "05/03/2015", amount: 1700, category: "Income" },
-  { date: "18/03/2015", amount: 250, category: "Ripetizioni" },
-  { date: "25/03/2015", amount: 1200, category: "Income" },
-  { date: "02/04/2015", amount: 300, category: "Ripetizioni" },
-  // 2016
-  { date: "05/01/2016", amount: 1600, category: "Income" },
-  { date: "10/01/2016", amount: 180, category: "Ripetizioni" },
-  { date: "22/01/2016", amount: 1400, category: "Income" },
-  { date: "05/02/2016", amount: 600, category: "Ripetizioni" },
-  { date: "18/02/2016", amount: 1250, category: "Income" },
-  { date: "28/02/2016", amount: 150, category: "Ripetizioni" },
-  // 2017
-  { date: "05/01/2017", amount: 1500, category: "Income" },
-  { date: "12/01/2017", amount: 200, category: "Ripetizioni" },
-  { date: "20/01/2017", amount: 1350, category: "Income" },
-  { date: "03/02/2017", amount: 150, category: "Ripetizioni" },
-  // 2025
-  { date: "05/01/2025", amount: 1500, category: "Income" },
-  { date: "12/01/2025", amount: 200, category: "Ripetizioni" },
-  { date: "20/01/2025", amount: 1300, category: "Income" },
-  { date: "03/02/2025", amount: 150, category: "Ripetizioni" },
-  { date: "15/02/2025", amount: 1200, category: "Income" },
-  { date: "28/02/2025", amount: 100, category: "Ripetizioni" }
-];
+const parseDataPeriod = (period) => {
+  if (!period || period === 'Totale') return { year: 'Totale', month: null };
+  if (period.includes('/')) {
+    const [month, year] = period.split('/');
+    return { year, month: parseInt(month) };
+  }
+  return { year: period, month: null };
+};
 
+async function fetchIncomes(reset = false) {
+  if (reset) {
+    page.value = 1;
+    incomes.value = [];
+  }
+  loading.value = true;
+  try {
+    const { year, month } = parseDataPeriod(settings.dataPeriod);
+    const res = await getMovimenti(page.value, 20, year, month);
+    const data = res.results || res;
+    
+    const mapped = data
+      .filter(m => m.tipo === 'entrata')
+      .map(m => ({
+        ...m,
+        id: m.id,
+        date: new Date(m.data).toLocaleDateString('it-IT'),
+        amount: Number(m.importo),
+        title: m.titolo,
+        category: m.categoria ? m.categoria.nome : 'Nessuna',
+        categoryColor: m.categoria ? m.categoria.color : '#ccc'
+      }));
+    
+    incomes.value = [...incomes.value, ...mapped];
+    page.value++;
+  } catch (err) {
+    console.error("Error fetching incomes:", err);
+  } finally {
+    loading.value = false;
+  }
+}
+
+watch(() => settings.dataPeriod, () => fetchIncomes(true));
+
+async function handleDelete(mv) {
+  try {
+    await deleteMovimento(mv.id);
+    incomes.value = incomes.value.filter(item => item.id !== mv.id);
+  } catch (err) {
+    console.error("Error deleting movement:", err);
+  }
+}
+
+onMounted(() => {
+  if (financials.cashFlowCategories.length === 0) {
+    financials.fetchAll();
+  }
+  fetchIncomes();
+});
 
 
 </script>
@@ -49,10 +77,19 @@ const incomes = [
 <template>
   <MainComponent
   :mainComponent="Detail"
-  :mainProps="{ desc: 'Dettagli Entrate', serie: incomes, categories: financials.cashFlowCategories }"
+  :mainProps="{ 
+    desc: 'Dettagli Entrate', 
+    serie: incomes, 
+    categories: financials.cashFlowCategories 
+  }"
   :showTopSection=true
   topSectionTitle="Dettagli Entrate"
   :showAddButton=true
   :showTimeButton=true
+  :listen="{
+    'delete-movement': handleDelete,
+    'load-more': () => fetchIncomes()
+  }"
   />
 </template>
+

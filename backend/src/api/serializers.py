@@ -30,23 +30,24 @@ class MovimentoShortSerializer(serializers.ModelSerializer):
 # for relations and foreign keys, send only the reference ID (or primary key), not the entire object
 # -------------------------------------------------------------------
 class ContoEditSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Conto
         fields = "__all__"
 
 class CategoriaEditSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.ReadOnlyField(source='user.username')
 
     class Meta:
         model = Categoria
         fields = "__all__"
 
 class MovimentoEditSerializer(serializers.ModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
+    user = serializers.ReadOnlyField(source='user.username')
     categoria = serializers.PrimaryKeyRelatedField(queryset=Categoria.objects.all())
     conto = serializers.PrimaryKeyRelatedField(queryset=Conto.objects.all(), required=False)
+    tipo = serializers.ReadOnlyField()
 
     class Meta:
         model = Movimento

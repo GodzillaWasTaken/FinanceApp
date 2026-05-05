@@ -13,5 +13,6 @@ urlpatterns = [
     path('auth/', include('djoser.urls.jwt')),
     path('auth/profile/', views.UserProfileView.as_view(), name='user-profile'),
     path('settings/', views.GlobalSettingsView.as_view(), name='global-settings'),
+    path('stats/monthly/', views.MonthlyStatsView.as_view(), name='monthly-stats'),
     path('', include(router.urls)),
 ]

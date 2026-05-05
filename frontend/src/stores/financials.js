@@ -1,24 +1,59 @@
 import { defineStore } from "pinia";
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+import { getAllConti, getAllCategorie } from '../apicalls/apiCalls';
 
 export const useFinancialsStore = defineStore('financials', () => {
 
-  const cashFlowCategories = ref([
-    { id: 1, name: 'Income', type: "income", user: 1, color: '#16a34a' },   // green
-    { id: 2, name: 'Ripetizioni', type: "income", user: 1, color: '#3b82f6' }, // blue
-    { id: 3, name: 'Car', type: "expense", user: 1, color: '#ef4444' },     // red
-    { id: 4, name: 'Food', type: "expense", user: 1, color: '#f97316' },    // orange
-    { id: 5, name: 'Shopping', type: "expense", user: 1, color: '#8b5cf6' },// purple
-    { id: 6, name: 'Travel', type: "expense", user: 1, color: '#06b6d4' },  // teal
-    { id: 7, name: 'Entertainment', type: "expense", user: 1, color: '#db2777' }, // pink
-    { id: 8, name: 'Gifts', type: "expense", user: 1, color: '#16a34a' },
-  ]);
+  const cashFlowCategories = ref([]);
+  const accounts = ref([]);
+  const loading = ref(false);
+  const error = ref(null);
 
+  async function fetchConti() {
+    loading.value = true;
+    try {
+      const data = await getAllConti();
+      // Map 'nome' to 'id' for compatibility with components expecting 'id'
+      accounts.value = (data.results || data).map(c => ({
+        ...c,
+        id: c.nome
+      }));
+    } catch (err) {
+      error.value = err;
+      console.error("Error fetching accounts:", err);
+    } finally {
+      loading.value = false;
+    }
+  }
 
-  const accounts = ref([
-    { id: 1, name: 'Conto Corrente', color: '#0ea5e9' },
-    { id: 2, name: 'Carta di Credito', color: '#f59e0b' },
-  ]);
+  async function fetchCategorie() {
+    loading.value = true;
+    try {
+      const data = await getAllCategorie();
+      // Map 'nome' to 'id' for compatibility with components expecting 'id'
+      cashFlowCategories.value = (data.results || data).map(c => ({
+        ...c,
+        id: c.nome
+      }));
+    } catch (err) {
+      error.value = err;
+      console.error("Error fetching categories:", err);
+    } finally {
+      loading.value = false;
+    }
+  }
 
-  return { cashFlowCategories, accounts};
+  async function fetchAll() {
+    await Promise.all([fetchConti(), fetchCategorie()]);
+  }
+
+  return { 
+    cashFlowCategories, 
+    accounts, 
+    loading, 
+    error, 
+    fetchConti, 
+    fetchCategorie, 
+    fetchAll 
+  };
 });
