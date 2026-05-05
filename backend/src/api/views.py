@@ -17,7 +17,7 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 
 
 
-# ----------------- MIXIN PER CAMBIO SERIALIZER -----------------
+# ----------------- MIXIN FOR SERIALIZER CHANGE -----------------
 
 class DynamicSerializerMixin:
     short_serializer_class = None
@@ -33,7 +33,7 @@ class DynamicSerializerMixin:
         if getattr(self, 'action', None) in ('create', 'update', 'partial_update'):
             return self.edit_serializer_class or self.serializer_class
 
-        # List (con paginazione) -> list serializer
+        # List (with pagination) -> list serializer
         return self.serializer_class
 
 
@@ -44,14 +44,14 @@ class BaseModelViewSet(DynamicSerializerMixin, viewsets.ModelViewSet):
     pagination_class = DefaultPagination
 
     def get_queryset(self):
-        # restituisce solo i dati dell’utente loggato
+        # returns only the logged-in user's data
         return super().get_queryset().filter(user=self.request.user)
 
     def perform_create(self, serializer):
-        # forza user = utente loggato
+        # force user = logged-in user
         serializer.save(user=self.request.user)
 
-# ----------------- VIEWSET PER OGNI MODELLO -----------------
+# ----------------- VIEWSET FOR EACH MODEL -----------------
 class ContoViewSet(BaseModelViewSet):
     queryset = Conto.objects.all().order_by("nome")
     serializer_class = ContoListSerializer
@@ -103,7 +103,7 @@ class CustomRegistrationView(APIView):
         settings = GlobalSettings.load()
         
         if not is_first_user and not settings.allow_registration:
-            return Response({"error": "Le registrazioni sono chiuse."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "Registrations are closed."}, status=status.HTTP_403_FORBIDDEN)
         
         username = request.data.get("username")
         password = request.data.get("password")
@@ -117,7 +117,7 @@ class CustomRegistrationView(APIView):
         if User.objects.filter(username=username).exists():
             return Response({"error": "Username già in uso."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Creazione atomica utente e salvataggio chiavi
+        # Atomic user creation and key saving
 
         with transaction.atomic():
             user = User.objects.create_user(username=username, email=email, password=password)
@@ -126,7 +126,7 @@ class CustomRegistrationView(APIView):
                 user.is_superuser = True
                 user.save()
                 
-            # Il profilo viene creato dal signal
+            # The profile is created by the signal
             profile = user.profile
             profile.encrypted_master_key = encrypted_master_key
             profile.recovery_encrypted_master_key = recovery_encrypted_master_key
@@ -136,8 +136,8 @@ class CustomRegistrationView(APIView):
 
 
 class GlobalSettingsView(APIView):
-    # GET è pubblico per sapere se poter mostrare il bottone
-    # PATCH è solo per gli admin
+    # GET is public to know if the button should be shown
+    # PATCH is for admins only
     
     def get_permissions(self):
         if self.request.method == 'GET':

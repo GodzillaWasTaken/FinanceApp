@@ -27,8 +27,8 @@ INSTALLED_APPS = [
 CORS_ALLOWED_ORIGINS = [
     "https://financeappfrontend.web.app",
     "https://financeappfrontend.firebaseapp.com",
-    "http://localhost",       # solo per sviluppo locale
-    "http://localhost:5173",  # solo per sviluppo locale con npm
+    "http://localhost",       # local development only
+    "http://localhost:5173",  # local development with npm
 ]
 
 CORS_ALLOW_HEADERS = list(default_headers) + [
@@ -36,7 +36,7 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # DEVE ESSERE PRIMO
+    'corsheaders.middleware.CorsMiddleware',  # MUST BE FIRST
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

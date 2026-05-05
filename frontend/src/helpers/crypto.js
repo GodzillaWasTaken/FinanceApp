@@ -1,32 +1,32 @@
 import CryptoJS from 'crypto-js';
 
-// Costanti
+// Constants
 const ITERATIONS = 100000;
 const KEY_SIZE = 256 / 32;
 
 /**
- * Genera una Master Key casuale a 256-bit (32 byte).
- * @returns {string} Master Key in formato esadecimale.
+ * Generates a random 256-bit (32-byte) Master Key.
+ * @returns {string} Master Key in hexadecimal format.
  */
 export function generateMasterKey() {
     return CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
 }
 
 /**
- * Genera una Recovery Key casuale (es. per il salvataggio offline).
- * Usiamo 16 byte per renderla più facile da digitare.
- * @returns {string} Recovery Key in formato esadecimale.
+ * Generates a random Recovery Key (e.g., for offline backup).
+ * We use 16 bytes to make it easier to type.
+ * @returns {string} Recovery Key in hexadecimal format.
  */
 export function generateRecoveryKey() {
     return CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
 }
 
 /**
- * Deriva una Key Encryption Key (KEK) usando PBKDF2 dalla password.
- * Usiamo lo username come salt per renderlo unico per utente.
+ * Derives a Key Encryption Key (KEK) using PBKDF2 from the password.
+ * We use the username as a salt to make it unique per user.
  * @param {string} password 
- * @param {string} salt (es. username)
- * @returns {string} KEK in formato esadecimale.
+ * @param {string} salt (e.g., username)
+ * @returns {string} KEK in hexadecimal format.
  */
 export function deriveKeyEncryptionKey(password, salt) {
     const derived = CryptoJS.PBKDF2(password, salt, {
@@ -38,20 +38,20 @@ export function deriveKeyEncryptionKey(password, salt) {
 }
 
 /**
- * Cifra la Master Key usando la KEK (Password o Recovery).
+ * Encrypts the Master Key using the KEK (Password or Recovery).
  * @param {string} masterKey 
  * @param {string} kek 
- * @returns {string} Master Key cifrata.
+ * @returns {string} Encrypted Master Key.
  */
 export function encryptKey(masterKey, kek) {
     return CryptoJS.AES.encrypt(masterKey, kek).toString();
 }
 
 /**
- * Decifra la Master Key usando la KEK (Password o Recovery).
+ * Decrypts the Master Key using the KEK (Password or Recovery).
  * @param {string} encryptedMasterKey 
  * @param {string} kek 
- * @returns {string|null} Master Key decifrata o null se fallisce.
+ * @returns {string|null} Decrypted Master Key or null if it fails.
  */
 export function decryptKey(encryptedMasterKey, kek) {
     try {
@@ -64,7 +64,7 @@ export function decryptKey(encryptedMasterKey, kek) {
 }
 
 /**
- * Cifra un dato testuale (es. titolo, descrizione) usando la Master Key.
+ * Encrypts textual data (e.g., title, description) using the Master Key.
  * @param {string} text 
  * @param {string} masterKey 
  * @returns {string} Ciphertext.
@@ -75,17 +75,17 @@ export function encryptData(text, masterKey) {
 }
 
 /**
- * Decifra un dato testuale usando la Master Key.
- * Se la decifratura fallisce (es. dato non cifrato o chiave errata),
- * restituisce il testo originale (utile per la transizione o errori).
+ * Decrypts textual data using the Master Key.
+ * If decryption fails (e.g., data not encrypted or incorrect key),
+ * returns the original text (useful for transition or errors).
  * @param {string} ciphertext 
  * @param {string} masterKey 
- * @returns {string} Testo in chiaro.
+ * @returns {string} Plaintext.
  */
 export function decryptData(ciphertext, masterKey) {
     if (!ciphertext) return ciphertext;
     try {
-        // Un semplice check per non tentare di decifrare testo normale
+        // A simple check to avoid trying to decrypt normal text
         if (!ciphertext.startsWith('U2FsdGVkX1')) {
             return ciphertext;
         }

@@ -8,7 +8,7 @@ const refreshToken = ref(localStorage.getItem('refreshToken') || null)
 // const permissions = ref(localStorage.getItem('userPermissions') || null)
 const authError = ref(null)
 
-// 🔹 funzione helper per tradurre l'errore in stringa
+// 🔹 helper function to translate the error into a string
 function parseError(err, fallbackMessage = 'Si è verificato un errore.') {
   if (!err.response) {
     return 'Errore di rete, riprova più tardi.'
@@ -24,7 +24,7 @@ function parseError(err, fallbackMessage = 'Si è verificato un errore.') {
     return data.detail
   }
 
-  // Se è un oggetto con campi (es. { email: ["..."], password: ["..."] })
+  // If it's an object with fields (e.g., { email: ["..."], password: ["..."] })
   const firstKey = Object.keys(data)[0]
   if (firstKey) {
     const val = data[firstKey]
@@ -54,51 +54,51 @@ export function useAuth() {
         const profileRes = await axiosInstance.get('api/auth/profile/')
         const profile = profileRes.data
         let encryptedMasterKey = profile.encrypted_master_key
-        
+
         const kek = deriveKeyEncryptionKey(password, username)
 
         if (!encryptedMasterKey) {
-            // New user or no key yet
-            const newMasterKey = generateMasterKey()
-            encryptedMasterKey = encryptKey(newMasterKey, kek)
-            
-            const recoveryKey = generateRecoveryKey()
-            const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
-            const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
-            
-            await axiosInstance.patch('api/auth/profile/', {
-                encrypted_master_key: encryptedMasterKey,
-                recovery_encrypted_master_key: recoveryEncryptedKey
-            })
+          // New user or no key yet
+          const newMasterKey = generateMasterKey()
+          encryptedMasterKey = encryptKey(newMasterKey, kek)
 
-            sessionStorage.setItem('masterKey', newMasterKey)
-            sessionStorage.setItem('tempRecoveryKey', recoveryKey)
+          const recoveryKey = generateRecoveryKey()
+          const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
+          const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
+
+          await axiosInstance.patch('api/auth/profile/', {
+            encrypted_master_key: encryptedMasterKey,
+            recovery_encrypted_master_key: recoveryEncryptedKey
+          })
+
+          sessionStorage.setItem('masterKey', newMasterKey)
+          sessionStorage.setItem('tempRecoveryKey', recoveryKey)
         } else {
-            const decryptedMasterKey = decryptKey(encryptedMasterKey, kek)
-            if (decryptedMasterKey) {
-                sessionStorage.setItem('masterKey', decryptedMasterKey)
-            } else {
-                throw new Error("Impossibile decifrare la chiave master. Dati corrotti.")
-            }
+          const decryptedMasterKey = decryptKey(encryptedMasterKey, kek)
+          if (decryptedMasterKey) {
+            sessionStorage.setItem('masterKey', decryptedMasterKey)
+          } else {
+            throw new Error("Impossibile decifrare la chiave master. Dati corrotti.")
+          }
         }
-      } catch(e) {
-          console.error("Errore E2EE:", e)
-          authError.value = "Errore durante l'inizializzazione della crittografia."
-          // Clear tokens since login is effectively failed if E2EE fails
-          localStorage.removeItem('authToken')
-          localStorage.removeItem('refreshToken')
-          return
+      } catch (e) {
+        console.error("Errore E2EE:", e)
+        authError.value = "Errore durante l'inizializzazione della crittografia."
+        // Clear tokens since login is effectively failed if E2EE fails
+        localStorage.removeItem('authToken')
+        localStorage.removeItem('refreshToken')
+        return
       }
 
       // Update reactive variables now that sessionStorage has the key
       authToken.value = access
       refreshToken.value = refresh
-      
+
       if (shouldRedirect) {
-        router.push('/cashflow') //PER ORA è QUESTA, POI CI SARA LA DASHBOARD COMPLETA CHE AVRA LA ROUTE /
+        router.push('/cashflow') // FOR NOW it's this, LATER there will be the FULL DASHBOARD which will have the route /
       }
     } catch (err) {
-      if(!authError.value) {
+      if (!authError.value) {
         authError.value = parseError(err, 'Credenziali non valide')
       }
     } finally {
@@ -141,7 +141,7 @@ export function useAuth() {
       const newMasterKey = generateMasterKey()
       const kek = deriveKeyEncryptionKey(password, username)
       const encryptedMasterKey = encryptKey(newMasterKey, kek)
-      
+
       const recoveryKey = generateRecoveryKey()
       const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
       const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
@@ -163,7 +163,7 @@ export function useAuth() {
     } catch (err) {
       authError.value = parseError(err, 'Registrazione fallita')
       console.error(err)
-      throw err // Rilancia per gestirlo nel componente
+      throw err // Rethrow to handle it in the component
     }
   }
 

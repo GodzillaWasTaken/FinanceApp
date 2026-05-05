@@ -39,13 +39,13 @@ const formattedCurrency = computed(() => {
       maximumFractionDigits: 2 
     });
 
-    // formatToParts ci restituisce un array di pezzi
+    // formatToParts returns an array of parts
     const parts = formatter.formatToParts(props.value);
     
-    // Estraiamo il simbolo (es. "€")
+    // Extract the symbol (e.g., "€")
     const symbol = parts.find(part => part.type === 'currency')?.value;
     
-    // Ricostruiamo il numero escludendo il simbolo e gli spazi extra
+    // Reconstruct the number excluding the symbol and extra spaces
     const number = parts
       .filter(part => part.type !== 'currency' && part.type !== 'literal') // literal rimuove spazi superflui
       .map(part => part.value)
@@ -54,7 +54,7 @@ const formattedCurrency = computed(() => {
     return { number, symbol };
   }
   
-  // Fallback se non è un numero
+  // Fallback if not a number
   return { number: props.value, symbol: '' };
 })
 </script>

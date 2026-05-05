@@ -29,8 +29,8 @@ const handleUnlock = async () => {
 
         if (decryptedMasterKey) {
             sessionStorage.setItem('masterKey', decryptedMasterKey);
-            // Sbloccato con successo, ricarica la pagina o vai alla dashboard
-            router.go(0); // ricarica la route attuale
+            // Successfully unlocked, reload the page or go to the dashboard
+            router.go(0); // reload the current route
         } else {
             error.value = "Password errata. Impossibile decifrare i dati.";
         }

@@ -33,7 +33,7 @@ const handleRegister = async () => {
     await register(email.value, username.value, password.value);
     recoveryKey.value = sessionStorage.getItem('tempRecoveryKey');
   } catch (e) {
-    // Gestito in useAuth
+    // Handled in useAuth
   }
 };
 

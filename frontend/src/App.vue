@@ -6,7 +6,7 @@ import UnlockVault from './components/UnlockVault.vue'
 
 const { authToken } = useAuth()
 
-// Controlla se l'utente è loggato (ha il JWT) ma NON ha la Master Key in memoria
+// Check if the user is logged in (has JWT) but does NOT have the Master Key in memory
 const isVaultLocked = computed(() => {
   const hasToken = !!authToken.value;
   const hasKey = !!sessionStorage.getItem('masterKey');

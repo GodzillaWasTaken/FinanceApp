@@ -5,15 +5,15 @@ import TopSection from './TopSection.vue';
 import { useSettingsStore } from '../../stores/settings';
 import { ref } from 'vue';
 
-// Disabilita l'ereditarietà degli attributi per evitare che gli eventi/attributi
-// siano applicati al div radice di MainComponent
+// Disable attribute inheritance to prevent events/attributes
+// from being applied to the root div of MainComponent
 defineOptions({
     inheritAttrs: false
 })
 
 defineProps({
     mainComponent: Object,
-    //prop per l'oggetto component che viene sostituito a mainComponent
+    // prop for the component object that replaces mainComponent
     mainProps:{
         type: Object,
         default: () => ({})
@@ -90,7 +90,7 @@ function close() {
             />
           </section>
 
-              <!-- opacty when selecting time frame-->
+              <!-- opacity when selecting time frame-->
             <transition name="fade">
                   <div
                     v-if="isTimeFrameButtonActive"

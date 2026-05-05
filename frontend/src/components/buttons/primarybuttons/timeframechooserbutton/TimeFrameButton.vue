@@ -24,7 +24,7 @@ const preSetButtons = [
   { id: 1, label: 'Totale' }
 ]
 
-//gestione della dimensinione finestra per mostrare popover mobile o desktop
+// handle window size to show mobile or desktop popover
 const windowWidth = ref(window.innerWidth)
 
 function handleResize() {
@@ -64,7 +64,7 @@ function timeFrameUpdated(timeFrame, source) {
 
 
 
-// doc handlers gestiti dinamicamente
+// doc handlers managed dynamically
 const docClickHandler = (e) => {
   if (!root.value) return
   if (!root.value.contains(e.target)) toggle()
@@ -94,7 +94,7 @@ async function focusFirstInPanel() {
   }
 }
 
-// watch su isOpen per aggiungere/rimuovere listener e gestire focus
+// watch on isOpen to add/remove listeners and manage focus
 watch(isOpen, (val) => {
   if (val) {
     addDocListeners()

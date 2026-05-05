@@ -3,9 +3,9 @@ from django.contrib.auth.models import User
 from .models import Conto, Categoria, Movimento
 
 # -------------------------------------------------------------------
-# SHORT SERIALIZERS (per riferimenti annidati)
-# permette di ottenre api piu rapide e con payload minore, utile per ottenere le
-# informazioni essenziali di un oggetto quando e' referenziato in un altro
+# SHORT SERIALIZERS (for nested references)
+# allows for faster APIs and smaller payloads, useful for obtaining the
+# essential information of an object when it's referenced in another
 # -------------------------------------------------------------------
 class ContoShortSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,8 +26,8 @@ class MovimentoShortSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 # -------------------------------------------------------------------
-# EDIT SERIALIZERS (per creare o aggiornare)
-# per relazioni e chiavi esterne mandi solo l'id di referenza (o la chiave primaria) non tutto l'oggetto
+# EDIT SERIALIZERS (for creating or updating)
+# for relations and foreign keys, send only the reference ID (or primary key), not the entire object
 # -------------------------------------------------------------------
 class ContoEditSerializer(serializers.ModelSerializer):
     user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all())
@@ -53,7 +53,7 @@ class MovimentoEditSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 # -------------------------------------------------------------------
-# LIST SERIALIZERS (per API con paginazione)
+# LIST SERIALIZERS (for APIs with pagination)
 # -------------------------------------------------------------------
 class ContoListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -74,7 +74,7 @@ class MovimentoListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 # -------------------------------------------------------------------
-# DETAIL SERIALIZERS (per visualizzazione dettagliata)
+# DETAIL SERIALIZERS (for detailed view)
 # -------------------------------------------------------------------
 class ContoDetailSerializer(serializers.ModelSerializer):
     class Meta:

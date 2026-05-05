@@ -1,7 +1,7 @@
 import axiosInstance from '../axios';
 import { encryptData, decryptData } from '../helpers/crypto';
 
-// Helpers per E2EE
+// Helpers for E2EE
 function encryptMovimentoPayload(data) {
     const masterKey = sessionStorage.getItem('masterKey');
     if (!masterKey || !data) return data;
@@ -20,7 +20,7 @@ function decryptMovimentoResponse(item) {
     return decrypted;
 }
 
-// Helper generico per le richieste API
+// Generic helper for API requests
 function apiRequest(endpoint, method = 'GET', data = null, params = null) {
     const config = {
         url: endpoint,
@@ -31,7 +31,7 @@ function apiRequest(endpoint, method = 'GET', data = null, params = null) {
     return axiosInstance(config).then(res => res.data);
 }
 
-// -------------------- CONTI --------------------
+// -------------------- ACCOUNTS --------------------
 export function getConti(page = 1, pageSize = 10) {
     return apiRequest('/api/conti/', 'GET', null, { page, page_size: pageSize });
 }
@@ -52,7 +52,7 @@ export function getAllConti() {
     return apiRequest('/api/conti/', 'GET', null, { page_size: 'all' });
 }
 
-// -------------------- CATEGORIE --------------------
+// -------------------- CATEGORIES --------------------
 export function getCategorie(page = 1, pageSize = 10) {
     return apiRequest('/api/categorie/', 'GET', null, { page, page_size: pageSize });
 }
@@ -73,7 +73,7 @@ export function getAllCategorie() {
     return apiRequest('/api/categorie/', 'GET', null, { page_size: 'all' });
 }
 
-// -------------------- MOVIMENTI --------------------
+// -------------------- MOVEMENTS --------------------
 export function getMovimenti(page = 1, pageSize = 10) {
     return apiRequest('/api/movimenti/', 'GET', null, { page, page_size: pageSize }).then(res => {
         if (res.results) {
@@ -99,7 +99,7 @@ export function deleteMovimento(id) {
     return apiRequest(`/api/movimenti/${id}/`, 'DELETE');
 }
 
-// -------------------- UTENTE (Djoser) --------------------
+// -------------------- USER (Djoser) --------------------
 export function getCurrentUser() {
     return apiRequest('/api/auth/users/me/', 'GET');
 }

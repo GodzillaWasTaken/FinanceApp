@@ -43,17 +43,17 @@ const settings = useSettingsStore();
 const defaultMenuOpen = settings.defaultMenuOpen;
 const isHoverHomeIcon = ref(false)
 const isHoverCloseMenuOnMobileIcon = ref(false)
-const isOpen = ref(false) // Sidebar mobile
+const isOpen = ref(false) // Mobile sidebar
 
-// --- LOGICA SOTTOMENU SIDEBAR ---
+// --- SIDEBAR SUBMENU LOGIC ---
 const activeSubMenu = ref(null) 
 const isSubMenuVisible = ref(false)
 
-// --- LOGICA SOTTOMENU BOTTOM SHEET (MOBILE) ---
+// --- BOTTOM SHEET SUBMENU LOGIC (MOBILE) ---
 const isMobileBottomSheetOpen = ref(false)
 const activeMobileBottomMenu = ref(null)
 
-// Gestione click dalla SIDEBAR (Desktop e Mobile Hamburger)
+// Sidebar click handling (Desktop and Mobile Hamburger)
 const handleSidebarVoiceClick = (item) => {
   if (item.voices && item.voices.length > 0) {
     activeSubMenu.value = item
@@ -64,10 +64,10 @@ const handleSidebarVoiceClick = (item) => {
   }
 }
 
-// Gestione click dalla BOTTOM NAV (Mobile fissa in basso)
+// BOTTOM NAV click handling (Mobile fixed at bottom)
 const handleBottomNavClick = (item) => {
   if (item.voices && item.voices.length > 0) {
-    // Se è già aperto lo stesso menu, chiudilo, altrimenti aprilo
+    // If the same menu is already open, close it, otherwise open it
     if (isMobileBottomSheetOpen.value && activeMobileBottomMenu.value?.name === item.name) {
       closeBottomSheet()
     } else {
@@ -75,7 +75,7 @@ const handleBottomNavClick = (item) => {
       isMobileBottomSheetOpen.value = true
     }
   } else {
-    // Navigazione normale
+    // Normal navigation
     closeBottomSheet()
   }
 }
@@ -100,7 +100,7 @@ watch(() => settings.defaultMenuOpen, () => {
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
-  // Se apro la sidebar, chiudo il bottom sheet per evitare confusione
+  // If I open the sidebar, I close the bottom sheet to avoid confusion
   if(isOpen.value) closeBottomSheet()
 }
 
@@ -116,9 +116,9 @@ onUnmounted(() => {
 
 const handleClickOutside = (event) => {
   if (isOpen.value && !settings.defaultMenuOpen) {
-    // Se sidebarRef non esiste o il click è fuori dalla sidebar
+    // If sidebarRef doesn't exist or the click is outside the sidebar
     const isOutsideSidebar = !sidebarRef.value || !sidebarRef.value.contains(event.target)
-    // Se menuButtonRef non esiste o il click è fuori dal bottone (per evitare conflitti con toggleMenu)
+    // If menuButtonRef doesn't exist or the click is outside the button (to avoid conflicts with toggleMenu)
     const isOutsideButton = !menuButtonRef.value || !menuButtonRef.value.contains(event.target)
     
     if (isOutsideSidebar && isOutsideButton) {
@@ -435,15 +435,15 @@ onMounted(() => {
 </template>
 
 <style>
-/* Sidebar laterale */
+/* Side sidebar */
 .slide-enter-active, .slide-leave-active { transition: transform 0.3s ease; }
 .slide-enter-from, .slide-leave-to { transform: translateX(-100%); }
 
-/* Overlay e dissolvenze */
+/* Overlay and fades */
 .fade-enter-active, .fade-leave-active { transition: opacity 0.3s ease; }
 .fade-enter-from, .fade-leave-to { opacity: 0; }
 
-/* Bottom Sheet che sale dal basso */
+/* Bottom Sheet sliding up from the bottom */
 .slide-up-enter-active, .slide-up-leave-active { 
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
 }
@@ -452,17 +452,17 @@ onMounted(() => {
   opacity: 0; 
 }
 .mobile-blur-bg {
-  /* altezza del gradiente (modifica liberamente) */
+  /* gradient height (modify freely) */
   height: 120px;
 
-  /* background trasparente */
+  /* transparent background */
   background: transparent;
 
-  /* blur forte dietro */
+  /* strong blur behind */
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
 
-  /* GRADIENTE: 0% blur in alto → 100% blur in basso */
+  /* GRADIENT: 0% blur at top → 100% blur at bottom */
   mask-image: linear-gradient(
     to bottom,
     rgba(0, 0, 0, 0) 0%,

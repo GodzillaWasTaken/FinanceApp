@@ -45,7 +45,7 @@ const routes = [
     },
   },
   {
-    // temporanea per sviluppo una volta inclusa la dashbpard completa sarà quella l'endpoint
+    // temporary for development; once the full dashboard is included, that will be the endpoint
     path: '/',
     name: 'Home',
     component: CashFlowDashboardView,

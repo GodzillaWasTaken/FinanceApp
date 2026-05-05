@@ -21,7 +21,7 @@ def save_user_profile(sender, instance, **kwargs):
     instance.profile.save()
 
 class Conto(models.Model):
-    #(valore_salvato, etichetta), valore salvato nel db, etichetta visualizzata
+    # (saved_value, label), value saved in the db, displayed label
     TIPO_CHOICES = [
         ("conto_corrente", "Conto Corrente"),
         ("revolut", "Revolut"),
@@ -83,7 +83,7 @@ class Movimento(models.Model):
 
     def save(self, *args, **kwargs):
         if self.categoria:
-            # assegna automaticamente il tipo dal tipo della categoria
+            # automatically assigns the type from the category type
             self.tipo = self.categoria.tipo
         super().save(*args, **kwargs)
 
@@ -103,7 +103,7 @@ class GlobalSettings(models.Model):
         return "Impostazioni Globali"
 
     def save(self, *args, **kwargs):
-        # Singleton pattern: ci deve essere sempre e solo una riga (ID 1)
+        # Singleton pattern: there must always and only be one row (ID 1)
         self.pk = 1
         super().save(*args, **kwargs)
 
