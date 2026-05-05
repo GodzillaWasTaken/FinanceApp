@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onUnmounted } from 'vue'
+import { ref, watch, onUnmounted, onMounted } from 'vue'
 import { 
   Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon, 
   ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon, ArrowRightStartOnRectangleIcon
@@ -11,6 +11,9 @@ import {
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
 import { useAuth } from '../../composables/useAuth'
+
+const sidebarRef = ref(null)
+const menuButtonRef = ref(null)
 
 const { logout } = useAuth()
 
@@ -108,6 +111,25 @@ watch(isOpen, (val) => {
 
 onUnmounted(() => {
   document.body.classList.remove('overflow-hidden')
+  window.removeEventListener('click', handleClickOutside)
+})
+
+const handleClickOutside = (event) => {
+  if (isOpen.value && !settings.defaultMenuOpen) {
+    // Se sidebarRef non esiste o il click è fuori dalla sidebar
+    const isOutsideSidebar = !sidebarRef.value || !sidebarRef.value.contains(event.target)
+    // Se menuButtonRef non esiste o il click è fuori dal bottone (per evitare conflitti con toggleMenu)
+    const isOutsideButton = !menuButtonRef.value || !menuButtonRef.value.contains(event.target)
+    
+    if (isOutsideSidebar && isOutsideButton) {
+      isOpen.value = false
+      closeSubMenu()
+    }
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', handleClickOutside)
 })
 </script>
 
@@ -210,7 +232,8 @@ onUnmounted(() => {
     <!-- button to slide the menu out -->
     <button 
       v-if="!isOpen"
-      @click="toggleMenu"
+      ref="menuButtonRef"
+      @click.stop="toggleMenu"
       :class="['hidden absolute left-4 z-40 text-text', defaultMenuOpen ? 'md:hidden' : 'md:block' ]"
       style="top: 8px"
     >
@@ -220,7 +243,7 @@ onUnmounted(() => {
     <transition name="fade">
       <div
         v-if="isOpen || isMobileBottomSheetOpen"
-        @click="() => { if(isOpen) toggleMenu(); if(isMobileBottomSheetOpen) closeBottomSheet(); }"
+        @click="() => { if(isOpen) { isOpen = false; closeSubMenu(); } if(isMobileBottomSheetOpen) closeBottomSheet(); }"
         :class="['fixed inset-0 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
         style="background: rgba(0,0,0,0.28); backdrop-filter: blur(3px);"
       ></div>
@@ -231,6 +254,7 @@ onUnmounted(() => {
     <transition name="slide">
       <aside 
         v-if="isOpen" 
+        ref="sidebarRef"
         class="fixed inset-y-0 left-0 w-72 md:w-44 text-gray-800 p-4 z-40 flex flex-col overflow-hidden backdrop-blur-2xl bg-white shadow-[6px_0_24px_rgba(0,0,0,0.04)] border-r border-white/60 rounded-r-3xl"
       >
         <button 
@@ -279,7 +303,6 @@ onUnmounted(() => {
                         :icon="ArrowRightStartOnRectangleIcon"
                         :iconSolid="ArrowRightStartOnRectangleIconSolid"
                         @click="handleLogout"
-                        class="text-red-500 hover:text-red-600 hover:bg-red-50"
                     />
                 </div>
               </ul>
@@ -402,7 +425,6 @@ onUnmounted(() => {
                 :icon="ArrowRightStartOnRectangleIcon"
                 :iconSolid="ArrowRightStartOnRectangleIconSolid"
                 @click="handleLogout"
-                class="text-red-500"
               />
             </div>
           </div>
