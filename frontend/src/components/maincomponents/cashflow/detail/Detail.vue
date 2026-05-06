@@ -4,9 +4,11 @@ import CumulativeLinear from '@/components/cards/charts/types/CumulativeLinear.v
 import StackedArea from '@/components/cards/charts/types/StackedArea.vue';
 import MovementList from '@/components/lists/MovementList.vue';
 import DeleteConfirmationModal from '@/components/modals/DeleteConfirmationModal.vue';
+import SelectDropdown from '@/components/formcomponents/SelectDropdown.vue';
 import BaseButton from '@/components/buttons/BaseButton.vue';
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useFinancialsStore } from '@/stores/financials';
 
 const props = defineProps({
     desc: {
@@ -24,12 +26,17 @@ const props = defineProps({
     hasMore: {
         type: Boolean,
         default: true
+    },
+    selectedCategory: {
+        type: [String, Number],
+        default: ''
     }
 })
 
-const emit = defineEmits(['delete-movement', 'load-more']);
+const emit = defineEmits(['delete-movement', 'load-more', 'filter-category']);
 
 const router = useRouter();
+const financials = useFinancialsStore();
 
 const showDeleteModal = ref(false);
 const selectedMovement = ref(null);
@@ -52,9 +59,10 @@ function confirmDelete() {
 }
 
 function onModify(mv) {
+    console.log('Detail.vue - Setting editingMovement in store:', mv);
     // set the editing movement in the store and navigate to the add/modify view
-    ('Modifying movement:', mv);
-    router.push({ name: 'AddModifyTransaction', state: { movement: mv } });
+    financials.editingMovement = mv;
+    router.push({ name: 'AddModifyTransaction' });
 }
 
 function onLoadMore() {
@@ -81,8 +89,19 @@ function formatAmount(v) {
 
         <section class="flex-1 bg-background md:pb-10">
                 <div class = "flex flex-col bg-white rounded-[10px] min-h-40 p-4 gap-4 shadow-sm">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                             <h1 class="text-2xl font-semibold">{{ desc }}</h1>
+                            <div class="w-full md:w-64">
+                                <SelectDropdown 
+                                    :items="categories" 
+                                    :model-value="selectedCategory"
+                                    placeholder="Filtra per categoria"
+                                    item-label="nome"
+                                    :show-color="true"
+                                    :filter-system-items="false"
+                                    @update:model-value="(val) => $emit('filter-category', val)"
+                                />
+                            </div>
                         </div>
 
                         <div>

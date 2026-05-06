@@ -1,11 +1,11 @@
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import AddModifyCashFlow from '../../components/maincomponents/cashflow/AddModifyCashFlow.vue';
 import MainComponent from '../../components/maincomponents/MainComponent.vue';
 import { useFinancialsStore } from '../../stores/financials';
 import { useSettingsStore } from '../../stores/settings';
-import { createMovimento, updateMovimento, createCategoria } from '../../apicalls/apiCalls';
+import { createMovimento, updateMovimento } from '../../apicalls/apiCalls';
 
 const financials = useFinancialsStore();
 const settings = useSettingsStore();
@@ -17,6 +17,28 @@ const props = defineProps({
     default: null
   }
 })
+
+// Priority: Store > Props > window.history.state
+const movementToPrefill = computed(() => {
+  if (financials.editingMovement) {
+    console.log("AddModifyTransactionView - Found movement in Store:", financials.editingMovement);
+    return financials.editingMovement;
+  }
+  
+  if (props.movement) {
+    console.log("AddModifyTransactionView - Found movement in Props:", props.movement);
+    return props.movement;
+  }
+  
+  const state = window.history.state;
+  if (state?.movement) {
+    console.log("AddModifyTransactionView - Found movement in History State:", state.movement);
+    return state.movement;
+  }
+  
+  console.log("AddModifyTransactionView - No movement found to prefill");
+  return null;
+});
 
 onMounted(() => {
   if (financials.cashFlowCategories.length === 0 || financials.accounts.length === 0) {
@@ -41,11 +63,12 @@ async function handleSubmit(movementData) {
             await updateMovimento(movementData.id, payload);
         }
         
+        // Clear editing state after successful save
+        financials.editingMovement = null;
         router.push({ name: 'CashFlowDashboard' });
     } catch (err) {
         console.error("Error saving movement:", err);
         if (err.response && err.response.data) {
-          console.error("Server response:", err.response.data);
           alert("Errore durante il salvataggio: " + JSON.stringify(err.response.data));
         } else {
           alert("Errore durante il salvataggio del movimento.");
@@ -76,7 +99,7 @@ async function handleNewAccountCreated(account) {
   :mainProps="{
     categorie: financials.cashFlowCategories,
     conti: financials.accounts,
-    prefillMovement: props.movement,
+    prefillMovement: movementToPrefill,
     currency: financials.displayCurrencySymbol || '€',
     currencyFormat: settings.currencyFormat || 'it-IT',
     currencySymbol: financials.currencySymbol || 'EUR'
@@ -91,5 +114,3 @@ async function handleNewAccountCreated(account) {
   }"
   />
 </template>
-
-

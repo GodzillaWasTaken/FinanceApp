@@ -3,6 +3,7 @@ import { ref, watch, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/vue/24/outline'
 import { onBeforeRouteLeave } from 'vue-router'
+import { useFinancialsStore } from '@/stores/financials'
 import ConfirmModal from '../../modals/ConfirmModal.vue'
 import DatePicker from 'primevue/datepicker';
 import SelectDropdown from '../../formcomponents/SelectDropdown.vue'
@@ -31,148 +32,10 @@ const form = ref({
 const validationError = ref('')
 const isSubmitting = ref(false)
 const originalFormState = ref('')
-
-// Custom Modal Navigation Logic
-const showConfirmModal = ref(false)
-let pendingNavigationNext = null
-
-const isDirty = computed(() => {
-  if (isSubmitting.value) return false
-  return JSON.stringify(form.value) !== originalFormState.value
-})
-
-onBeforeRouteLeave((to, from, next) => {
-  if (isDirty.value) {
-    showConfirmModal.value = true
-    pendingNavigationNext = next
-  } else {
-    next()
-  }
-})
-
-function handleConfirmNavigation() {
-  showConfirmModal.value = false
-  if (pendingNavigationNext) pendingNavigationNext()
-}
-
-function handleCancelNavigation() {
-  showConfirmModal.value = false
-  if (pendingNavigationNext) pendingNavigationNext(false)
-}
-
-onMounted(() => {
-  // Cattura lo stato iniziale dopo che il prefill è stato applicato
-  setTimeout(() => {
-    originalFormState.value = JSON.stringify(form.value)
-  }, 600)
-})
-
-const resetForm = () => {
-  form.value = {
-    date: new Date(),
-    amount: '',
-    category: '', 
-    account: '', 
-    description: '',
-    title: ''
-  }
-
-  displayValue.value = ''
-}
-
-
-// Determine if we are adding a new movement or modifying an existing one, check based on prefillMovement prop
-const isNewMovement = computed(() => props.prefillMovement === null || props.prefillMovement.id === undefined);
-
-
-// prefill from prop (preferred) or route query if provided
-const route = useRoute()
-onMounted(() => {
-  //control on whether we are adding a new movement or modifying an existing one
-  if (route.query.new === '1') {
-    return
-  }
-
-  // first try prop-based prefill
-  if (props.prefillMovement) {
-    const raw = props.prefillMovement
-    applyPrefill(raw)
-    return
-  }
-
-  // fallback to route query (legacy)
-  const payload = route.query?.data
-  if (!payload) return
-  try {
-    const raw = JSON.parse(decodeURIComponent(String(payload)))
-    applyPrefill(raw)
-  } catch (e) {
-    console.warn('Invalid prefill data for AddModifyCashFlow', e)
-  }
-})
-
-function applyPrefill(raw) {
-  // raw may have date as dd/mm/yyyy or yyyy-mm-dd
-  if (raw.date) {
-    const parts = String(raw.date).split(/[-\/]/)
-    if (parts.length === 3) {
-      // try dd/mm/yyyy or yyyy-mm-dd
-      if (parts[0].length === 4) {
-        // yyyy-mm-dd
-        form.value.date = new Date(raw.date)
-      } else {
-        // dd/mm/yyyy
-        const dd = parseInt(parts[0], 10)
-        const mm = parseInt(parts[1], 10) - 1
-        const yyyy = parseInt(parts[2], 10)
-        form.value.date = new Date(yyyy, mm, dd)
-      }
-    }
-  }
-  if (raw.amount !== undefined) {
-    form.value.amount = Number(raw.amount) || ''
-    displayValue.value = formatter.value.format(Number(raw.amount) || 0)
-  }
-  if (raw.title) form.value.title = raw.title
-  if (raw.description) form.value.description = raw.description
-  if (raw.category) {
-    const found = (props.categorie || []).find(c => String(c.nome) === String(raw.category) || String(c.id) === String(raw.category))
-    if (found) {
-      form.value.category = found.id || found.nome
-      selectedCategoryName.value = found.nome || ''
-    } else {
-      selectedCategoryName.value = raw.category
-      form.value.category = raw.category
-    }
-  }
-  if (raw.conto || raw.account) {
-    const accVal = raw.conto || raw.account
-    const found = (props.conti || []).find(c => String(c.nome) === String(accVal) || String(c.id) === String(accVal))
-    if (found) {
-      form.value.account = found.id || found.nome
-      selectedAccountName.value = found.nome || ''
-    } else {
-      selectedAccountName.value = accVal
-      form.value.account = accVal
-    }
-  }
-  // If raw contains id, keep it for submission
-  if (raw.id) {
-    form.value.id = raw.id
-  }
-}
-
-
-
+const financials = useFinancialsStore()
 
 const datepickerRef = ref(null)  // ref del DatePicker
 const showFutureWarning = ref(false) // new: briefly show UI warning when a future date is attempted
-
-function openDatePicker() {
-  datepickerRef.value?.$el?.querySelector('input')?.focus();
-}
-
-
 
 // money object to format currency input
 const displayValue = ref('')
@@ -207,6 +70,188 @@ const formatParts = computed(() => {
 const decimalSep = computed(() => formatParts.value.find(p => p.type === 'decimal')?.value || '.')
 const groupSep = computed(() => formatParts.value.find(p => p.type === 'group')?.value || ',')
 const currencySymbolStr = computed(() => formatParts.value.find(p => p.type === 'currency')?.value || props.currencySymbol)
+
+const selectedCategoryName = ref('') // synced for hidden required input
+const selectedAccountName = ref('')  // synced for hidden required input
+
+// Custom Modal Navigation Logic
+const showConfirmModal = ref(false)
+let pendingNavigationNext = null
+
+const isDirty = computed(() => {
+  if (isSubmitting.value) return false
+  return JSON.stringify(form.value) !== originalFormState.value
+})
+
+onBeforeRouteLeave((to, from, next) => {
+  if (isDirty.value) {
+    showConfirmModal.value = true
+    pendingNavigationNext = next
+  } else {
+    next()
+  }
+})
+
+function handleConfirmNavigation() {
+  showConfirmModal.value = false
+  if (pendingNavigationNext) pendingNavigationNext()
+}
+
+function handleCancelNavigation() {
+  showConfirmModal.value = false
+  if (pendingNavigationNext) pendingNavigationNext(false)
+}
+
+
+const resetForm = () => {
+  form.value = {
+    date: new Date(),
+    amount: '',
+    category: '', 
+    account: '', 
+    description: '',
+    title: ''
+  }
+
+  displayValue.value = ''
+}
+
+
+// Determine if we are adding a new movement or modifying an existing one, check based on prefillMovement prop
+const isNewMovement = computed(() => props.prefillMovement === null || props.prefillMovement.id === undefined);
+
+
+// prefill from prop (preferred) or route query if provided
+const route = useRoute()
+
+function initPrefill() {
+  const historyState = window.history.state;
+  const storedMovement = financials.editingMovement;
+  
+  console.log("AddModifyCashFlow - Prop prefillMovement:", props.prefillMovement);
+  console.log("AddModifyCashFlow - Store/Storage editingMovement:", storedMovement);
+  
+  if (route.query.new === '1') {
+    financials.editingMovement = null;
+    resetForm()
+    return
+  }
+
+  const target = props.prefillMovement || storedMovement || historyState?.movement;
+  if (target) {
+    console.log("AddModifyCashFlow - Target found, applying prefill:", target);
+    applyPrefill(target)
+  } else {
+    const payload = route.query?.data
+    if (payload) {
+      try {
+        const raw = JSON.parse(decodeURIComponent(String(payload)))
+        applyPrefill(raw)
+      } catch (e) {
+        console.warn('Invalid prefill data for AddModifyCashFlow', e)
+      }
+    }
+  }
+}
+
+onMounted(() => {
+  initPrefill()
+})
+
+// Watch for prop changes to re-apply prefill (handles async loading)
+watch(() => props.prefillMovement, (newVal) => {
+  if (newVal) applyPrefill(newVal)
+}, { immediate: true })
+
+// Watch for categories/accounts loading to re-apply prefill if necessary
+watch([() => props.categorie, () => props.conti], () => {
+  if (props.prefillMovement || route.query.data) {
+    initPrefill()
+  }
+}, { deep: true })
+
+// Capture original state for dirty check, but only after prefill settles
+watch(form, () => {
+  if (!originalFormState.value && !isSubmitting.value) {
+     setTimeout(() => {
+       if (!originalFormState.value) originalFormState.value = JSON.stringify(form.value)
+     }, 800)
+  }
+}, { once: true })
+
+function applyPrefill(raw) {
+  if (!raw) return
+
+  // 1. Date
+  if (raw.data || raw.date) {
+    const dateVal = raw.data || raw.date
+    // Handle both YYYY-MM-DD (ISO) and DD/MM/YYYY (Italian)
+    if (typeof dateVal === 'string' && dateVal.includes('/')) {
+      const parts = dateVal.split('/')
+      form.value.date = new Date(parts[2], parts[1] - 1, parts[0])
+    } else {
+      form.value.date = new Date(dateVal)
+    }
+  }
+
+  // 2. Amount
+  if (raw.importo !== undefined || raw.amount !== undefined) {
+    const amt = raw.importo !== undefined ? raw.importo : raw.amount
+    form.value.amount = Number(amt) || 0
+    displayValue.value = formatter.value.format(form.value.amount)
+  }
+
+  // 3. Title & Description
+  if (raw.titolo || raw.title) form.value.title = raw.titolo || raw.title
+  if (raw.descrizione || raw.description) form.value.description = raw.descrizione || raw.description
+
+  // 4. Category
+  const catVal = raw.categoria || raw.category
+  if (catVal) {
+    const catId = typeof catVal === 'object' ? catVal.id : catVal
+    const found = (props.categorie || []).find(c => 
+      String(c.id) === String(catId) || 
+      String(c.nome).toLowerCase() === String(catId).toLowerCase()
+    )
+    if (found) {
+      form.value.category = found.id
+      selectedCategoryName.value = found.nome
+    } else if (typeof catVal === 'string') {
+      selectedCategoryName.value = catVal
+      form.value.category = catVal
+    }
+  }
+
+  // 5. Account
+  const accVal = raw.conto || raw.account
+  if (accVal) {
+    const accId = typeof accVal === 'object' ? accVal.id : accVal
+    const found = (props.conti || []).find(c => 
+      String(c.id) === String(accId) || 
+      String(c.nome).toLowerCase() === String(accId).toLowerCase()
+    )
+    if (found) {
+      form.value.account = found.id
+      selectedAccountName.value = found.nome
+    } else if (typeof accVal === 'string') {
+      selectedAccountName.value = accVal
+      form.value.account = accVal
+    }
+  }
+
+  // 6. ID for update
+  if (raw.id) form.value.id = raw.id
+}
+
+
+
+
+function openDatePicker() {
+  datepickerRef.value?.$el?.querySelector('input')?.focus();
+}
+
+
+
 
 // helper to escape regex special chars
 const _escapeRegex = (s = '') => s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
@@ -320,8 +365,6 @@ const onBlur = () => {
 
 
 
-const selectedCategoryName = ref('') // synced for hidden required input
-const selectedAccountName = ref('')  // synced for hidden required input
 
 // handlers for SelectDropdown events
 function onCategorySelect(cat) {
@@ -480,7 +523,7 @@ watch(
             <div class = "flex flex-col p-4 gap-4 bg-white mt-10 mb-20 md:mb-6 rounded-[10px] min-h-40 shadow-sm">
                     <div class="flex items-center gap-2">
                         <PlusCircleIcon class="h-6 w-6 text-primary" />
-                        <h2 class="text-xl font-bold text-text">Aggiungi Movimento</h2>
+                        <h2 class="text-xl font-bold text-text">{{ isNewMovement ? 'Aggiungi Movimento' : 'Modifica Movimento' }}</h2>
                     </div>
 
                     <!-- wrap fields in a native form to enable browser required validation -->

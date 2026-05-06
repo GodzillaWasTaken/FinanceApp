@@ -15,7 +15,8 @@ const props = defineProps({
   required: { type: Boolean, default: false },
 
   allowCreateCategory: { type: Boolean, default: false },
-  allowCreateAccount: { type: Boolean, default: false }
+  allowCreateAccount: { type: Boolean, default: false },
+  filterSystemItems: { type: Boolean, default: true }
 })
 
 const emit = defineEmits(['update:modelValue', 'select', 'clear', 'item-created'])
@@ -27,9 +28,13 @@ const containerRef = ref(null)
 const showCreateModal = ref(false)
 
 const filtered = computed(() => {
-  if (!props.searchEnabled || !search.value) return props.items || []
+  let list = props.items || []
+  if (props.filterSystemItems) {
+    list = list.filter(i => !i.is_system)
+  }
+  if (!props.searchEnabled || !search.value) return list
   const q = String(search.value).toLowerCase()
-  return (props.items || []).filter(i => (String(i[props.itemLabel] || '')).toLowerCase().includes(q))
+  return list.filter(i => (String(i[props.itemLabel] || '')).toLowerCase().includes(q))
 })
 
 const selectedItem = computed(() => {

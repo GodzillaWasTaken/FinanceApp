@@ -12,6 +12,7 @@ const expenses = ref([]);
 const page = ref(1);
 const loading = ref(false);
 const hasMore = ref(true);
+const selectedCategoryId = ref('');
 
 const parseDataPeriod = (period) => {
   if (!period || period === 'Totale') return { year: 'Totale', month: null };
@@ -31,14 +32,16 @@ async function fetchExpenses(reset = false) {
   loading.value = true;
   try {
     const { year, month } = parseDataPeriod(settings.dataPeriod);
-    const res = await getMovimenti(page.value, 20, year, month);
+    const filters = {};
+    if (selectedCategoryId.value) filters.categoria = selectedCategoryId.value;
+    
+    const res = await getMovimenti(page.value, 20, year, month, filters);
     const data = res.results || res;
     
     const mapped = data
       .filter(m => m.tipo === 'uscita')
       .map(m => ({
         ...m,
-        id: m.id,
         date: new Date(m.data).toLocaleDateString('it-IT'),
         amount: Number(m.importo),
         title: m.titolo,
@@ -63,6 +66,7 @@ async function fetchExpenses(reset = false) {
 }
 
 watch(() => settings.dataPeriod, () => fetchExpenses(true));
+watch(selectedCategoryId, () => fetchExpenses(true));
 
 async function handleDelete(mv) {
   try {
@@ -98,7 +102,8 @@ onMounted(() => {
   :showTimeButton=true
   :listen="{
     'delete-movement': handleDelete,
-    'load-more': () => fetchExpenses()
+    'load-more': () => fetchExpenses(),
+    'filter-category': (val) => selectedCategoryId.value = val
   }"
   />
 </template>

@@ -1,11 +1,19 @@
 import { defineStore } from "pinia";
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { getAllConti, getAllCategorie } from '../apicalls/apiCalls';
 
 export const useFinancialsStore = defineStore('financials', () => {
 
   const cashFlowCategories = ref([]);
   const accounts = ref([]);
+  
+  // Persistent editing movement (survives refreshes)
+  const editingMovement = ref(JSON.parse(localStorage.getItem('editingMovement') || 'null'));
+  
+  watch(editingMovement, (newVal) => {
+    localStorage.setItem('editingMovement', JSON.stringify(newVal));
+  }, { deep: true });
+
   const loading = ref(false);
   const error = ref(null);
 
@@ -14,10 +22,7 @@ export const useFinancialsStore = defineStore('financials', () => {
     try {
       const data = await getAllConti();
       // Map 'nome' to 'id' for compatibility with components expecting 'id'
-      accounts.value = (data.results || data).map(c => ({
-        ...c,
-        id: c.nome
-      }));
+      accounts.value = data.results || data;
     } catch (err) {
       error.value = err;
       console.error("Error fetching accounts:", err);
@@ -31,10 +36,7 @@ export const useFinancialsStore = defineStore('financials', () => {
     try {
       const data = await getAllCategorie();
       // Map 'nome' to 'id' for compatibility with components expecting 'id'
-      cashFlowCategories.value = (data.results || data).map(c => ({
-        ...c,
-        id: c.nome
-      }));
+      cashFlowCategories.value = data.results || data;
     } catch (err) {
       error.value = err;
       console.error("Error fetching categories:", err);
@@ -50,6 +52,7 @@ export const useFinancialsStore = defineStore('financials', () => {
   return { 
     cashFlowCategories, 
     accounts, 
+    editingMovement,
     loading, 
     error, 
     fetchConti, 

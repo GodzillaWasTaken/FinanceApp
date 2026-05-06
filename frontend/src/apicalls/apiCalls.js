@@ -74,8 +74,8 @@ export function getAllCategorie() {
 }
 
 // -------------------- MOVEMENTS --------------------
-export function getMovimenti(page = 1, pageSize = 10, year = null, month = null) {
-    const params = { page, page_size: pageSize };
+export function getMovimenti(page = 1, pageSize = 10, year = null, month = null, filters = {}) {
+    const params = { page, page_size: pageSize, ...filters };
     if (year) params.year = year;
     if (month) params.month = month;
 
