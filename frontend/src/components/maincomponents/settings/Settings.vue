@@ -2,6 +2,8 @@
 import { ref, onMounted } from 'vue';
 import { Switch } from '@headlessui/vue';
 import { getCurrentUser } from '../../../apicalls/apiCalls';
+import { useAuth } from '../../../composables/useAuth';
+import { ArrowRightStartOnRectangleIcon } from '@heroicons/vue/24/outline';
 
 defineProps({
     defaultMenuOpen: {
@@ -11,6 +13,8 @@ defineProps({
 });
 
 const emit = defineEmits(['update:defaultMenuOpen']); 
+
+const { logout } = useAuth();
 
 const isAdmin = ref(false);
 const loadingAdminSettings = ref(true);
@@ -70,6 +74,18 @@ function toggleMenu(newValue) {
                                 Apri Pannello Amministratore
                             </router-link>
                         </div>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-100 mt-6 pt-6 mb-8">
+                    <div class="flex justify-center px-6">
+                        <button 
+                            @click="logout"
+                            class="flex items-center justify-center gap-2 px-8 py-3.5 bg-red-50 text-red-600 font-bold rounded-2xl cursor-pointer md:hover:bg-red-100 active:scale-95 transition-all duration-200"
+                        >
+                            <ArrowRightStartOnRectangleIcon class="h-6 w-6" />
+                            Esci dall'account
+                        </button>
                     </div>
                 </div>
 

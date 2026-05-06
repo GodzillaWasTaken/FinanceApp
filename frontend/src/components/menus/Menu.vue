@@ -6,7 +6,8 @@ import {
 } from '@heroicons/vue/24/outline'
 import { 
   PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
-  HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid, ArrowRightStartOnRectangleIcon as ArrowRightStartOnRectangleIconSolid
+  HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid, 
+  ArrowRightStartOnRectangleIcon as ArrowRightStartOnRectangleIconSolid
 } from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
@@ -238,16 +239,7 @@ onMounted(() => {
       <Bars3Icon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
     </button>
 
-    <transition name="fade">
-      <div
-        v-if="isOpen || isMobileBottomSheetOpen"
-        @click="() => { if(isOpen) { isOpen = false; closeSubMenu(); } if(isMobileBottomSheetOpen) closeBottomSheet(); }"
-        :class="['fixed inset-0 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
-        style="background: rgba(0,0,0,0.28); backdrop-filter: blur(3px);"
-      ></div>
-    </transition>
-
-    
+  
     <!-- slide menu when open (default menu open settings false) -->
     <transition name="slide">
       <aside 
@@ -296,12 +288,6 @@ onMounted(() => {
                           :iconSolid="Cog6ToothIconSolid"
                            @click="closeSubMenu"
                         />
-                    <MenuVoice
-                        menuVoice="Logout"
-                        :icon="ArrowRightStartOnRectangleIcon"
-                        :iconSolid="ArrowRightStartOnRectangleIconSolid"
-                        @click="handleLogout"
-                    />
                 </div>
               </ul>
            </div>
@@ -335,7 +321,29 @@ onMounted(() => {
 
 
 
-    <!-- mobile -->
+
+
+    <!-- MOBILE -->
+
+
+    <!-- profile mobile -->
+    <RouterLink 
+      to="/settings"
+      class="mt-2 mr-1 md:hidden absolute right-4 z-40 text-text"
+      style="top: 8px"
+      @click="closeBottomSheet"
+    >
+      <Cog6ToothIcon class="h-6 w-6 cursor-pointer transform hover:scale-110 duration-300" />
+    </RouterLink>
+
+    <transition name="fade">
+      <div
+        v-if="isOpen || isMobileBottomSheetOpen"
+        @click="() => { if(isOpen) { isOpen = false; closeSubMenu(); } if(isMobileBottomSheetOpen) closeBottomSheet(); }"
+        :class="['fixed inset-0 z-30', defaultMenuOpen ? 'md:hidden' : '' ]"
+        style="background: rgba(0,0,0,0.28); backdrop-filter: blur(3px);"
+      ></div>
+    </transition>
 
     <!-- submenu mobile -->
     <transition name="slide-up">
@@ -398,32 +406,13 @@ onMounted(() => {
           </RouterLink>
 
           <div class="flex flex-1 justify-around">
-            <div v-for="item in menuOptions.slice(2, 3)" :key="item.name" class="flex flex-col items-center min-w-0">
+            <div v-for="item in menuOptions.slice(2, 4)" :key="item.name" class="flex flex-col items-center min-w-0">
               <MenuVoice
                 :menuVoice="item.name"
                 :route="item.route"
                 :icon="item.icon"
                 :iconSolid="item.iconSolid"
                 @click="() => handleBottomNavClick(item)"
-              />
-            </div>
-
-            <div class="flex flex-col items-center min-w-0">
-              <MenuVoice
-                menuVoice="Settings"
-                route="/settings"
-                :icon="Cog6ToothIcon"
-                :iconSolid="Cog6ToothIconSolid"
-                @click="closeBottomSheet"
-              />
-            </div>
-
-            <div class="flex flex-col items-center min-w-0">
-              <MenuVoice
-                menuVoice="Logout"
-                :icon="ArrowRightStartOnRectangleIcon"
-                :iconSolid="ArrowRightStartOnRectangleIconSolid"
-                @click="handleLogout"
               />
             </div>
           </div>
