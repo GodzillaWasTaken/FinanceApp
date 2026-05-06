@@ -11,6 +11,7 @@ const settings = useSettingsStore();
 const expenses = ref([]);
 const page = ref(1);
 const loading = ref(false);
+const hasMore = ref(true);
 
 const parseDataPeriod = (period) => {
   if (!period || period === 'Totale') return { year: 'Totale', month: null };
@@ -25,6 +26,7 @@ async function fetchExpenses(reset = false) {
   if (reset) {
     page.value = 1;
     expenses.value = [];
+    hasMore.value = true;
   }
   loading.value = true;
   try {
@@ -45,7 +47,14 @@ async function fetchExpenses(reset = false) {
       }));
     
     expenses.value = [...expenses.value, ...mapped];
-    page.value++;
+    
+    // Check if there are more pages
+    if (res.next) {
+      page.value++;
+      hasMore.value = true;
+    } else {
+      hasMore.value = false;
+    }
   } catch (err) {
     console.error("Error fetching expenses:", err);
   } finally {
@@ -80,7 +89,8 @@ onMounted(() => {
   :mainProps="{ 
     desc: 'Dettagli Spese', 
     serie: expenses, 
-    categories: financials.cashFlowCategories 
+    categories: financials.cashFlowCategories,
+    hasMore: hasMore
   }"
   :showTopSection=true
   topSectionTitle="Dettagli Spese"

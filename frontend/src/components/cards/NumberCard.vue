@@ -63,7 +63,7 @@ const formattedCurrency = computed(() => {
   <div 
     :class="[
       color, 
-      'group relative flex flex-col justify-between p-2 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 overflow-hidden'
+      'group relative flex flex-col justify-between p-2 rounded-2xl shadow-sm border border-gray-100 transition-all duration-300 overflow-hidden'
     ]"
   >
     <div class="flex items-center z-10">

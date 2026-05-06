@@ -20,7 +20,11 @@ const props = defineProps({
     categories: {
     type: Object,
     default: () => ({})
-  }
+  },
+    hasMore: {
+        type: Boolean,
+        default: true
+    }
 })
 
 const emit = defineEmits(['delete-movement', 'load-more']);
@@ -92,8 +96,11 @@ function formatAmount(v) {
                             />
                         </div>
 
-                        <div class="mt-2">
-                            <BaseButton as="button" class="w-full px-4 py-2 bg-primary-light text-white rounded" @click="onLoadMore">Carica altri movimenti</BaseButton>
+                        <div class="mt-2 text-center">
+                            <BaseButton v-if="hasMore" as="button" class="w-full px-4 py-2 bg-primary-light text-white rounded" @click="onLoadMore">Mostra altri movimenti</BaseButton>
+                            <div v-else-if="hasMovements" class="text-gray-500 py-2 italic text-sm border-t border-gray-100 mt-4">
+                                Non ci sono altri movimenti da caricare
+                            </div>
                         </div>
 
                         <DeleteConfirmationModal

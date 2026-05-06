@@ -23,8 +23,7 @@ const netSign = computed(() => {
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full">
-      <RouterLink 
-        to="/notfound"
+      <div 
         class="group">
         <NumberCard 
           title="Netto" 
@@ -33,11 +32,11 @@ const netSign = computed(() => {
           :icon="BanknotesIcon"
           :sign="netSign"
           iconColor="text-nett"
-          class="relative h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 group-hover:shadow-md group-hover:-translate-y-1 snake-border snake-nett"
+          class="relative h-full items-center justify-center p-6 rounded-2xl shadow-sm border border-menuborder/50 transition-all duration-300 snake-border snake-nett"
           iconBackground="bg-nett/10"
           iconContainerClass="hide-icon-custom"
         />
-      </RouterLink>
+      </div>
       <RouterLink 
         to="/cashflow/income"
         class="group">
