@@ -29,10 +29,8 @@ const menuOptions = ref([
     icon: WalletIcon, 
     iconSolid: WalletIconSolid,
     voices: [
-      { name: 'Dashboard', route: '/', icon: HomeIcon, iconSolid: HomeIconSolid },
       { name: 'Spese', route: '/cashflow/expenses', icon: CreditCardIcon, iconSolid: CreditCardIcon },
       { name: 'Entrate', route: '/cashflow/income', icon: BanknotesIcon, iconSolid: BanknotesIcon },
-      { name: 'Aggiungi', route: '/addmodifytransaction', icon: PlusIcon, iconSolid: PlusIcon }
     ]
   },
   { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid },
@@ -343,24 +341,25 @@ onMounted(() => {
     <transition name="slide-up">
       <div 
         v-if="isMobileBottomSheetOpen"
-        class="fixed bottom-24 left-4 right-4 bg-white rounded-2xl shadow-2xl z-40 p-6 md:hidden border border-gray-100"
-      >
-         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
-            <h3 class="text-lg font-bold text-gray-800">{{ activeMobileBottomMenu?.name }}</h3>
-            <button @click="closeBottomSheet" class="text-gray-400 hover:text-gray-600">
-               <XMarkIcon class="h-6 w-6" />
-            </button>
-         </div>
-         
-         <div class="grid grid-cols-2 gap-4">
-            <div v-for="subItem in activeMobileBottomMenu?.voices" :key="subItem.name" class="flex flex-col items-center">
-               <MenuVoice
-                  :menuVoice="subItem.name"
-                  :route="subItem.route"
-                  :icon="subItem.icon"
-                  :iconSolid="subItem.iconSolid"
-                  @click="closeBottomSheet" 
-               />
+        class="fixed bottom-24 left-4 right-4 bg-white rounded-2xl shadow-2xl z-40 p-4 md:hidden border border-gray-100"
+      >  
+         <div class="flex flex-col">
+            <div class="flex justify-end">
+              <button @click="closeBottomSheet" class="text-gray-400 hover:text-gray-600">
+                  <XMarkIcon class="h-6 w-6" />
+              </button>
+            </div>
+          
+            <div class="flex justify-around items-center px-4 pb-2">
+               <div v-for="subItem in activeMobileBottomMenu?.voices" :key="subItem.name">
+                  <MenuVoice
+                     :menuVoice="subItem.name"
+                     :route="subItem.route"
+                     :icon="subItem.icon"
+                     :iconSolid="subItem.iconSolid"
+                     @click="closeBottomSheet" 
+                  />
+               </div>
             </div>
          </div>
       </div>
