@@ -2,6 +2,8 @@
 import { ref, watch, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { CheckIcon, PlusCircleIcon } from '@heroicons/vue/24/outline'
+import { onBeforeRouteLeave } from 'vue-router'
+import ConfirmModal from '../../modals/ConfirmModal.vue'
 import DatePicker from 'primevue/datepicker';
 import SelectDropdown from '../../formcomponents/SelectDropdown.vue'
 
@@ -27,6 +29,43 @@ const form = ref({
 })
 
 const validationError = ref('')
+const isSubmitting = ref(false)
+const originalFormState = ref('')
+
+// Custom Modal Navigation Logic
+const showConfirmModal = ref(false)
+let pendingNavigationNext = null
+
+const isDirty = computed(() => {
+  if (isSubmitting.value) return false
+  return JSON.stringify(form.value) !== originalFormState.value
+})
+
+onBeforeRouteLeave((to, from, next) => {
+  if (isDirty.value) {
+    showConfirmModal.value = true
+    pendingNavigationNext = next
+  } else {
+    next()
+  }
+})
+
+function handleConfirmNavigation() {
+  showConfirmModal.value = false
+  if (pendingNavigationNext) pendingNavigationNext()
+}
+
+function handleCancelNavigation() {
+  showConfirmModal.value = false
+  if (pendingNavigationNext) pendingNavigationNext(false)
+}
+
+onMounted(() => {
+  // Cattura lo stato iniziale dopo che il prefill è stato applicato
+  setTimeout(() => {
+    originalFormState.value = JSON.stringify(form.value)
+  }, 600)
+})
 
 const resetForm = () => {
   form.value = {
@@ -223,7 +262,48 @@ const onFocus = () => {
   }
 }
 
-// on blur: parse and format using the dynamic formatter
+const showNumericError = ref(false)
+const showZeroError = ref(false)
+const shakeTitle = ref(false)
+const shakeDescription = ref(false)
+const shakeAmount = ref(false)
+
+function triggerShake(type) {
+  if (type === 'title') shakeTitle.value = true
+  if (type === 'description') shakeDescription.value = true
+  if (type === 'amount') shakeAmount.value = true
+  
+  setTimeout(() => {
+    if (type === 'title') shakeTitle.value = false
+    if (type === 'description') shakeDescription.value = false
+    if (type === 'amount') shakeAmount.value = false
+  }, 300)
+}
+
+function onAmountInput(e) {
+  const original = e.target.value
+  const sanitized = original.replace(/[^0-9.]/g, '')
+  
+  if (original !== sanitized) {
+    showNumericError.value = true
+    triggerShake('amount')
+    displayValue.value = sanitized
+  } else {
+    showNumericError.value = false
+    displayValue.value = original
+  }
+
+  const parsed = parseFloat(sanitized)
+  if (!isNaN(parsed)) {
+    if (parsed > 10000000) triggerShake('amount')
+    showZeroError.value = (parsed <= 0)
+    form.value.amount = parsed
+  } else {
+    form.value.amount = ''
+    showZeroError.value = false
+  }
+}
+
 const onBlur = () => {
   const num = parseFloat(String(displayValue.value).replace(/\s+/g, ''))
   if (!isNaN(num)) {
@@ -275,12 +355,30 @@ const emit = defineEmits(['submit', 'newCategoryCreated', 'newAccountCreated'])
 function submitForm() {
   validationError.value = ''
 
+  // 1. Trim strings
+  form.value.title = form.value.title.trim()
+  form.value.description = form.value.description.trim()
+
   if (!form.value.title) {
     validationError.value = 'Inserisci un titolo per il movimento'
+    triggerShake('title')
     return
   }
   if (!form.value.amount && form.value.amount !== 0) {
     validationError.value = 'Inserisci un importo valido'
+    triggerShake('amount')
+    return
+  }
+  // 3. Zero/Negative amount check
+  if (form.value.amount <= 0) {
+    showZeroError.value = true
+    triggerShake('amount')
+    return
+  }
+  showZeroError.value = false
+  if (form.value.amount > 10000000) {
+    validationError.value = 'L\'importo massimo consentito è 10.000.000'
+    triggerShake('amount')
     return
   }
   if (!form.value.category) {
@@ -303,12 +401,17 @@ function submitForm() {
     }
   }
 
+  // 2. Disable submit during loading
+  isSubmitting.value = true
+
   emit('submit', { 
     ...form.value, 
     type: isNewMovement.value ? 'add' : 'edit',
   })
- 
-  resetForm()
+  
+  // Note: we don't reset isSubmitting here because the parent usually navigates away
+  // If there's an error, the parent would need to handle it or we'd need a prop.
+  // For now, we'll keep it simple.
 }
 
 
@@ -436,28 +539,48 @@ watch(
 
 
                     <div class="flex flex-col gap-1">
-                      <label class="text-sm font-semibold text-text text-center md:text-left">Titolo</label>
+                      <label class="text-sm font-semibold text-text text-center md:text-left flex items-center gap-2">
+                        Titolo
+                        <span :class="['text-[10px] font-normal transition-colors', form.title.length >= 50 ? 'text-red-500 font-bold' : 'text-gray-400']">
+                          ({{ form.title.length }}/50)
+                          <span v-if="form.title.length >= 50"> - Limite raggiunto!</span>
+                        </span>
+                      </label>
                       <input
                           v-model="form.title"
-                          rows="1"
+                          maxlength="50"
                           type="text"
-                          placeholder="Inserisci il titolo"
-                          class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
-                      ></input>
+                          @keydown="(e) => { if (form.title.length >= 50 && e.key.length === 1) triggerShake('title') }"
+                          placeholder="es. Spesa settimanale"
+                          :class="[
+                            'px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light transition-all',
+                            { 'animate-shake border-red-400': shakeTitle }
+                          ]"
+                      />
                     </div>
 
                     <div class="flex flex-col gap-1">
                     <label class="text-sm font-semibold text-text text-center md:text-left">Importo ({{ props.currency }})</label>
                     <input
                       type="text"
-                      v-model="displayValue"
+                      :value="displayValue"
+                      @input="onAmountInput"
                       @focus="onFocus"
                       @blur="onBlur"
                       inputmode="decimal"
-                      placeholder="00.00"
-                      class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
+                      placeholder="0.00 (max 10M)"
+                      :class="[
+                        'px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light transition-all',
+                        { 'text-red-600 border-red-300 bg-red-50': form.amount > 10000000 || showZeroError },
+                        { 'animate-shake border-red-400': shakeAmount }
+                      ]"
                     />
-                    <div class="text-sm text-gray-500">Usa il punto (.) come separatore decimale.</div>
+                    <div class="flex flex-col text-[10px] mt-1">
+                      <span v-if="showNumericError" class="text-amber-600 font-bold mb-0.5">⚠️ Sono consentiti solo numeri</span>
+                      <span v-if="showZeroError" class="text-red-500 font-bold mb-0.5">⚠️ L'importo deve essere maggiore di zero</span>
+                      <span v-if="form.amount > 10000000" class="text-red-500 font-bold mb-0.5">⚠️ Limite massimo di 10M superato!</span>
+                      <span class="text-gray-500">Usa il punto (.) per i decimali.</span>
+                    </div>
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -493,11 +616,23 @@ watch(
                     </div>
 
                     <div class="flex flex-col gap-1">
-                    <label class="text-sm font-semibold text-text text-center md:text-left">Descrizione</label>
+                    <label class="text-sm font-semibold text-text text-center md:text-left flex items-center gap-2">
+                      Descrizione
+                      <span :class="['text-[10px] font-normal transition-colors', form.description.length >= 200 ? 'text-red-500 font-bold' : 'text-gray-400']">
+                        ({{ form.description.length }}/200)
+                        <span v-if="form.description.length >= 200"> - Limite raggiunto!</span>
+                      </span>
+                    </label>
                     <textarea
                         v-model="form.description"
+                        maxlength="200"
                         rows="3"
-                        class="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light"
+                        @keydown="(e) => { if (form.description.length >= 200 && e.key.length === 1) triggerShake('description') }"
+                        placeholder="Aggiungi dettagli (opzionale)..."
+                        :class="[
+                            'px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light transition-all',
+                            { 'animate-shake border-red-400': shakeDescription }
+                        ]"
                     ></textarea>
                     </div>
 
@@ -507,13 +642,51 @@ watch(
 
                     <button
                       type="submit"
-                      class="flex items-center justify-center gap-2 px-4 py-2 rounded-md bg-primary-light text-white hover:bg-primary transition duration-300 cursor-pointer"
+                      :disabled="isSubmitting"
+                      :class="[
+                        'flex items-center justify-center gap-2 px-4 py-2 rounded-md transition duration-300',
+                        isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-primary-light text-white hover:bg-primary cursor-pointer'
+                      ]"
                     >
-                      <CheckIcon class="h-5 w-5" />
-                      Salva Movimento
+                      <template v-if="isSubmitting">
+                        <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Salvataggio...
+                      </template>
+                      <template v-else>
+                        <CheckIcon class="h-5 w-5" />
+                        Salva Movimento
+                      </template>
                     </button>
 
                     </form>
             </div>
         </section>
+
+        <!-- Custom Confirm Modal -->
+        <ConfirmModal 
+          :show="showConfirmModal"
+          title="Modifiche non salvate"
+          message="Hai inserito dei dati che non sono ancora stati salvati. Se esci ora, perderai queste modifiche. Vuoi davvero procedere?"
+          confirmText="Sì, esci"
+          cancelText="No, resta qui"
+          type="warning"
+          @confirm="handleConfirmNavigation"
+          @cancel="handleCancelNavigation"
+        />
 </template>
+
+<style scoped>
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-5px); }
+}
+
+.animate-shake {
+  animation: shake 0.2s ease-in-out;
+}
+</style>
