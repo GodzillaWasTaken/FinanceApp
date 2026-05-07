@@ -265,3 +265,6 @@ localfiles/
 
 #local scripts
 create_user.py
+
+# Docker
+docker-compose.override.yaml

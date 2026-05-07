@@ -1,44 +1,30 @@
 services:
   frontend:
-    build:
-      context: ./frontend
-      target: build-stage
-    command: npm run dev -- --host
+    image: ghcr.io/godzillawastaken/financeapp-frontend:latest
     ports:
-      - "5173:5173"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    env_file:
-      - ./frontend/.env.local
+      - "5173:80"
     depends_on:
       - backend
     networks:
-      # - swag_network
       - finance_internal
 
   backend:
-    build: ./backend
-    volumes:
-      - ./backend:/app
+    image: ghcr.io/godzillawastaken/financeapp-backend:latest
     env_file:
-      - .env.local
+      - .env
     ports:
       - "8080:8080"
     depends_on:
       - database
     networks:
-      # - swag_network
       - finance_internal
 
   database:
     image: postgres:18
     env_file:
-      - .env.local
-    ports:
-      - "5432:5432"
+      - .env
     volumes:
-      - postgres_data_financeapp:/var/lib/postgresql
+      - postgres_data_financeapp:/var/lib/postgresql/data
     networks:
       - finance_internal
 
@@ -55,8 +41,5 @@ volumes:
   postgres_data_financeapp:
 
 networks:
-  # swag_network:
-  #   external: true
   finance_internal:
-    name: finance_internal
     driver: bridge
