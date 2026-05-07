@@ -14,5 +14,6 @@ urlpatterns = [
     path('auth/profile/', views.UserProfileView.as_view(), name='user-profile'),
     path('settings/', views.GlobalSettingsView.as_view(), name='global-settings'),
     path('stats/monthly/', views.MonthlyStatsView.as_view(), name='monthly-stats'),
+    path('meta/choices/', views.MetaChoicesView.as_view(), name='meta-choices'),
     path('', include(router.urls)),
 ]

@@ -25,8 +25,15 @@ const form = ref({
   category: '', //id will be the value
   account: '', //id will be the value
   description: '',
-  title: ''
+  title: '',
+  movementType: '' // 'entrata', 'uscita', 'giroconto'
+})
 
+const movementTypes = computed(() => financials.movementTypes)
+
+const filteredCategories = computed(() => {
+  if (!form.value.movementType) return []
+  return (props.categorie || []).filter(c => c.tipo === form.value.movementType)
 })
 
 const validationError = ref('')
@@ -110,7 +117,8 @@ const resetForm = () => {
     category: '', 
     account: '', 
     description: '',
-    title: ''
+    title: '',
+    movementType: ''
   }
 
   displayValue.value = ''
@@ -216,10 +224,17 @@ function applyPrefill(raw) {
     if (found) {
       form.value.category = found.id
       selectedCategoryName.value = found.nome
+      // Also set movementType from category
+      form.value.movementType = found.tipo
     } else if (typeof catVal === 'string') {
       selectedCategoryName.value = catVal
       form.value.category = catVal
     }
+  }
+
+  // Set movementType explicitly if available in raw
+  if (raw.tipo) {
+    form.value.movementType = raw.tipo
   }
 
   // 5. Account
@@ -398,6 +413,11 @@ const emit = defineEmits(['submit', 'newCategoryCreated', 'newAccountCreated'])
 function submitForm() {
   validationError.value = ''
 
+  if (!form.value.movementType) {
+    validationError.value = 'Seleziona se il movimento è una spesa o una entrata'
+    return
+  }
+
   // 1. Trim strings
   form.value.title = form.value.title.trim()
   form.value.description = form.value.description.trim()
@@ -491,6 +511,31 @@ watch(() => form.value.date, (newDate) => {
     setTimeout(() => (showFutureWarning.value = false), 3000)
   }
 })
+
+// Reset category if it doesn't match the selected type
+watch(() => form.value.movementType, (newType) => {
+  if (!newType) {
+    form.value.category = ''
+    selectedCategoryName.value = ''
+    return
+  }
+  
+  // If we have a category, check if its type matches
+  if (form.value.category) {
+    const cat = (props.categorie || []).find(c => String(c.id) === String(form.value.category))
+    if (cat && cat.tipo !== newType) {
+      form.value.category = ''
+      selectedCategoryName.value = ''
+    }
+  }
+})
+
+function setMovementType(type) {
+  form.value.movementType = type
+  if (validationError.value.includes('tipo')) {
+    validationError.value = ''
+  }
+}
 
 // keep selectedCategoryName in sync if parent sets form.category directly
 watch(() => form.value.category, (val) => {
@@ -627,19 +672,60 @@ watch(
                     </div>
 
                     <div class="flex flex-col gap-1">
+                      <label class="text-sm font-semibold text-text text-center md:text-left">Tipo Movimento</label>
+                      
+                      <!-- Mobile: Buttons -->
+                      <div class="flex gap-2 md:hidden">
+                        <button 
+                          v-for="type in movementTypes"
+                          :key="type.id"
+                          type="button" 
+                          @click="setMovementType(type.id)"
+                          :class="[
+                            'flex-1 py-2 px-4 rounded-md border transition-all text-sm font-medium cursor-pointer',
+                            form.movementType === type.id 
+                              ? `${type.bgClass} text-white ${type.borderClass} shadow-sm` 
+                              : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                          ]"
+                        >
+                          {{ type.label }}
+                        </button>
+                      </div>
+
+                      <!-- Desktop: Dropdown -->
+                      <div class="hidden md:block">
+                        <SelectDropdown
+                          :items="movementTypes"
+                          v-model="form.movementType"
+                          itemLabel="label"
+                          placeholder="Seleziona tipo movimento"
+                          :searchEnabled="false"
+                          :clearable="false"
+                          :showColor="true"
+                          @select="(val) => setMovementType(val.id)"
+                        />
+                      </div>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
                       <label class="text-sm font-semibold text-text text-center md:text-left">Categoria</label>
-                      <SelectDropdown
-                        :items="props.categorie"
-                        v-model="form.category"
-                        itemLabel="nome"
-                        :showColor="true"
-                        placeholder="Seleziona categoria"
-                        @select="onCategorySelect"
-                        @clear="onCategoryClear"
-                        :required="true"
-                        :allowCreateCategory="true"
-                        @item-created="(c) => emit('newCategoryCreated', c)"
-                      />
+                      <div class="relative group">
+                        <SelectDropdown
+                          :items="filteredCategories"
+                          v-model="form.category"
+                          itemLabel="nome"
+                          :showColor="true"
+                          :placeholder="!form.movementType ? 'Seleziona prima il tipo' : 'Seleziona categoria'"
+                          @select="onCategorySelect"
+                          @clear="onCategoryClear"
+                          :required="true"
+                          :allowCreateCategory="true"
+                          :initialType="form.movementType"
+                          :disabled="!form.movementType"
+                          @item-created="(c) => emit('newCategoryCreated', c)"
+                        />
+                        <div v-if="!form.movementType" class="absolute inset-0 z-10 cursor-not-allowed" @click="validationError = 'Seleziona prima il tipo di movimento'"></div>
+                      </div>
                     </div>
 
                     <div class="flex flex-col gap-1">

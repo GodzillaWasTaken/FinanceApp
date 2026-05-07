@@ -1,11 +1,18 @@
 import { defineStore } from "pinia";
 import { ref, watch } from 'vue';
-import { getAllConti, getAllCategorie } from '../apicalls/apiCalls';
+import { getAllConti, getAllCategorie, getMetaChoices } from '../apicalls/apiCalls';
 
 export const useFinancialsStore = defineStore('financials', () => {
 
   const cashFlowCategories = ref([]);
   const accounts = ref([]);
+  const movementTypes = ref([]);
+  
+  const typeMetadata = {
+    uscita: { bgClass: 'bg-red-500', borderClass: 'border-red-500', color: '#EF4444' },
+    entrata: { bgClass: 'bg-green-500', borderClass: 'border-green-500', color: '#10B981' },
+    giroconto: { bgClass: 'bg-blue-500', borderClass: 'border-blue-500', color: '#3B82F6' }
+  };
   
   // Persistent editing movement (survives refreshes)
   const editingMovement = ref(JSON.parse(localStorage.getItem('editingMovement') || 'null'));
@@ -45,8 +52,22 @@ export const useFinancialsStore = defineStore('financials', () => {
     }
   }
 
+  async function fetchMetaChoices() {
+    try {
+      const data = await getMetaChoices();
+      if (data && data.movement_types) {
+        movementTypes.value = data.movement_types.map(t => ({
+          ...t,
+          ...(typeMetadata[t.id] || { bgClass: 'bg-gray-500', borderClass: 'border-gray-500', color: '#9CA3AF' })
+        }));
+      }
+    } catch (err) {
+      console.error("Error fetching meta choices:", err);
+    }
+  }
+
   async function fetchAll() {
-    await Promise.all([fetchConti(), fetchCategorie()]);
+    await Promise.all([fetchConti(), fetchCategorie(), fetchMetaChoices()]);
   }
 
   return { 
@@ -55,8 +76,10 @@ export const useFinancialsStore = defineStore('financials', () => {
     editingMovement,
     loading, 
     error, 
+    movementTypes,
     fetchConti, 
     fetchCategorie, 
+    fetchMetaChoices,
     fetchAll 
   };
 });

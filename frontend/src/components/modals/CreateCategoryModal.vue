@@ -1,21 +1,28 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import BaseButton from '@/components/buttons/BaseButton.vue'
 import SelectDropdown from '@/components/formcomponents/SelectDropdown.vue'
 import { createCategoria } from '@/apicalls/apiCalls'
+import { useFinancialsStore } from '@/stores/financials'
 
 const props = defineProps({
   isOpen: {
     type: Boolean,
     default: false
+  },
+  initialType: {
+    type: String,
+    default: 'uscita'
   }
 })
 
 const emit = defineEmits(['close', 'created'])
+const financials = useFinancialsStore()
+const movementTypes = computed(() => financials.movementTypes)
 
 const form = ref({
   name: '',
-  type: 'uscita',
+  type: props.initialType || 'uscita',
   color: '#1FBC9C'
 })
 
@@ -41,7 +48,7 @@ onBeforeUnmount(() => {
 function resetForm() {
   form.value = {
     name: '',
-    type: 'uscita',
+    type: props.initialType || 'uscita',
     color: '#000000'
   }
   error.value = ''
@@ -100,10 +107,8 @@ function close() {
             <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
             <SelectDropdown
               v-model="form.type"
-              :items="[
-                { id: 'entrata', name: 'Entrata' },
-                { id: 'uscita', name: 'Uscita' }
-              ]"
+              :items="movementTypes"
+              itemLabel="label"
               placeholder="Seleziona tipo"
               :search-enabled="false"
               :clearable="false"

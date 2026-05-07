@@ -138,3 +138,6 @@ export function getMonthlyStats(year = '2025', month = null) {
     if (month) params.month = month;
     return apiRequest('/api/stats/monthly/', 'GET', null, params);
 }
+export function getMetaChoices() {
+    return apiRequest('/api/meta/choices/', 'GET');
+}

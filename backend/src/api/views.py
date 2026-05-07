@@ -266,3 +266,13 @@ class MonthlyStatsView(APIView):
             "monthlyIncome": current_month_income,
             "monthlyExpense": current_month_spending
         })
+
+class MetaChoicesView(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        from .models import Categoria
+        return Response({
+            "movement_types": [
+                {"id": code, "label": label} for code, label in Categoria.TIPO_CHOICES
+            ]
+        })

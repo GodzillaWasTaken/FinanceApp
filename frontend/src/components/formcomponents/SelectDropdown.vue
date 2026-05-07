@@ -16,7 +16,9 @@ const props = defineProps({
 
   allowCreateCategory: { type: Boolean, default: false },
   allowCreateAccount: { type: Boolean, default: false },
-  filterSystemItems: { type: Boolean, default: true }
+  filterSystemItems: { type: Boolean, default: true },
+  disabled: { type: Boolean, default: false },
+  initialType: { type: String, default: 'uscita' }
 })
 
 const emit = defineEmits(['update:modelValue', 'select', 'clear', 'item-created'])
@@ -82,8 +84,14 @@ onUnmounted(() => {
 
 <template>
   <div class="relative" ref="containerRef">
-    <button type="button" @click="toggle" :aria-expanded="open" aria-haspopup="listbox"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light flex items-center justify-between gap-2 text-gray-700">
+    <button type="button" @click="!props.disabled && toggle()" :aria-expanded="open" aria-haspopup="listbox"
+            :disabled="props.disabled"
+            :class="[
+              'w-full px-3 py-2 border rounded-md focus:outline-none transition-all flex items-center justify-between gap-2',
+              props.disabled 
+                ? 'bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed' 
+                : 'bg-white border-gray-300 text-gray-700 focus:ring-2 focus:ring-primary-light'
+            ]">
        <div class="flex items-center gap-3">
         <span v-if="selectedItem && props.showColor && selectedItem.color" :style="{ backgroundColor: selectedItem.color }" class="w-3.5 h-3.5 rounded-full inline-block"></span>
         <span
@@ -134,6 +142,7 @@ onUnmounted(() => {
     <CreateCategoryModal 
       v-if="props.allowCreateCategory"
       :is-open="showCreateModal" 
+      :initialType="props.initialType"
       @close="showCreateModal = false"
       @created="(newItem) => { 
         emit('item-created', newItem); 
