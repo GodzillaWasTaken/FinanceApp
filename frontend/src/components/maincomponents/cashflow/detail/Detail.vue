@@ -20,8 +20,8 @@ const props = defineProps({
         default: () => []
     }, 
     categories: {
-    type: Object,
-    default: () => ({})
+    type: Array,
+    default: () => []
   },
     hasMore: {
         type: Boolean,
@@ -30,8 +30,14 @@ const props = defineProps({
     selectedCategory: {
         type: [String, Number],
         default: ''
+    },
+    unclassifiedCount: {
+        type: Number,
+        default: 0
     }
 })
+
+import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 
 const emit = defineEmits(['delete-movement', 'load-more', 'filter-category']);
 
@@ -101,6 +107,19 @@ function formatAmount(v) {
                                     :filter-system-items="false"
                                     @update:model-value="(val) => $emit('filter-category', val)"
                                 />
+                            </div>
+                        </div>
+
+                        <!-- Alert for unclassified movements -->
+                        <div v-if="unclassifiedCount > 0" class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-2 flex items-start gap-3 rounded-r-md shadow-sm">
+                            <ExclamationTriangleIcon class="h-5 w-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                            <div>
+                                <p class="text-sm text-amber-800 font-medium">
+                                    Attenzione: Ci sono {{ unclassifiedCount }} movimenti da classificare.
+                                </p>
+                                <p class="text-xs text-amber-700 mt-1">
+                                    Alcuni movimenti sono associati a categorie o conti temporanei "Da riassociare".
+                                </p>
                             </div>
                         </div>
 

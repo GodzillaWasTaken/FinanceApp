@@ -80,6 +80,7 @@ class MovimentoViewSet(BaseModelViewSet):
         month = self.request.query_params.get('month')
         categoria_id = self.request.query_params.get('categoria')
         conto_id = self.request.query_params.get('conto')
+        tipo = self.request.query_params.get('tipo')
 
         if year and year != 'Totale':
             queryset = queryset.filter(data__year=year)
@@ -89,6 +90,8 @@ class MovimentoViewSet(BaseModelViewSet):
             queryset = queryset.filter(categoria_id=categoria_id)
         if conto_id:
             queryset = queryset.filter(conto_id=conto_id)
+        if tipo:
+            queryset = queryset.filter(tipo=tipo)
             
         return queryset
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, onMounted, watch, computed } from 'vue';
 import Detail from '@/components/maincomponents/cashflow/detail/Detail.vue';
 import MainComponent from '@/components/maincomponents/MainComponent.vue';
 import { getMovimenti, deleteMovimento } from '@/apicalls/apiCalls';
@@ -32,14 +32,13 @@ async function fetchExpenses(reset = false) {
   loading.value = true;
   try {
     const { year, month } = parseDataPeriod(settings.dataPeriod);
-    const filters = {};
+    const filters = { tipo: 'uscita' };
     if (selectedCategoryId.value) filters.categoria = selectedCategoryId.value;
     
     const res = await getMovimenti(page.value, 20, year, month, filters);
     const data = res.results || res;
     
     const mapped = data
-      .filter(m => m.tipo === 'uscita')
       .map(m => ({
         ...m,
         date: new Date(m.data).toLocaleDateString('it-IT'),
@@ -64,6 +63,13 @@ async function fetchExpenses(reset = false) {
     loading.value = false;
   }
 }
+
+const unclassifiedCount = computed(() => {
+  return expenses.value.filter(m => 
+    (m.categoria && m.categoria.is_system) || 
+    (m.conto && m.conto.is_system)
+  ).length;
+});
 
 watch(() => settings.dataPeriod, () => fetchExpenses(true));
 watch(selectedCategoryId, () => fetchExpenses(true));
@@ -93,8 +99,10 @@ onMounted(() => {
   :mainProps="{ 
     desc: 'Dettagli Spese', 
     serie: expenses, 
-    categories: financials.cashFlowCategories,
-    hasMore: hasMore
+    categories: financials.cashFlowCategories.filter(c => c.tipo === 'uscita'),
+    hasMore: hasMore,
+    selectedCategory: selectedCategoryId,
+    unclassifiedCount: unclassifiedCount
   }"
   :showTopSection=true
   topSectionTitle="Dettagli Spese"
@@ -103,7 +111,7 @@ onMounted(() => {
   :listen="{
     'delete-movement': handleDelete,
     'load-more': () => fetchExpenses(),
-    'filter-category': (val) => selectedCategoryId.value = val
+    'filter-category': (val) => selectedCategoryId = val
   }"
   />
 </template>
