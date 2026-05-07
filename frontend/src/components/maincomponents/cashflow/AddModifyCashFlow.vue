@@ -27,7 +27,7 @@ const form = ref({
   account: '', //id will be the value
   description: '',
   title: '',
-  movementType: '' // 'entrata', 'uscita', 'giroconto'
+  movementType: '' // 'income', 'expense', 'transfer'
 })
 
 const movementTypes = computed(() => financials.movementTypes)

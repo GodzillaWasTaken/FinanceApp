@@ -22,9 +22,9 @@ def save_user_profile(sender, instance, **kwargs):
 
 @receiver(post_save, sender=User)
 def create_system_fallback_resources(sender, instance, created, **kwargs):
-    """Crea le categorie e il conto 'Da riassociare' per ogni nuovo utente."""
+    """Creates the 'To be reassociated' categories and account for each new user."""
     if created:
-        # Crea categorie di sistema per ogni tipo
+        # Create system categories for each type
         for tipo_code, tipo_label in Categoria.TIPO_CHOICES:
             Categoria.objects.get_or_create(
                 user=instance,
@@ -33,7 +33,7 @@ def create_system_fallback_resources(sender, instance, created, **kwargs):
                 defaults={'color': '#95A5A6', 'is_system': True}
             )
         
-        # Crea conto di sistema
+        # Create system account
         Conto.objects.get_or_create(
             user=instance,
             nome="Da riassociare",
@@ -65,7 +65,7 @@ class Conto(models.Model):
         if self.is_system:
             raise Exception("Non puoi eliminare un conto di sistema.")
         
-        # Trova il conto di sistema "Da riassociare" dell'utente
+        # Find the user's "To be reassociated" system account
         fallback = Conto.objects.filter(user=self.user, is_system=True).first()
         if fallback and fallback != self:
             Movimento.objects.filter(conto=self).update(conto=fallback)
@@ -98,7 +98,7 @@ class Categoria(models.Model):
         if self.is_system:
             raise Exception("Non puoi eliminare una categoria di sistema.")
         
-        # Trova la categoria di sistema del tipo corrispondente per l'utente
+        # Find the system category of the corresponding type for the user
         fallback = Categoria.objects.filter(user=self.user, is_system=True, tipo=self.tipo).first()
         if fallback and fallback != self:
             Movimento.objects.filter(categoria=self).update(categoria=fallback)
@@ -148,7 +148,7 @@ class GlobalSettings(models.Model):
         verbose_name_plural = "Global Settings"
 
     def __str__(self):
-        return "Impostazioni Globali"
+        return "Global Settings"
 
     def save(self, *args, **kwargs):
         # Singleton pattern: there must always and only be one row (ID 1)
