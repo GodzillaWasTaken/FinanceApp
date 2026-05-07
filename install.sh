@@ -3,7 +3,7 @@
 echo "Setting up FinanceApp..."
 
 # download docker-compose.yml
-curl -s -O https://raw.githubusercontent.com/GodzillaWasTaken/FinanceApp/main/docker-compose.yml
+curl -s -O https://raw.githubusercontent.com/GodzillaWasTaken/FinanceApp/main/docker-compose.yaml
 
 # download .env only if it doesn't exist
 if [ ! -f .env ]; then
