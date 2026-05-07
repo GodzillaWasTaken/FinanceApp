@@ -7,6 +7,7 @@ import { useFinancialsStore } from '@/stores/financials'
 import ConfirmModal from '../../modals/ConfirmModal.vue'
 import DatePicker from 'primevue/datepicker';
 import SelectDropdown from '../../formcomponents/SelectDropdown.vue'
+import InputError from '../../formcomponents/InputError.vue'
 
 const props = defineProps({
   categorie: { type: Array, default: () => [] },
@@ -414,7 +415,7 @@ function submitForm() {
   validationError.value = ''
 
   if (!form.value.movementType) {
-    validationError.value = 'Seleziona se il movimento è una spesa o una entrata'
+    validationError.value = 'Seleziona prima il tipo di movimento'
     return
   }
 
@@ -618,9 +619,11 @@ watch(
                                  </div>
 
                                 <!-- warning shown when user attempts to pick a future date -->
-                                <div v-if="showFutureWarning" class="text-sm text-red-600 mt-1">
-                                  Non è possibile selezionare una data futura — impostata la data di oggi.
-                                </div>
+                                <InputError 
+                                  :message="showFutureWarning ? 'Non è possibile selezionare una data futura — impostata la data di oggi.' : ''"
+                                  type="error"
+                                  :animate="true"
+                                />
 
                             </button>
                     </div>
@@ -642,9 +645,11 @@ watch(
                           placeholder="es. Spesa settimanale"
                           :class="[
                             'px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-light transition-all',
-                            { 'animate-shake border-red-400': shakeTitle }
+                            { 'animate-shake border-red-400': shakeTitle || validationError === 'Inserisci un titolo per il movimento' },
+                            { 'border-red-400 bg-red-50': validationError === 'Inserisci un titolo per il movimento' }
                           ]"
                       />
+                      <InputError :message="validationError === 'Inserisci un titolo per il movimento' ? 'Inserisci un titolo per il movimento' : ''" />
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -663,11 +668,11 @@ watch(
                         { 'animate-shake border-red-400': shakeAmount }
                       ]"
                     />
-                    <div class="flex flex-col text-[10px] mt-1">
-                      <span v-if="showNumericError" class="text-amber-600 font-bold mb-0.5">⚠️ Sono consentiti solo numeri</span>
-                      <span v-if="showZeroError" class="text-red-500 font-bold mb-0.5">⚠️ L'importo deve essere maggiore di zero</span>
-                      <span v-if="form.amount > 10000000" class="text-red-500 font-bold mb-0.5">⚠️ Limite massimo di 10M superato!</span>
-                      <span class="text-gray-500">Usa il punto (.) per i decimali.</span>
+                    <div class="flex flex-col mt-1">
+                      <InputError :message="showNumericError ? 'Sono consentiti solo numeri' : ''" type="warning" />
+                      <InputError :message="showZeroError ? 'L\'importo deve essere maggiore di zero' : ''" />
+                      <InputError :message="form.amount > 10000000 ? 'Limite massimo di 10M superato!' : ''" />
+                      <span class="text-[10px] text-gray-500 mt-0.5">Usa il punto (.) per i decimali.</span>
                     </div>
                     </div>
 
@@ -715,7 +720,7 @@ watch(
                           v-model="form.category"
                           itemLabel="nome"
                           :showColor="true"
-                          :placeholder="!form.movementType ? 'Seleziona prima il tipo' : 'Seleziona categoria'"
+                          :placeholder="!form.movementType ? 'Seleziona prima il tipo di movimento (Es. Uscita, Entrata, Giroconto)' : 'Seleziona categoria'"
                           @select="onCategorySelect"
                           @clear="onCategoryClear"
                           :required="true"
@@ -726,6 +731,11 @@ watch(
                         />
                         <div v-if="!form.movementType" class="absolute inset-0 z-10 cursor-not-allowed" @click="validationError = 'Seleziona prima il tipo di movimento'"></div>
                       </div>
+                      <InputError 
+                        :message="validationError === 'Seleziona prima il tipo di movimento' ? 'Per favore, seleziona prima se è una Spesa, un\'Entrata o un Giroconto' : ''" 
+                        :animate="true"
+                      />
+                      <InputError :message="validationError === 'Seleziona una categoria' ? 'Seleziona una categoria' : ''" />
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -742,6 +752,7 @@ watch(
                         :allowCreateAccount="true"
                         @item-created="(a) => emit('newAccountCreated', a)"
                       />
+                      <InputError :message="validationError === 'Seleziona un conto' ? 'Seleziona un conto' : ''" />
                     </div>
 
                     <div class="flex flex-col gap-1">
@@ -765,7 +776,7 @@ watch(
                     ></textarea>
                     </div>
 
-                    <div v-if="validationError" class="bg-red-50 text-red-600 p-3 rounded-md text-sm font-medium border border-red-100">
+                    <div v-if="validationError && !['Seleziona prima il tipo di movimento', 'Inserisci un titolo per il movimento', 'Seleziona una categoria', 'Seleziona un conto'].includes(validationError)" class="bg-red-50 text-red-600 p-3 rounded-md text-sm font-medium border border-red-100">
                       {{ validationError }}
                     </div>
 
