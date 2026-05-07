@@ -2,12 +2,12 @@
 import { ref, watch, onUnmounted, onMounted } from 'vue'
 import { 
   Bars3Icon, PaperAirplaneIcon, WalletIcon, HomeIcon, PlusIcon, ArrowTrendingUpIcon, ClipboardIcon, Cog6ToothIcon, 
-  ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon, ArrowRightStartOnRectangleIcon
+  ChevronLeftIcon, BanknotesIcon, CreditCardIcon, XMarkIcon, ArrowRightStartOnRectangleIcon, TagIcon
 } from '@heroicons/vue/24/outline'
 import { 
   PaperAirplaneIcon as PaperAirplaneIconSolid, WalletIcon as WalletIconSolid, ArrowTrendingUpIcon as ArrowTrendingUpIconSolid,
   HomeIcon as HomeIconSolid, ClipboardIcon as ClipboardIconSolid, Cog6ToothIcon as Cog6ToothIconSolid, 
-  ArrowRightStartOnRectangleIcon as ArrowRightStartOnRectangleIconSolid
+  ArrowRightStartOnRectangleIcon as ArrowRightStartOnRectangleIconSolid, TagIcon as TagIconSolid
 } from '@heroicons/vue/24/solid'
 import MenuVoice from './MenuVoice.vue'
 import { useSettingsStore } from '../../stores/settings'
@@ -32,6 +32,7 @@ const menuOptions = ref([
     voices: [
       { name: 'Spese', route: '/cashflow/expenses', icon: CreditCardIcon, iconSolid: CreditCardIcon },
       { name: 'Entrate', route: '/cashflow/income', icon: BanknotesIcon, iconSolid: BanknotesIcon },
+      { name: 'Categorie', route: '/cashflow/categories', icon: TagIcon, iconSolid: TagIconSolid },
     ]
   },
   { name: 'Investimenti', route: '/notfound', icon: ArrowTrendingUpIcon, iconSolid: ArrowTrendingUpIconSolid },
@@ -358,8 +359,9 @@ onMounted(() => {
               </button>
             </div>
           
-            <div class="flex justify-around items-center px-4 pb-2">
-               <div v-for="subItem in activeMobileBottomMenu?.voices" :key="subItem.name">
+            <!-- Spese / Entrate (top) -->
+            <div class="flex justify-around items-center px-4 pb-2 border-b border-gray-50 mb-2">
+               <div v-for="subItem in activeMobileBottomMenu?.voices.slice(0, 2)" :key="subItem.name">
                   <MenuVoice
                      :menuVoice="subItem.name"
                      :route="subItem.route"
@@ -367,6 +369,19 @@ onMounted(() => {
                      :iconSolid="subItem.iconSolid"
                      @click="closeBottomSheet" 
                   />
+               </div>
+            </div>
+
+            <!-- Categorie (bottom, smaller) -->
+            <div v-if="activeMobileBottomMenu?.voices.length > 2" class="flex justify-center py-2 mt-2">
+               <div v-for="subItem in activeMobileBottomMenu?.voices.slice(2)" :key="subItem.name">
+                  <RouterLink 
+                    :to="subItem.route" 
+                    class="text-xs font-semibold text-primary bg-primary/5 px-4 py-2 rounded-full border border-primary/10 hover:bg-primary/10 transition-colors"
+                    @click="closeBottomSheet"
+                  >
+                    Gestisci categorie
+                  </RouterLink>
                </div>
             </div>
          </div>

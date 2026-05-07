@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import BaseButton from '@/components/buttons/BaseButton.vue'
 import SelectDropdown from '@/components/formcomponents/SelectDropdown.vue'
 import { createCategoria } from '@/apicalls/apiCalls'
@@ -13,10 +13,14 @@ const props = defineProps({
   initialType: {
     type: String,
     default: 'uscita'
+  },
+  category: {
+    type: Object,
+    default: null
   }
 })
 
-const emit = defineEmits(['close', 'created'])
+const emit = defineEmits(['close', 'created', 'updated'])
 const financials = useFinancialsStore()
 const movementTypes = computed(() => financials.movementTypes)
 
@@ -35,6 +39,18 @@ function updateIsMobile() {
   isMobile.value = window.innerWidth < 640
 }
 
+watch(() => props.category, (newVal) => {
+  if (newVal) {
+    form.value = {
+      name: newVal.nome,
+      type: newVal.tipo,
+      color: newVal.color || '#1FBC9C'
+    }
+  } else {
+    resetForm()
+  }
+}, { immediate: true })
+
 onMounted(() => {
   updateIsMobile()
   window.addEventListener('resize', updateIsMobile)
@@ -49,7 +65,7 @@ function resetForm() {
   form.value = {
     name: '',
     type: props.initialType || 'uscita',
-    color: '#000000'
+    color: '#1FBC9C'
   }
   error.value = ''
 }
@@ -64,12 +80,23 @@ async function save() {
   error.value = ''
 
   try {
-    const res = await createCategoria({
-      nome: form.value.name,
-      tipo: form.value.type,
-      color: form.value.color
-    })
-    emit('created', res)
+    if (props.category) {
+      // Update
+      const res = await financials.updateCategoria(props.category.id, {
+        nome: form.value.name,
+        tipo: form.value.type,
+        color: form.value.color
+      })
+      emit('updated', res)
+    } else {
+      // Create
+      const res = await financials.createCategoria({
+        nome: form.value.name,
+        tipo: form.value.type,
+        color: form.value.color
+      })
+      emit('created', res)
+    }
     resetForm()
     emit('close')
   } catch (err) {
@@ -92,7 +119,7 @@ function close() {
     <div v-if="isOpen" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="close"></div>
       <div class="relative bg-white rounded-lg shadow-xl p-6 w-full max-w-md z-10 transform transition-all">
-        <h3 class="text-lg font-semibold mb-4 text-gray-900">Nuova Categoria</h3>
+        <h3 class="text-lg font-semibold mb-4 text-gray-900">{{ category ? 'Modifica Categoria' : 'Nuova Categoria' }}</h3>
 
         <form @submit.prevent="save" class="space-y-4">
 

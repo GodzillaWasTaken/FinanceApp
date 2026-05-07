@@ -143,7 +143,7 @@ function formatAmount(v) {
 
                         <DeleteConfirmationModal
                             v-if="showDeleteModal"
-                            :title="selectedMovement?.title"
+                            :itemTitle="selectedMovement?.title"
                             :date="selectedMovement?.date"
                             :amount="selectedMovement?.amount"
                             @close="closeDeleteModal"

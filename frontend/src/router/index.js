@@ -10,6 +10,7 @@ import AddModifiyView from '../views/cashflow/AddModifyTransactionView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import AdminSettingsView from '../views/AdminSettingsView.vue';
 import SetupView from '../views/SetupView.vue';
+import CategoriesView from '../views/cashflow/CategoriesView.vue';
 import { getGlobalSettings } from '../apicalls/apiCalls';
 
 const routes = [
@@ -81,6 +82,14 @@ const routes = [
     path: '/cashflow/expenses',
     name: 'Expenses',
     component: ExpenseDetailView,
+    meta: {
+      authenticationRequired: true,
+    },
+  },
+  {
+    path: '/cashflow/categories',
+    name: 'Categories',
+    component: CategoriesView,
     meta: {
       authenticationRequired: true,
     },

@@ -213,45 +213,77 @@ function applyPrefill(raw) {
   // 3. Title & Description
   if (raw.titolo || raw.title) form.value.title = raw.titolo || raw.title
   if (raw.descrizione || raw.description) form.value.description = raw.descrizione || raw.description
-
+  
   // 4. Category
-  const catVal = raw.categoria || raw.category
-  if (catVal) {
-    const catId = typeof catVal === 'object' ? catVal.id : catVal
+  // We check both the nested object and the flattened property
+  const catObj = raw.categoria || {};
+  const catName = raw.category || catObj.nome || '';
+  const catId = catObj.id || (typeof raw.category === 'number' ? raw.category : null);
+  
+  const isSystemName = (n) => n && String(n).toLowerCase().includes('riassociare');
+  const isSystem = catObj.is_system || isSystemName(catName);
+
+  if (catId || catName) {
     const found = (props.categorie || []).find(c => 
-      String(c.id) === String(catId) || 
-      String(c.nome).toLowerCase() === String(catId).toLowerCase()
-    )
+      (catId && String(c.id) === String(catId)) || 
+      (catName && String(c.nome).toLowerCase() === String(catName).toLowerCase())
+    );
+
     if (found) {
-      form.value.category = found.id
-      selectedCategoryName.value = found.nome
-      // Also set movementType from category
-      form.value.movementType = found.tipo
-    } else if (typeof catVal === 'string') {
-      selectedCategoryName.value = catVal
-      form.value.category = catVal
+      if (!found.is_system && !isSystemName(found.nome)) {
+        form.value.category = found.id;
+        selectedCategoryName.value = found.nome;
+      } else {
+        // System category detected: reset to empty to force user classification
+        form.value.category = '';
+        selectedCategoryName.value = '';
+      }
+      form.value.movementType = found.tipo;
+    } else {
+      // Fallback if categories not yet loaded or not found in list
+      if (!isSystem) {
+        form.value.category = catId || catName;
+        selectedCategoryName.value = catName || catId;
+      } else {
+        form.value.category = '';
+        selectedCategoryName.value = '';
+      }
     }
   }
 
   // Set movementType explicitly if available in raw
   if (raw.tipo) {
-    form.value.movementType = raw.tipo
+    form.value.movementType = raw.tipo;
   }
 
   // 5. Account
-  const accVal = raw.conto || raw.account
-  if (accVal) {
-    const accId = typeof accVal === 'object' ? accVal.id : accVal
+  const accObj = raw.conto || {};
+  const accName = raw.account || accObj.nome || '';
+  const accId = accObj.id || (typeof raw.account === 'number' ? raw.account : null);
+  const isAccSystem = accObj.is_system || isSystemName(accName);
+
+  if (accId || accName) {
     const found = (props.conti || []).find(c => 
-      String(c.id) === String(accId) || 
-      String(c.nome).toLowerCase() === String(accId).toLowerCase()
-    )
+      (accId && String(c.id) === String(accId)) || 
+      (accName && String(c.nome).toLowerCase() === String(accName).toLowerCase())
+    );
+
     if (found) {
-      form.value.account = found.id
-      selectedAccountName.value = found.nome
-    } else if (typeof accVal === 'string') {
-      selectedAccountName.value = accVal
-      form.value.account = accVal
+      if (!found.is_system && !isSystemName(found.nome)) {
+        form.value.account = found.id;
+        selectedAccountName.value = found.nome;
+      } else {
+        form.value.account = '';
+        selectedAccountName.value = '';
+      }
+    } else {
+      if (!isAccSystem) {
+        form.value.account = accId || accName;
+        selectedAccountName.value = accName || accId;
+      } else {
+        form.value.account = '';
+        selectedAccountName.value = '';
+      }
     }
   }
 

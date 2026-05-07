@@ -1,6 +1,11 @@
 import { defineStore } from "pinia";
 import { ref, watch } from 'vue';
-import { getAllConti, getAllCategorie, getMetaChoices } from '../apicalls/apiCalls';
+import { 
+  getAllConti, getAllCategorie, getMetaChoices, 
+  createCategoria as apiCreateCategoria, 
+  updateCategoria as apiUpdateCategoria, 
+  deleteCategoria as apiDeleteCategoria 
+} from '../apicalls/apiCalls';
 
 export const useFinancialsStore = defineStore('financials', () => {
 
@@ -52,6 +57,23 @@ export const useFinancialsStore = defineStore('financials', () => {
     }
   }
 
+  async function createCategoria(data) {
+    const res = await apiCreateCategoria(data);
+    await fetchCategorie();
+    return res;
+  }
+
+  async function updateCategoria(id, data) {
+    const res = await apiUpdateCategoria(id, data);
+    await fetchCategorie();
+    return res;
+  }
+
+  async function deleteCategoria(id) {
+    await apiDeleteCategoria(id);
+    await fetchCategorie();
+  }
+
   async function fetchMetaChoices() {
     try {
       const data = await getMetaChoices();
@@ -79,6 +101,9 @@ export const useFinancialsStore = defineStore('financials', () => {
     movementTypes,
     fetchConti, 
     fetchCategorie, 
+    createCategoria,
+    updateCategoria,
+    deleteCategoria,
     fetchMetaChoices,
     fetchAll 
   };
