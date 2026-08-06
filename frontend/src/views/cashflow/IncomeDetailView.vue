@@ -13,6 +13,16 @@ const incomes = ref([]);
 const periodTotalValue = ref(null);
 
 const periodTotal = computed(() => {
+  // If a category filter is active, calculate total from loaded incomes.
+  // Otherwise, fallback to the general period total fetched from stats API.
+  if (selectedCategoryId.value) {
+    const sum = incomes.value.reduce((acc, curr) => acc + (curr.amount || 0), 0);
+    return new Intl.NumberFormat("it-IT", { 
+      style: "currency", 
+      currency: "EUR",
+      maximumFractionDigits: 2 
+    }).format(sum);
+  }
   if (periodTotalValue.value !== null) {
     return new Intl.NumberFormat("it-IT", { 
       style: "currency", 
