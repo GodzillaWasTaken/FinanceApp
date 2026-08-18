@@ -1,0 +1,4 @@
+// Release.xcconfig
+// Configuration for the Production environment (App Store)
+
+API_BASE_URL = https:/$()/pileup-backend-552035049143.europe-west1.run.app/api/

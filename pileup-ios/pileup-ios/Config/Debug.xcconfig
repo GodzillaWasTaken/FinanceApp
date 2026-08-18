@@ -1,0 +1,4 @@
+// Debug.xcconfig
+// Configuration for the Development environment (local)
+
+API_BASE_URL = http:/$()/192.168.178.103:8080/api/
