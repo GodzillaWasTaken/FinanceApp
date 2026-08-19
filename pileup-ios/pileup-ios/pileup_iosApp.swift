@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct pileup_iosApp: App {
+
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(\.font, .montserrat(size: 16))
         }
     }
 }

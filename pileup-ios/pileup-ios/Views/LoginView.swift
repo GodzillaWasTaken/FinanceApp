@@ -12,13 +12,13 @@ struct LoginView: View {
                 Spacer()
                 
                 // Logo or Title
-                Text("FinanceApp")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
+                Text("PILEUP")
+                    .font(.montserrat(size: 34, weight: .bold))
+                    .tracking(4) // space between letters
                     .foregroundColor(.blue)
                 
                 Text("Login to your account")
-                    .font(.subheadline)
+                    .font(.montserrat(size: 15))
                     .foregroundColor(.gray)
                 
                 // Form Fields
@@ -39,7 +39,7 @@ struct LoginView: View {
                 if let errorMessage = viewModel.errorMessage {
                     Text(errorMessage)
                         .foregroundColor(.red)
-                        .font(.footnote)
+                        .font(.montserrat(size: 13))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal)
                 }
@@ -54,7 +54,7 @@ struct LoginView: View {
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
                             Text("Login")
-                                .fontWeight(.semibold)
+                                .font(.montserrat(size: 16, weight: .semibold))
                         }
                     }
                     .frame(maxWidth: .infinity)

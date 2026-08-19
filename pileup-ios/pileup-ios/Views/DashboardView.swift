@@ -20,7 +20,7 @@ struct DashboardView: View {
                         VStack(spacing: 16) {
                             HStack {
                                 Text("This Month's Cashflow")
-                                    .font(.headline)
+                                    .font(.montserrat(size: 17, weight: .semibold))
                                 Spacer()
                             }
                             
@@ -66,12 +66,11 @@ struct StatCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             Text(title)
-                .font(.subheadline)
+                .font(.montserrat(size: 15))
                 .foregroundColor(.gray)
             
             Text(String(format: "€ %.2f", amount))
-                .font(.title3)
-                .fontWeight(.bold)
+                .font(.montserrat(size: 20, weight: .bold))
                 .foregroundColor(color)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
