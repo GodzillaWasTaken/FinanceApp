@@ -9,6 +9,17 @@ struct LoginView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 24) {
+                // Tasto impostazioni in alto a destra, indipendente dalla Navigation Bar
+                HStack {
+                    Spacer()
+                    Button(action: { showSettings = true }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.system(size: 22))
+                            .foregroundColor(.gray.opacity(0.6))
+                    }
+                }
+                .padding(.trailing, 10)
+                
                 Spacer()
                 
                 // Logo or Title
@@ -66,15 +77,19 @@ struct LoginView: View {
                 .padding(.horizontal)
                 .disabled(viewModel.isLoading || username.isEmpty || password.isEmpty)
                 
+                // Se le registrazioni sono aperte
+                if viewModel.globalSettings?.allow_registration == true {
+                    NavigationLink(destination: RegisterView(viewModel: viewModel)) {
+                        Text("Non hai un account? Registrati")
+                            .font(.montserrat(size: 14, weight: .semibold))
+                            .foregroundColor(.blue)
+                    }
+                    .padding(.top, 16)
+                }
+                
                 Spacer()
             }
             .padding()
-            .navigationBarItems(trailing: Button(action: {
-                showSettings = true
-            }) {
-                Image(systemName: "gearshape")
-                    .foregroundColor(.gray)
-            })
             .sheet(isPresented: $showSettings) {
                 ServerSettingsView()
             }

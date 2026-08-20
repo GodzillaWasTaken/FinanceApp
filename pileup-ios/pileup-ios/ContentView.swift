@@ -14,6 +14,8 @@ struct ContentView: View {
         Group {
             if authViewModel.isAuthenticated {
                 DashboardView(authViewModel: authViewModel)
+            } else if authViewModel.needsUnlock {
+                UnlockView(viewModel: authViewModel)
             } else {
                 LoginView(viewModel: authViewModel)
             }
