@@ -26,7 +26,7 @@ class CryptoV2 {
         
         let status = CCKeyDerivationPBKDF(
             CCPBKDFAlgorithm(kCCPBKDF2),
-            password,
+            passwordData.bytes,
             passwordData.count,
             saltData.bytes,
             saltData.count,

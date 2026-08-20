@@ -6,13 +6,11 @@ struct TokenResponse: Codable {
 }
 
 struct UserProfile: Codable {
-    let id: Int
-    let username: String
-    let email: String
-    // Add other fields as necessary from the backend
+    let encrypted_master_key: String?
+    let recovery_encrypted_master_key: String?
 }
 
 struct GlobalSettings: Codable {
     let is_initialized: Bool
-    // Add other fields based on the API response
+    let allow_registration: Bool
 }
