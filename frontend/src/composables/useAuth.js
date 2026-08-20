@@ -55,7 +55,8 @@ export function useAuth() {
         const profile = profileRes.data
         let encryptedMasterKey = profile.encrypted_master_key
 
-        const kek = deriveKeyEncryptionKey(password, username)
+        const isLegacy = encryptedMasterKey ? encryptedMasterKey.startsWith('U2FsdGVkX1') : false
+        const kek = deriveKeyEncryptionKey(password, username, isLegacy)
 
         if (!encryptedMasterKey) {
           // New user or no key yet
@@ -139,11 +140,12 @@ export function useAuth() {
     try {
       // 1. Generate E2EE keys
       const newMasterKey = generateMasterKey()
-      const kek = deriveKeyEncryptionKey(password, username)
+      // New registration is always V2, so isLegacy = false
+      const kek = deriveKeyEncryptionKey(password, username, false)
       const encryptedMasterKey = encryptKey(newMasterKey, kek)
 
       const recoveryKey = generateRecoveryKey()
-      const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username)
+      const recoveryKek = deriveKeyEncryptionKey(recoveryKey, username, false)
       const recoveryEncryptedKey = encryptKey(newMasterKey, recoveryKek)
 
       // 2. Register user with keys

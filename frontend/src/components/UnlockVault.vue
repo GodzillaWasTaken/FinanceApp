@@ -34,7 +34,8 @@ const handleUnlock = async () => {
             return;
         }
 
-        const kek = deriveKeyEncryptionKey(password.value, username);
+        const isLegacy = encryptedMasterKey.startsWith('U2FsdGVkX1');
+        const kek = deriveKeyEncryptionKey(password.value, username, isLegacy);
         const decryptedMasterKey = decryptKey(encryptedMasterKey, kek);
 
         if (decryptedMasterKey) {

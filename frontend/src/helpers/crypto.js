@@ -1,98 +1,79 @@
-import CryptoJS from 'crypto-js';
-
-// Constants
-const ITERATIONS = 100000;
-const KEY_SIZE = 256 / 32;
-
 /**
- * Generates a random 256-bit (32-byte) Master Key.
- * @returns {string} Master Key in hexadecimal format.
+ * =========================================================================
+ * END-TO-END ENCRYPTION (E2EE) ROUTER
+ * =========================================================================
+ * This file acts as an interceptor to provide backward compatibility.
+ * 
+ * V1 (Legacy): Used MD5 and EVP_BytesToKey within CryptoJS. 
+ *              Produces ciphertexts starting with 'U2FsdGVkX1'.
+ *              Maintained ONLY for reading existing data in the DB.
+ * 
+ * V2 (Modern): Uses pure AES-256-CBC with explicitly generated 16-byte IVs.
+ *              Produces ciphertexts in the format 'IV(hex):Ciphertext(b64)'.
+ *              Used for ALL new encryptions (new items, or when editing old items).
+ * =========================================================================
  */
+
+import { deriveKeyEncryptionKeyV1, decryptKeyV1, decryptDataV1 } from './crypto_v1';
+import { generateMasterKeyV2, generateRecoveryKeyV2, deriveKeyEncryptionKeyV2, encryptDataV2, decryptDataV2 } from './crypto_v2';
+
+// ---------------------------------------------------------
+// 1. KEY GENERATION (Always V2)
+// ---------------------------------------------------------
 export function generateMasterKey() {
-    return CryptoJS.lib.WordArray.random(32).toString(CryptoJS.enc.Hex);
+    return generateMasterKeyV2();
 }
 
-/**
- * Generates a random Recovery Key (e.g., for offline backup).
- * We use 16 bytes to make it easier to type.
- * @returns {string} Recovery Key in hexadecimal format.
- */
 export function generateRecoveryKey() {
-    return CryptoJS.lib.WordArray.random(16).toString(CryptoJS.enc.Hex);
+    return generateRecoveryKeyV2();
 }
 
-/**
- * Derives a Key Encryption Key (KEK) using PBKDF2 from the password.
- * We use the username as a salt to make it unique per user.
- * @param {string} password 
- * @param {string} salt (e.g., username)
- * @returns {string} KEK in hexadecimal format.
- */
-export function deriveKeyEncryptionKey(password, salt) {
-    const derived = CryptoJS.PBKDF2(password, salt, {
-        keySize: KEY_SIZE,
-        iterations: ITERATIONS,
-        hasher: CryptoJS.algo.SHA256
-    });
-    return derived.toString(CryptoJS.enc.Hex);
-}
-
-/**
- * Encrypts the Master Key using the KEK (Password or Recovery).
- * @param {string} masterKey 
- * @param {string} kek 
- * @returns {string} Encrypted Master Key.
- */
-export function encryptKey(masterKey, kek) {
-    return CryptoJS.AES.encrypt(masterKey, kek).toString();
-}
-
-/**
- * Decrypts the Master Key using the KEK (Password or Recovery).
- * @param {string} encryptedMasterKey 
- * @param {string} kek 
- * @returns {string|null} Decrypted Master Key or null if it fails.
- */
-export function decryptKey(encryptedMasterKey, kek) {
-    try {
-        const bytes = CryptoJS.AES.decrypt(encryptedMasterKey, kek);
-        const originalText = bytes.toString(CryptoJS.enc.Utf8);
-        return originalText || null;
-    } catch (e) {
-        return null;
+// ---------------------------------------------------------
+// 2. KEK DERIVATION (Context Aware)
+// ---------------------------------------------------------
+// During Login, if the `encrypted_master_key` is V1, we must use V1 (100k iterations).
+// Otherwise we use V2 (210k iterations).
+export function deriveKeyEncryptionKey(password, salt, isLegacyV1 = false) {
+    if (isLegacyV1) {
+        return deriveKeyEncryptionKeyV1(password, salt);
     }
+    return deriveKeyEncryptionKeyV2(password, salt);
 }
 
-/**
- * Encrypts textual data (e.g., title, description) using the Master Key.
- * @param {string} text 
- * @param {string} masterKey 
- * @returns {string} Ciphertext.
- */
+// ---------------------------------------------------------
+// 3. MASTER KEY ENCRYPTION / DECRYPTION
+// ---------------------------------------------------------
+export function encryptKey(masterKey, kek) {
+    return encryptDataV2(masterKey, kek);
+}
+
+export function decryptKey(encryptedMasterKey, kek) {
+    if (!encryptedMasterKey) return null;
+    if (encryptedMasterKey.startsWith('U2FsdGVkX1')) {
+        return decryptKeyV1(encryptedMasterKey, kek);
+    }
+    return decryptDataV2(encryptedMasterKey, kek);
+}
+
+// ---------------------------------------------------------
+// 4. DATA ENCRYPTION / DECRYPTION
+// ---------------------------------------------------------
+// Always encrypt using the modern V2 algorithm.
 export function encryptData(text, masterKey) {
     if (!text) return text;
-    return CryptoJS.AES.encrypt(text, masterKey).toString();
+    return encryptDataV2(text, masterKey);
 }
 
-/**
- * Decrypts textual data using the Master Key.
- * If decryption fails (e.g., data not encrypted or incorrect key),
- * returns the original text (useful for transition or errors).
- * @param {string} ciphertext 
- * @param {string} masterKey 
- * @returns {string} Plaintext.
- */
+// Decrypt intelligently based on the ciphertext signature.
 export function decryptData(ciphertext, masterKey) {
     if (!ciphertext) return ciphertext;
-    try {
-        // A simple check to avoid trying to decrypt normal text
-        if (!ciphertext.startsWith('U2FsdGVkX1')) {
-            return ciphertext;
-        }
-        const bytes = CryptoJS.AES.decrypt(ciphertext, masterKey);
-        const originalText = bytes.toString(CryptoJS.enc.Utf8);
-        return originalText || ciphertext;
-    } catch (e) {
-        return ciphertext;
+    
+    if (ciphertext.startsWith('U2FsdGVkX1')) {
+        return decryptDataV1(ciphertext, masterKey);
+    } else if (ciphertext.includes(':')) {
+        return decryptDataV2(ciphertext, masterKey);
     }
+    
+    // Fallback if not encrypted (e.g. legacy plain text before E2E)
+    return ciphertext;
 }
