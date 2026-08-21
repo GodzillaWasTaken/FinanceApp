@@ -15,6 +15,10 @@ class AuthViewModel: ObservableObject {
     init() {
         checkAuthStatus()
         fetchGlobalSettings()
+        
+        NotificationCenter.default.addObserver(forName: NSNotification.Name("SessionExpired"), object: nil, queue: .main) { [weak self] _ in
+            self?.logout()
+        }
     }
     
     func checkAuthStatus() {
@@ -26,15 +30,12 @@ class AuthViewModel: ObservableObject {
     
     // Fetches global settings from the API to check if the register feature with invite code is enabled
     func fetchGlobalSettings() {
-        NetworkManager.shared.request(endpoint: "settings/", method: "GET") { [weak self] (result: Result<GlobalSettings, Error>) in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                switch result {
-                case .success(let settings):
-                    self.globalSettings = settings
-                case .failure(let error):
-                    print("Error fetching settings: \(error.localizedDescription)")
-                }
+        Task { @MainActor in
+            do {
+                let settings: GlobalSettings = try await NetworkManager.shared.request(endpoint: "settings/")
+                self.globalSettings = settings
+            } catch {
+                print("Error fetching settings: \(error.localizedDescription)")
             }
         }
     }
@@ -58,7 +59,7 @@ class AuthViewModel: ObservableObject {
     // Called by UnlockView when user manually enters password
     func unlockWithPassword(_ password: String) {
         let username = UserDefaults.standard.string(forKey: "username") ?? ""
-        fetchProfileAndDeriveKey(password: password, username: username)
+        login(username: username, password: password)
     }
     
     func login(username: String, password: String) {
@@ -72,18 +73,16 @@ class AuthViewModel: ObservableObject {
             return
         }
         
-        NetworkManager.shared.request(endpoint: "auth/jwt/create/", method: "POST", body: body) { [weak self] (result: Result<TokenResponse, Error>) in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
-                switch result {
-                case .success(let response):
-                    UserDefaults.standard.set(response.access, forKey: "authToken")
-                    UserDefaults.standard.set(username, forKey: "username") // Save username right after successful login
-                    self.fetchProfileAndDeriveKey(password: password, username: username)
-                case .failure(let error):
-                    self.isLoading = false
-                    self.errorMessage = "Invalid credentials or network error. (\(error.localizedDescription))"
-                }
+        Task { @MainActor in
+            do {
+                let response: TokenResponse = try await NetworkManager.shared.request(endpoint: "auth/jwt/create/", method: "POST", body: body)
+                UserDefaults.standard.set(response.access, forKey: "authToken")
+                UserDefaults.standard.set(response.refresh, forKey: "refreshToken") // Save refresh token
+                UserDefaults.standard.set(username, forKey: "username") // Save username right after successful login
+                self.fetchProfileAndDeriveKey(password: password, username: username)
+            } catch {
+                self.isLoading = false
+                self.errorMessage = "Invalid credentials or network error. (\(error.localizedDescription))"
             }
         }
     }
@@ -92,58 +91,58 @@ class AuthViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        NetworkManager.shared.request(endpoint: "auth/profile/", method: "GET") { [weak self] (result: Result<UserProfile, Error>) in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
+        Task { @MainActor in
+            do {
+                let profile: UserProfile = try await NetworkManager.shared.request(endpoint: "auth/profile/")
                 self.isLoading = false
+                self.userProfile = profile
                 
-                switch result {
-                case .success(let profile):
-                    self.userProfile = profile
+                if let encryptedMasterKey = profile.encrypted_master_key, !encryptedMasterKey.isEmpty {
+                    // Rileva se è la vecchia versione
+                    let isLegacy = encryptedMasterKey.hasPrefix("U2FsdGVkX1")
                     
-                    if let encryptedMasterKey = profile.encrypted_master_key, !encryptedMasterKey.isEmpty {
-                        // Rileva se è la vecchia versione
-                        let isLegacy = encryptedMasterKey.hasPrefix("U2FsdGVkX1")
+                    // Derive KEK (210k per V2, 100k per V1)
+                    let kek = CryptoHelper.deriveKeyEncryptionKey(password: password, salt: username, isLegacyV1: isLegacy)
+                    
+                    // Decrypt Master Key
+                    if let decryptedKey = CryptoHelper.decryptData(encryptedMasterKey, key: kek) {
+                        self.masterKey = decryptedKey
+                        // Save to Keychain for future Face ID unlocks
+                        _ = KeychainManager.shared.saveMasterKey(decryptedKey)
                         
-                        // Derive KEK (210k per V2, 100k per V1)
-                        let kek = CryptoHelper.deriveKeyEncryptionKey(password: password, salt: username, isLegacyV1: isLegacy)
-                        
-                        // Decrypt Master Key
-                        if let decryptedKey = CryptoHelper.decryptData(encryptedMasterKey, key: kek) {
-                            self.masterKey = decryptedKey
-                            // Save to Keychain for future Face ID unlocks
-                            _ = KeychainManager.shared.saveMasterKey(decryptedKey)
-                            
-                            self.isAuthenticated = true
-                            self.needsUnlock = false
-                        } else {
-                            self.errorMessage = "Password non valida per la decrittografia E2E."
-                        }
-                    } else {
-                        // Registration hasn't set an E2E key yet, or older account.
-                        // Ideally shouldn't happen with new flow.
                         self.isAuthenticated = true
                         self.needsUnlock = false
+                    } else {
+                        self.errorMessage = "Password non valida per la decrittografia E2E."
                     }
-                    
-                case .failure(let error):
-                    self.errorMessage = "Errore durante il recupero del profilo: \(error.localizedDescription)"
+                } else {
+                    // Registration hasn't set an E2E key yet, or older account.
+                    // Ideally shouldn't happen with new flow.
+                    self.isAuthenticated = true
+                    self.needsUnlock = false
                 }
+            } catch {
+                self.isLoading = false
+                self.errorMessage = "Errore durante il recupero del profilo: \(error.localizedDescription)"
             }
         }
     }
     
-    func register(username: String, email: String, password: String, inviteCode: String?, completion: @escaping (String?) -> Void) {
-        isLoading = true
-        errorMessage = nil
+    func register(username: String, email: String, password: String, inviteCode: String?) async throws -> String? {
+        await MainActor.run {
+            isLoading = true
+            errorMessage = nil
+        }
         
         // 1. Genera chiavi E2E
         let newMasterKey = CryptoHelper.generateMasterKey()
         let kek = CryptoHelper.deriveKeyEncryptionKey(password: password, salt: username)
         guard let encryptedMasterKey = CryptoHelper.encryptData(newMasterKey, key: kek) else {
-            self.errorMessage = "Errore nella generazione delle chiavi crittografiche."
-            self.isLoading = false
-            return
+            await MainActor.run {
+                self.errorMessage = "Errore nella generazione delle chiavi crittografiche."
+                self.isLoading = false
+            }
+            return nil
         }
         
         var parameters: [String: Any] = [
@@ -158,32 +157,29 @@ class AuthViewModel: ObservableObject {
         }
         
         guard let body = try? JSONSerialization.data(withJSONObject: parameters) else {
-            self.errorMessage = "Data encoding error"
-            self.isLoading = false
-            return
+            await MainActor.run {
+                self.errorMessage = "Data encoding error"
+                self.isLoading = false
+            }
+            return nil
         }
         
-        NetworkManager.shared.request(endpoint: "auth/register/", method: "POST", body: body) { [weak self] (result: Result<UserProfile, Error>) in
-            DispatchQueue.main.async {
-                guard let self = self else { return }
+        do {
+            let _: UserProfile = try await NetworkManager.shared.request(endpoint: "auth/register/", method: "POST", body: body)
+            await MainActor.run { self.isLoading = false }
+            return newMasterKey
+        } catch {
+            await MainActor.run {
+                self.errorMessage = "Errore durante la registrazione. L'username potrebbe essere già in uso. (\(error.localizedDescription))"
                 self.isLoading = false
-                
-                switch result {
-                case .success(_):
-                    // Registration successful, login automatically or just return the recovery key?
-                    // Actually frontend generates recovery key too!
-                    // I will just return the newMasterKey as the "Recovery Key" for them to save.
-                    completion(newMasterKey)
-                case .failure(let error):
-                    self.errorMessage = "Errore durante la registrazione. L'username potrebbe essere già in uso. (\(error.localizedDescription))"
-                    completion(nil)
-                }
             }
+            throw error
         }
     }
     
     func logout() {
         UserDefaults.standard.removeObject(forKey: "authToken")
+        UserDefaults.standard.removeObject(forKey: "refreshToken")
         _ = KeychainManager.shared.deleteMasterKey()
         isAuthenticated = false
         needsUnlock = false

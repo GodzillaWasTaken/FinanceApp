@@ -94,9 +94,13 @@ struct RegisterView: View {
                     }
                     
                     Button(action: {
-                        viewModel.register(username: username, email: email, password: password, inviteCode: inviteCode) { generatedRecoveryKey in
-                            if let key = generatedRecoveryKey {
-                                self.recoveryKey = key
+                        Task {
+                            do {
+                                if let key = try await viewModel.register(username: username, email: email, password: password, inviteCode: inviteCode) {
+                                    self.recoveryKey = key
+                                }
+                            } catch {
+                                // Errore gestito dal viewModel (errorMessage)
                             }
                         }
                     }) {

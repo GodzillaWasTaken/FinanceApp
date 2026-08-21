@@ -16,16 +16,15 @@ class DashboardViewModel: ObservableObject {
         
         let endpoint = "stats/monthly/?year=\(currentYear)&month=\(currentMonth)"
         
-        NetworkManager.shared.request(endpoint: endpoint, method: "GET") { (result: Result<MonthlyStatsResponse, Error>) in
-            DispatchQueue.main.async {
+        Task { @MainActor in
+            do {
+                let response: MonthlyStatsResponse = try await NetworkManager.shared.request(endpoint: endpoint, method: "GET")
                 self.isLoading = false
-                switch result {
-                case .success(let response):
-                    self.monthlyIncome = response.monthlyIncome
-                    self.monthlyExpense = response.monthlyExpense
-                case .failure(let error):
-                    self.errorMessage = "Error fetching stats: \(error.localizedDescription)"
-                }
+                self.monthlyIncome = response.monthlyIncome
+                self.monthlyExpense = response.monthlyExpense
+            } catch {
+                self.isLoading = false
+                self.errorMessage = "Error fetching stats: \(error.localizedDescription)"
             }
         }
     }
