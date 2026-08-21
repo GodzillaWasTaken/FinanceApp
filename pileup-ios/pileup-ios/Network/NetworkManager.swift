@@ -1,6 +1,6 @@
 import Foundation
 
-class NetworkManager {
+actor NetworkManager {
     static let shared = NetworkManager()
     
     // The base URL checks UserDefaults for a custom server first, then falls back to Info.plist
@@ -14,12 +14,14 @@ class NetworkManager {
         }
         return urlString
     }
+    
+    private var refreshTask: Task<Bool, Error>?
+    
     private init() {}
     
-    func request<T: Decodable>(endpoint: String, method: String = "GET", body: Data? = nil, completion: @escaping (Result<T, Error>) -> Void) {
+    func request<T: Decodable>(endpoint: String, method: String = "GET", body: Data? = nil) async throws -> T {
         guard let url = URL(string: baseURL + endpoint) else {
-            completion(.failure(NSError(domain: "Invalid URL", code: 400, userInfo: nil)))
-            return
+            throw NSError(domain: "Network", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
         }
         
         var request = URLRequest(url: url)
@@ -34,29 +36,78 @@ class NetworkManager {
             request.httpBody = body
         }
         
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async { completion(.failure(error)) }
-                return
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            // If token expired, try to refresh
+            if httpResponse.statusCode == 401 && endpoint != "auth/jwt/refresh/" && endpoint != "auth/jwt/create/" && endpoint != "auth/register/" {
+                
+                let refreshSuccess = try await refreshAccessToken()
+                
+                if refreshSuccess {
+                    // Retry original request
+                    return try await self.request(endpoint: endpoint, method: method, body: body)
+                } else {
+                    // Logout if refresh fails
+                    await MainActor.run {
+                        NotificationCenter.default.post(name: NSNotification.Name("SessionExpired"), object: nil)
+                    }
+                    throw NSError(domain: "Network", code: 401, userInfo: [NSLocalizedDescriptionKey: "Session expired."])
+                }
             }
+            
+            if !(200...299).contains(httpResponse.statusCode) {
+                throw NSError(domain: "Network", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server error: \(httpResponse.statusCode)"])
+            }
+        }
+        
+        return try JSONDecoder().decode(T.self, from: data)
+    }
+    
+    private func refreshAccessToken() async throws -> Bool {
+        if let existingTask = refreshTask {
+            return try await existingTask.value
+        }
+        
+        let task = Task<Bool, Error> {
+            guard let refreshToken = UserDefaults.standard.string(forKey: "refreshToken") else {
+                return false
+            }
+            
+            let parameters = ["refresh": refreshToken]
+            guard let body = try? JSONSerialization.data(withJSONObject: parameters) else {
+                return false
+            }
+            
+            guard let url = URL(string: baseURL + "auth/jwt/refresh/") else {
+                return false
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.httpBody = body
+            
+            let (data, response) = try await URLSession.shared.data(for: request)
             
             if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
-                let error = NSError(domain: "Network", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Server error: \(httpResponse.statusCode)"])
-                DispatchQueue.main.async { completion(.failure(error)) }
-                return
+                return false
             }
             
-            guard let data = data else {
-                DispatchQueue.main.async { completion(.failure(NSError(domain: "No data", code: 404, userInfo: nil))) }
-                return
-            }
-            
-            do {
-                let decodedData = try JSONDecoder().decode(T.self, from: data)
-                DispatchQueue.main.async { completion(.success(decodedData)) }
-            } catch {
-                DispatchQueue.main.async { completion(.failure(error)) }
-            }
-        }.resume()
+            let decodedData = try JSONDecoder().decode(TokenRefreshResponse.self, from: data)
+            UserDefaults.standard.set(decodedData.access, forKey: "authToken")
+            return true
+        }
+        
+        refreshTask = task
+        
+        do {
+            let result = try await task.value
+            refreshTask = nil
+            return result
+        } catch {
+            refreshTask = nil
+            throw error
+        }
     }
 }
