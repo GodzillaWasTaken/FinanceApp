@@ -16,9 +16,10 @@ struct RegisterView: View {
             VStack(spacing: 24) {
                 if let key = recoveryKey {
                     // Registration Success State
-                    Text("Registrazione Completata!")
-                        .font(.montserrat(size: 24, weight: .bold))
-                        .foregroundColor(.blue)
+                    Text("REGISTRAZIONE COMPLETATA")
+                        .font(.montserrat(size: 20, weight: .bold))
+                        .tracking(1)
+                        .foregroundColor(AppTheme.Colors.primary)
                         .padding(.top, 40)
                     
                     Text("Questa è la tua Recovery Key. Salvala in un posto sicuro. Se perdi la password e questa chiave, perderai tutti i tuoi dati E2E.")
@@ -38,11 +39,12 @@ struct RegisterView: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Ho salvato la chiave, vai al Login")
-                            .font(.montserrat(size: 16, weight: .semibold))
+                        Text("HO SALVATO LA CHIAVE, VAI AL LOGIN")
+                            .font(.montserrat(size: 14, weight: .bold))
+                            .tracking(1)
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(Color.blue)
+                            .background(AppTheme.Colors.primary)
                             .foregroundColor(.white)
                             .cornerRadius(10)
                     }
@@ -51,9 +53,10 @@ struct RegisterView: View {
                     
                 } else {
                     // Registration Form State
-                    Text("Registrati")
+                    Text("REGISTRATI")
                         .font(.montserrat(size: 34, weight: .bold))
-                        .foregroundColor(.blue)
+                        .tracking(4)
+                        .foregroundColor(AppTheme.Colors.primary)
                         .padding(.top, 40)
                     
                     VStack(spacing: 16) {
@@ -109,13 +112,14 @@ struct RegisterView: View {
                                 ProgressView()
                                     .progressViewStyle(CircularProgressViewStyle(tint: .white))
                             } else {
-                                Text("Registrati")
-                                    .font(.montserrat(size: 16, weight: .semibold))
+                                Text("REGISTRATI")
+                                    .font(.montserrat(size: 16, weight: .bold))
+                                    .tracking(2)
                             }
                         }
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(Color.blue)
+                        .background(AppTheme.Colors.primary)
                         .foregroundColor(.white)
                         .cornerRadius(10)
                     }

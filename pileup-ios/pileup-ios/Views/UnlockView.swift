@@ -13,9 +13,10 @@ struct UnlockView: View {
                 Spacer()
                 
                 let username = UserDefaults.standard.string(forKey: "username") ?? "Utente"
-                Text("Ciao, \(username)!")
+                Text("CIAO, \(username.uppercased())")
                     .font(.montserrat(size: 28, weight: .bold))
-                    .foregroundColor(.blue)
+                    .tracking(2)
+                    .foregroundColor(AppTheme.Colors.primary)
                 
                 Text("Sblocca per accedere ai tuoi dati")
                     .font(.montserrat(size: 15))
@@ -30,10 +31,11 @@ struct UnlockView: View {
                         VStack(spacing: 12) {
                             Image(systemName: "faceid")
                                 .font(.system(size: 60))
-                                .foregroundColor(.blue)
-                            Text("Sblocca con Face ID")
-                                .font(.montserrat(size: 14, weight: .semibold))
-                                .foregroundColor(.blue)
+                                .foregroundColor(AppTheme.Colors.primary)
+                            Text("SBLOCCA CON FACE ID")
+                                .font(.montserrat(size: 14, weight: .bold))
+                                .tracking(1)
+                                .foregroundColor(AppTheme.Colors.primary)
                         }
                     }
                     .padding()
@@ -68,13 +70,14 @@ struct UnlockView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
-                            Text("Sblocca")
-                                .font(.montserrat(size: 16, weight: .semibold))
+                            Text("SBLOCCA")
+                                .font(.montserrat(size: 16, weight: .bold))
+                                .tracking(2)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
+                    .background(AppTheme.Colors.primary)
                     .foregroundColor(.white)
                     .cornerRadius(10)
                 }

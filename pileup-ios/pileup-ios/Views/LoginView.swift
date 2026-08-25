@@ -25,11 +25,13 @@ struct LoginView: View {
                 // Logo or Title
                 Text("PILEUP")
                     .font(.montserrat(size: 34, weight: .bold))
-                    .tracking(4) // space between letters
-                    .foregroundColor(.blue)
+                    .tracking(6) // increased space between letters
+                    .foregroundColor(AppTheme.Colors.primary)
                 
                 Text("Login to your account")
-                    .font(.montserrat(size: 15))
+                    .font(.montserrat(size: 14, weight: .semibold))
+                    .textCase(.uppercase)
+                    .tracking(2)
                     .foregroundColor(.gray)
                 
                 // Form Fields
@@ -64,13 +66,14 @@ struct LoginView: View {
                             ProgressView()
                                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         } else {
-                            Text("Login")
-                                .font(.montserrat(size: 16, weight: .semibold))
+                            Text("LOGIN")
+                                .font(.montserrat(size: 16, weight: .bold))
+                                .tracking(2)
                         }
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(Color.blue)
+                    .background(AppTheme.Colors.primary)
                     .foregroundColor(.white)
                     .cornerRadius(10)
                 }
@@ -80,9 +83,10 @@ struct LoginView: View {
                 // Se le registrazioni sono aperte
                 if viewModel.globalSettings?.allow_registration == true {
                     NavigationLink(destination: RegisterView(viewModel: viewModel)) {
-                        Text("Non hai un account? Registrati")
-                            .font(.montserrat(size: 14, weight: .semibold))
-                            .foregroundColor(.blue)
+                        Text("NON HAI UN ACCOUNT? REGISTRATI")
+                            .font(.montserrat(size: 12, weight: .bold))
+                            .tracking(1)
+                            .foregroundColor(AppTheme.Colors.primary)
                     }
                     .padding(.top, 16)
                 }
