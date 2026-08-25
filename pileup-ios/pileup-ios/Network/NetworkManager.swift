@@ -94,9 +94,12 @@ actor NetworkManager {
                 return false
             }
             
-            let decodedData = try JSONDecoder().decode(TokenRefreshResponse.self, from: data)
-            UserDefaults.standard.set(decodedData.access, forKey: "authToken")
-            return true
+            if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+               let access = json["access"] as? String {
+                UserDefaults.standard.set(access, forKey: "authToken")
+                return true
+            }
+            return false
         }
         
         refreshTask = task

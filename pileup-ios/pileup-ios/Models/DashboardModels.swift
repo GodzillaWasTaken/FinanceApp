@@ -1,6 +1,7 @@
 import Foundation
 
-struct MonthlyStat: Codable {
+struct MonthlyStat: Codable, Identifiable {
+    var id: String { month }
     let month: String
     let amount: Double
 }

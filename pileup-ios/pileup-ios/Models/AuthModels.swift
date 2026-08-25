@@ -5,10 +5,6 @@ struct TokenResponse: Codable, Sendable {
     let refresh: String
 }
 
-struct TokenRefreshResponse: Sendable {
-    let access: String
-}
-extension TokenRefreshResponse: Decodable {}
 
 
 

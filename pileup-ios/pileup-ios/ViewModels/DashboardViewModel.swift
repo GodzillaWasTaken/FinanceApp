@@ -4,6 +4,8 @@ import Combine
 class DashboardViewModel: ObservableObject {
     @Published var monthlyIncome: Double = 0.0
     @Published var monthlyExpense: Double = 0.0
+    @Published var incomeMovements: [MonthlyStat] = []
+    @Published var expenseMovements: [MonthlyStat] = []
     @Published var isLoading: Bool = false
     @Published var errorMessage: String? = nil
     
@@ -22,6 +24,8 @@ class DashboardViewModel: ObservableObject {
                 self.isLoading = false
                 self.monthlyIncome = response.monthlyIncome
                 self.monthlyExpense = response.monthlyExpense
+                self.incomeMovements = response.income
+                self.expenseMovements = response.spending
             } catch {
                 self.isLoading = false
                 self.errorMessage = "Error fetching stats: \(error.localizedDescription)"
