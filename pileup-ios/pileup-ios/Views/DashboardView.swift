@@ -81,8 +81,54 @@ struct DashboardView: View {
                     
                     // Main Balance Area
                     if viewModel.isLoading {
-                        ProgressView()
-                            .tint(.white)
+                        VStack(spacing: 8) {
+                            Text("Netto")
+                                .font(.montserrat(size: 16, weight: .semibold))
+                                .textCase(.uppercase)
+                                .tracking(2)
+                                .foregroundColor(.white.opacity(0.8))
+                            
+                            ZStack(alignment: .center) {
+                                PlatformView()
+                                    .offset(y: 45)
+                                    .opacity(0.5)
+                                
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(Color.white.opacity(0.2))
+                                    .frame(width: 220, height: 60)
+                                    .shimmering()
+                            }
+                            .padding(.bottom, 24)
+                            
+                            HStack(spacing: 40) {
+                                VStack(spacing: 4) {
+                                    Text("Entrate")
+                                        .font(.montserrat(size: 14, weight: .semibold))
+                                        .textCase(.uppercase)
+                                        .tracking(2)
+                                        .foregroundColor(.white.opacity(0.8))
+                                    
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 100, height: 28)
+                                        .shimmering()
+                                }
+                                
+                                VStack(spacing: 4) {
+                                    Text("Uscite")
+                                        .font(.montserrat(size: 14, weight: .semibold))
+                                        .textCase(.uppercase)
+                                        .tracking(2)
+                                        .foregroundColor(.white.opacity(0.8))
+                                    
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .fill(Color.white.opacity(0.2))
+                                        .frame(width: 100, height: 28)
+                                        .shimmering()
+                                }
+                            }
+                            .padding(.top, 32)
+                        }
                     } else if let errorMessage = viewModel.errorMessage {
                         Text(errorMessage)
                             .foregroundColor(AppTheme.Colors.negative)
