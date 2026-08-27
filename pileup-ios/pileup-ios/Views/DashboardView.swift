@@ -48,24 +48,30 @@ struct DashboardView: View {
                 
                 VStack(spacing: 0) {
                     // Top Navigation Area
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Ciao, \(UserDefaults.standard.string(forKey: "username") ?? "Utente")")
-                                .font(.montserrat(size: 14, weight: .semibold))
-                                .foregroundColor(.white.opacity(0.9))
+                    VStack(spacing: 16) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Ciao, \(UserDefaults.standard.string(forKey: "username") ?? "Utente")")
+                                    .font(.montserrat(size: 14, weight: .semibold))
+                                    .foregroundColor(.white.opacity(0.9))
+                            }
+                            
+                            Spacer()
+                            
+                            NavigationLink(destination: SettingsView(authViewModel: authViewModel)) {
+                                Image(systemName: "gearshape.fill")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundColor(.white)
+                                    .padding(10)
+                                    .background(Color.white.opacity(0.2))
+                                    .clipShape(Circle())
+                            }
                         }
                         
-                        Spacer()
-                        
-                        Button(action: {
-                            authViewModel.logout()
-                        }) {
-                            Image(systemName: "rectangle.portrait.and.arrow.right")
-                                .font(.system(size: 14, weight: .bold))
-                                .foregroundColor(.white)
-                                .padding(10)
-                                .background(Color.white.opacity(0.2))
-                                .clipShape(Circle())
+                        HStack {
+                            Spacer()
+                            TimeFrameSelectorView(viewModel: viewModel)
+                            Spacer()
                         }
                     }
                     .padding(.horizontal, 24)
