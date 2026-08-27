@@ -105,12 +105,11 @@ struct UnlockView: View {
     func checkBiometrics() {
         let context = LAContext()
         var error: NSError?
-        isFaceIDAvailable = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
         
-        if let err = error {
-            print("Biometrics check failed: \(err.localizedDescription)")
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            isFaceIDAvailable = (context.biometryType == .faceID)
         } else {
-            print("Biometrics available: \(isFaceIDAvailable)")
+            isFaceIDAvailable = false
         }
     }
 }

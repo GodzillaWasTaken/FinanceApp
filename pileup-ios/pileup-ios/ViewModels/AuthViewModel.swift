@@ -35,7 +35,7 @@ class AuthViewModel: ObservableObject {
                 let settings: GlobalSettings = try await NetworkManager.shared.request(endpoint: "settings/")
                 self.globalSettings = settings
             } catch {
-                print("Error fetching settings: \(error.localizedDescription)")
+                // Fallback silenzioso in caso di errore fetch settings
             }
         }
     }
