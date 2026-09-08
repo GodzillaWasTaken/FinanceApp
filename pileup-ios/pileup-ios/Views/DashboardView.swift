@@ -2,10 +2,16 @@ import SwiftUI
 import Charts
 
 struct DashboardView: View {
-    @StateObject private var viewModel = DashboardViewModel()
+    @ObservedObject var viewModel: DashboardViewModel
     @ObservedObject var authViewModel: AuthViewModel
-    @State private var showChartsSheet = false
-    @State private var currentDetent: PresentationDetent = .height(120)
+    
+    @State private var isChartsExpanded: Bool = false
+    @GestureState private var dragOffset: CGFloat = 0
+    
+    init(authViewModel: AuthViewModel, viewModel: DashboardViewModel? = nil) {
+        self.authViewModel = authViewModel
+        self.viewModel = viewModel ?? DashboardViewModel()
+    }
     
     private func formattedCurrency(_ value: Double) -> String {
         let formatter = NumberFormatter()
@@ -37,7 +43,7 @@ struct DashboardView: View {
     
     var body: some View {
         NavigationView {
-            ZStack {
+            ZStack(alignment: .bottom) {
                 // Background Gradient
                 LinearGradient(
                     gradient: Gradient(colors: [AppTheme.Colors.primary, AppTheme.Colors.primaryHover]),
@@ -46,6 +52,7 @@ struct DashboardView: View {
                 )
                 .edgesIgnoringSafeArea(.all)
                 
+                // Main Content
                 VStack(spacing: 0) {
                     // Top Navigation Area
                     VStack(spacing: 16) {
@@ -143,18 +150,22 @@ struct DashboardView: View {
                             ZStack(alignment: .center) {
                                 // Effetto banconota 3D (Platform)
                                 PlatformView()
-                                    .offset(y: 45) // Spostato decisamente giù sotto al testo
+                                    .offset(y: 45)
                                 
-                                formattedCurrencyView(value: viewModel.monthlyIncome - viewModel.monthlyExpense, mainSize: 64, decimalSize: 32)
-                                    .foregroundColor(.white)
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.5)
-                                    //  trasparenza simulata
-                                    .shadow(color: AppTheme.Colors.primary, radius: 8, x: 0, y: 2)
-                                    .shadow(color: AppTheme.Colors.primary, radius: 20, x: 0, y: 0)
-                                    .shadow(color: AppTheme.Colors.primaryHover, radius: 40, x: 0, y: 0)
+                                formattedCurrencyView(
+                                    value: viewModel.monthlyIncome - viewModel.monthlyExpense,
+                                    mainSize: 64,
+                                    decimalSize: 32
+                                )
+                                .foregroundColor(.white)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.5)
+                                .shadow(color: AppTheme.Colors.primary, radius: 8, x: 0, y: 2)
+                                .shadow(color: AppTheme.Colors.primary, radius: 20, x: 0, y: 0)
+                                .shadow(color: AppTheme.Colors.primaryHover, radius: 40, x: 0, y: 0)
                             }
                             .padding(.bottom, 24)
+                            
                             HStack(spacing: 40) {
                                 VStack(spacing: 4) {
                                     Text("Entrate")
@@ -162,7 +173,8 @@ struct DashboardView: View {
                                         .textCase(.uppercase)
                                         .tracking(2)
                                         .foregroundColor(.white.opacity(0.8))
-                                    formattedCurrencyView(value: viewModel.monthlyIncome, mainSize: 28, decimalSize: 18).foregroundColor(.white)
+                                    formattedCurrencyView(value: viewModel.monthlyIncome, mainSize: 28, decimalSize: 18)
+                                        .foregroundColor(.white)
                                 }
                                 
                                 VStack(spacing: 4) {
@@ -171,7 +183,8 @@ struct DashboardView: View {
                                         .textCase(.uppercase)
                                         .tracking(2)
                                         .foregroundColor(.white.opacity(0.8))
-                                    formattedCurrencyView(value: viewModel.monthlyExpense, mainSize: 28, decimalSize: 18).foregroundColor(.white)
+                                    formattedCurrencyView(value: viewModel.monthlyExpense, mainSize: 28, decimalSize: 18)
+                                        .foregroundColor(.white)
                                 }
                             }
                             .padding(.top, 32)
@@ -179,123 +192,164 @@ struct DashboardView: View {
                     }
                     
                     Spacer()
-                    Spacer() // Push up slightly to leave room for the bottom sheet
-                }
-            }
-            .navigationBarHidden(true)
-            .sheet(isPresented: $showChartsSheet) {
-                ChartsSheetView(viewModel: viewModel, currentDetent: $currentDetent)
-                    .presentationDetents([.height(120), .medium, .large], selection: $currentDetent)
-                    .presentationBackgroundInteraction(.enabled(upThrough: .large))
-                    .presentationCornerRadius(32)
-                    .presentationDragIndicator(.visible)
-                    .interactiveDismissDisabled()
-            }
-            .onAppear {
-                viewModel.fetchMonthlyStats()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    showChartsSheet = true
-                }
-            }
-        }
-    }
-}
-
-struct ChartsSheetView: View {
-    @ObservedObject var viewModel: DashboardViewModel
-    @Binding var currentDetent: PresentationDetent
-    
-    var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 16) {
-                HStack {
-                    if currentDetent == .height(120) {
-                        Spacer()
-                        Text("Scorri su per i grafici")
-                            .font(.caption)
-                            .foregroundColor(AppTheme.Colors.textLight)
-                            .padding(.top, 24) // Spazio dal bordo superiore
-                        Spacer()
-                    } else {
-                        Spacer()
-                        // Segnaposto per il futuro Menu (es. impostazioni, filtri, ecc.)
-                        Button(action: {
-                            // Azione Menu (da implementare)
-                        }) {
-                            Image(systemName: "ellipsis.circle.fill")
-                                .font(.system(size: 24))
-                                .foregroundColor(AppTheme.Colors.primary)
-                        }
-                        .padding(.trailing, 24)
-                        .padding(.top, 24)
-                    }
-                }
-                // Force height to be 140 when panel closed to avoid seeing components when closed
-                .frame(height: currentDetent == .height(120) ? 140 : nil, alignment: .top)
-                .padding(.bottom, 8)
-                
-                if !viewModel.incomeMovements.isEmpty || !viewModel.expenseMovements.isEmpty {
-                    Text("Riepilogo Movimenti")
-                        .font(.headline)
-                        .foregroundColor(AppTheme.Colors.text)
-                        .padding(.horizontal, 24)
-                    
-                    Chart {
-                        ForEach(viewModel.incomeMovements) { stat in
-                            LineMark(
-                                x: .value("Data", stat.month),
-                                y: .value("Valore", stat.amount)
-                            )
-                            .foregroundStyle(by: .value("Tipo", "Entrate"))
-                            .lineStyle(StrokeStyle(lineWidth: 3))
-                            .interpolationMethod(.catmullRom)
-                            
-                            PointMark(
-                                x: .value("Data", stat.month),
-                                y: .value("Valore", stat.amount)
-                            )
-                            .foregroundStyle(by: .value("Tipo", "Entrate"))
-                            .symbol(by: .value("Tipo", "Entrate"))
-                        }
-                        
-                        ForEach(viewModel.expenseMovements) { stat in
-                            LineMark(
-                                x: .value("Data", stat.month),
-                                y: .value("Valore", stat.amount)
-                            )
-                            .foregroundStyle(by: .value("Tipo", "Uscite"))
-                            .lineStyle(StrokeStyle(lineWidth: 3))
-                            .interpolationMethod(.catmullRom)
-                            
-                            PointMark(
-                                x: .value("Data", stat.month),
-                                y: .value("Valore", stat.amount)
-                            )
-                            .foregroundStyle(by: .value("Tipo", "Uscite"))
-                            .symbol(by: .value("Tipo", "Uscite"))
-                        }
-                    }
-                    .chartForegroundStyleScale([
-                        "Entrate": AppTheme.Colors.success,
-                        "Uscite": AppTheme.Colors.negative
-                    ])
-                    .chartLegend(position: .top, alignment: .leading)
-                    .frame(height: 250)
-                    .padding(.horizontal, 24)
-                    
-                    Spacer(minLength: 40)
-                } else {
                     Spacer()
                 }
+                
+                // Interactive In-View Drawer for Charts (resting above the bottom menu)
+                DashboardChartsDrawer(
+                    viewModel: viewModel,
+                    isExpanded: $isChartsExpanded
+                )
+                .padding(.bottom, 106) // Sits neatly above the floating bottom menu
+            }
+            .navigationBarHidden(true)
+            .onAppear {
+                viewModel.fetchMonthlyStats()
             }
         }
-        .background(AppTheme.Colors.background.edgesIgnoringSafeArea(.bottom))
     }
 }
 
-struct DashboardView_Previews: PreviewProvider {
-    static var previews: some View {
-        DashboardView(authViewModel: AuthViewModel())
+/// Interactive drawer for Charts resting cleanly above the bottom navigation bar.
+struct DashboardChartsDrawer: View {
+    @ObservedObject var viewModel: DashboardViewModel
+    @Binding var isExpanded: Bool
+    @GestureState private var dragOffset: CGFloat = 0
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Drag handle & Header
+            VStack(spacing: 8) {
+                Capsule()
+                    .fill(Color.gray.opacity(0.35))
+                    .frame(width: 36, height: 5)
+                    .padding(.top, 10)
+                
+                if !isExpanded {
+                    HStack(spacing: 8) {
+                        Image(systemName: "chart.xyaxis.line")
+                            .foregroundColor(AppTheme.Colors.primary)
+                            .font(.system(size: 13, weight: .semibold))
+                        
+                        Text("Scorri su per i grafici")
+                            .font(.montserrat(size: 12, weight: .semibold))
+                            .foregroundColor(AppTheme.Colors.textLight)
+                        
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.neutral)
+                    }
+                    .padding(.bottom, 12)
+                } else {
+                    HStack {
+                        Text("Riepilogo Movimenti")
+                            .font(.montserrat(size: 16, weight: .bold))
+                            .foregroundColor(AppTheme.Colors.text)
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                isExpanded = false
+                            }
+                        }) {
+                            Image(systemName: "chevron.down.circle.fill")
+                                .font(.system(size: 22))
+                                .foregroundColor(AppTheme.Colors.primary)
+                        }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 4)
+                    .padding(.bottom, 12)
+                }
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                    isExpanded.toggle()
+                }
+            }
+            
+            // Charts content when expanded
+            if isExpanded {
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        if !viewModel.incomeMovements.isEmpty || !viewModel.expenseMovements.isEmpty {
+                            Chart {
+                                ForEach(viewModel.incomeMovements) { stat in
+                                    LineMark(
+                                        x: .value("Data", stat.month),
+                                        y: .value("Valore", stat.amount)
+                                    )
+                                    .foregroundStyle(by: .value("Tipo", "Entrate"))
+                                    .lineStyle(StrokeStyle(lineWidth: 3))
+                                    .interpolationMethod(.catmullRom)
+                                    
+                                    PointMark(
+                                        x: .value("Data", stat.month),
+                                        y: .value("Valore", stat.amount)
+                                    )
+                                    .foregroundStyle(by: .value("Tipo", "Entrate"))
+                                    .symbol(by: .value("Tipo", "Entrate"))
+                                }
+                                
+                                ForEach(viewModel.expenseMovements) { stat in
+                                    LineMark(
+                                        x: .value("Data", stat.month),
+                                        y: .value("Valore", stat.amount)
+                                    )
+                                    .foregroundStyle(by: .value("Tipo", "Uscite"))
+                                    .lineStyle(StrokeStyle(lineWidth: 3))
+                                    .interpolationMethod(.catmullRom)
+                                    
+                                    PointMark(
+                                        x: .value("Data", stat.month),
+                                        y: .value("Valore", stat.amount)
+                                    )
+                                    .foregroundStyle(by: .value("Tipo", "Uscite"))
+                                    .symbol(by: .value("Tipo", "Uscite"))
+                                }
+                            }
+                            .chartForegroundStyleScale([
+                                "Entrate": AppTheme.Colors.success,
+                                "Uscite": AppTheme.Colors.negative
+                            ])
+                            .chartLegend(position: .top, alignment: .leading)
+                            .frame(height: 240)
+                            .padding(.horizontal, 20)
+                        } else {
+                            Text("Nessun dato disponibile per il periodo selezionato")
+                                .font(.montserrat(size: 13, weight: .regular))
+                                .foregroundColor(AppTheme.Colors.textLight)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.vertical, 40)
+                        }
+                    }
+                    .padding(.bottom, 24)
+                }
+                .transition(.opacity)
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: isExpanded ? 340 : 48)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color.white)
+                .shadow(color: Color.black.opacity(0.12), radius: 15, x: 0, y: -4)
+        )
+        .padding(.horizontal, 16)
+        .gesture(
+            DragGesture()
+                .onEnded { value in
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        if value.translation.height < -30 {
+                            isExpanded = true
+                        } else if value.translation.height > 30 {
+                            isExpanded = false
+                        }
+                    }
+                }
+        )
     }
 }
 
@@ -341,5 +395,11 @@ struct PlatformView: View {
                     .clipShape(Ellipse())
                 )
         }
+    }
+}
+
+struct DashboardView_Previews: PreviewProvider {
+    static var previews: some View {
+        DashboardView(authViewModel: AuthViewModel())
     }
 }
