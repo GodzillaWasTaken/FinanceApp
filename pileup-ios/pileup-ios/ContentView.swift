@@ -13,7 +13,7 @@ struct ContentView: View {
     var body: some View {
         Group {
             if authViewModel.isAuthenticated {
-                DashboardView(authViewModel: authViewModel)
+                MainTabView(authViewModel: authViewModel)
             } else if authViewModel.needsUnlock {
                 UnlockView(viewModel: authViewModel)
             } else {
